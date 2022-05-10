@@ -14,7 +14,8 @@ jobs:
         env:
           APAX_TOKEN: ${{ secrets.APAX_ACCESS_TOKEN }}
         run: | 
-              apt-get install --assume-yes --no-install-recommends libtinfo5 \
+              sudo apt-get install --assume-yes --no-install-recommends libtinfo5 \
+              cd /tmp
               mkdir apax-dep
               npm init -y
               curl -H "Authorization: bearer $APAX_TOKEN" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\ > .npmrc
@@ -31,5 +32,5 @@ jobs:
               echo "WwIDAQAB" >> public.pem 
               echo "-----END PUBLIC KEY-----" >> public.pem 
               openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
-              npm install -g ax-apax-*.tgz
+              sudo npm install -g ax-apax-*.tgz
               apax --version
