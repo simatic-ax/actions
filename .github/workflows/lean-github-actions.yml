@@ -7,27 +7,30 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: install_apax
       - uses: actions/setup-node@v3
         with: 
           node-version: 14
-      - run: apt-get install --assume-yes --no-install-recommends libtinfo5
-      - run: cd /tmp
-      - run: mkdir apax-dep
-      - run: npm init -y
-      - run: 'curl -H "Authorization: bearer $APAX_TOKEN" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\ > .npmrc'
-      - run: npm add @ax/apax-signed
-      - run: npm install
-      - run: cd node_modules/@ax/apax-signed
-      - run: echo "-----BEGIN PUBLIC KEY-----" > public.pem 
-      - run: echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" >> public.pem 
-      - run: echo "03hNjjrw6JMKvj0skNJvSaNPq1cYwq1Q/cu86Ny/Wl+lJT+Nzl32oKcgPuU+eY1Z" >> public.pem 
-      - run: echo "VTm9ZYPmIuoO+WPEsW5v1q8u7LURJt5jMxyfVQLXakUzkrjdQY+8/fO77R/s7ndi" >> public.pem 
-      - run: echo "qOXvoDw4SC8RAcbFVoske7R9L8nr8+lAjyOAs7fcWEOAkXaFF3BNIddxAGtAjXr5" >> public.pem 
-      - run: echo "5y+ecHh0wom+diN3RdSDk5TqKl9F8lThAqd8LjFxRcjaeaKftruTB9yd+ppN/4wl" >> public.pem 
-      - run: echo "avwaTQ/7eYHbvNV5aYeELUzxFykhsqKlIeo93y/ncnU0xS7W6ccCvNJ74kRfRtJY" >> public.pem 
-      - run: echo "WwIDAQAB" >> public.pem 
-      - run: echo "-----END PUBLIC KEY-----" >> public.pem 
-      - run: openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
-      - run: npm install -g ax-apax-*.tgz
-      - run: apax --version
+      - shell: bash
+        env:
+          APAX_TOKEN: ${{ secrets.APAX_ACCESS_TOKEN }}
+        run: | 
+              apt-get install --assume-yes --no-install-recommends libtinfo5 \
+              cd /tmp
+              mkdir apax-dep
+              npm init -y
+              curl -H "Authorization: bearer $APAX_TOKEN" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\ > .npmrc
+              npm add @ax/apax-signed
+              npm install
+              cd node_modules/@ax/apax-signed
+              echo "-----BEGIN PUBLIC KEY-----" > public.pem 
+              echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" >> public.pem 
+              echo "03hNjjrw6JMKvj0skNJvSaNPq1cYwq1Q/cu86Ny/Wl+lJT+Nzl32oKcgPuU+eY1Z" >> public.pem 
+              echo "VTm9ZYPmIuoO+WPEsW5v1q8u7LURJt5jMxyfVQLXakUzkrjdQY+8/fO77R/s7ndi" >> public.pem 
+              echo "qOXvoDw4SC8RAcbFVoske7R9L8nr8+lAjyOAs7fcWEOAkXaFF3BNIddxAGtAjXr5" >> public.pem 
+              echo "5y+ecHh0wom+diN3RdSDk5TqKl9F8lThAqd8LjFxRcjaeaKftruTB9yd+ppN/4wl" >> public.pem 
+              echo "avwaTQ/7eYHbvNV5aYeELUzxFykhsqKlIeo93y/ncnU0xS7W6ccCvNJ74kRfRtJY" >> public.pem 
+              echo "WwIDAQAB" >> public.pem 
+              echo "-----END PUBLIC KEY-----" >> public.pem 
+              openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
+              npm install -g ax-apax-*.tgz
+              apax --version
