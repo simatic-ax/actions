@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install_apax
-      - uses: actions/setup-node@v3
+        uses: actions/setup-node@v3
         with: 
-          node-version: 14
-      - shell: bash
+            node-version: 14
+        shell: bash
         env:
           APAX_TOKEN: ${{ secrets.APAX_ACCESS_TOKEN }}
         run: | 
