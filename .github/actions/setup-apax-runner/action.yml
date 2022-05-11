@@ -19,3 +19,9 @@ runs:
         run: | 
               chmod +x ./scripts/setup-apax-env_ubuntu.sh
               ./scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
+      - name: Cache node paths
+        uses: actions/cache@v3
+        with:
+            path: |
+                /usr/local/lib/node
+                /usr/local/lib/node_modules

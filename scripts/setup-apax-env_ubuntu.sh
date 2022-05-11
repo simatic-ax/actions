@@ -21,6 +21,13 @@ if [[ $# -ne 1 ]]; then
     Help
 fi
 
+# Check if apt is installed and exiting early to save time
+if command -v apax &>/dev/null; then
+    echo "Apax already installed, skip installation"
+    exit 0
+fi
+
+
 echo "Checking system requirements.."
 
 # Check if apt is installed and exiting early to save time
