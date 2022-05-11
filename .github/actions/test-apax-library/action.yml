@@ -1,0 +1,13 @@
+name: "Test an apax library"
+description: "Builds the library and runs all the test cases defined within"
+
+runs:
+  using: "composite"
+  steps:
+      - name: install_apax
+        shell: bash
+        env:
+          APAX_TOKEN: ${{ inputs.apax-access-token }}
+        run: | 
+              chmod +x ./scripts/testing-library-projects.sh
+              ./scripts/testing-library-projects.sh
