@@ -16,7 +16,7 @@ Help() {
 }
 
 # check if the bash script is called with no argument or
-# more arguments than one
+# more arguments than one which is invalid
 if [[ $# -ne 1 ]]; then
     Help
 fi
