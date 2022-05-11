@@ -26,3 +26,4 @@ runs:
             path: |
                 /usr/local/lib/node
                 /usr/local/lib/node_modules
+            key: ${{ runner.os }}-modules
