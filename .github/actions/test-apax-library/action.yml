@@ -13,6 +13,7 @@ runs:
         shell: bash
         env:
           LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
+          SCRIPT_PATH: ax_ci_workflows
         run: | 
-              chmod +x ./scripts/testing-library-projects.sh
-              ./scripts/testing-library-projects.sh $LIBRARY_DIRECTORY
+              chmod +x ./$SCRIPT_PATH/scripts/testing-library-projects.sh
+              ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY

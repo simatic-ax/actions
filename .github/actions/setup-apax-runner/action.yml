@@ -16,9 +16,10 @@ runs:
         shell: bash
         env:
           APAX_TOKEN: ${{ inputs.apax-access-token }}
+          SCRIPT_PATH: ax_ci_workflows
         run: | 
-              chmod +x ./scripts/setup-apax-env_ubuntu.sh
-              ./scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
+              chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
+              ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
       - name: Cache node paths
         uses: actions/cache@v3
         with:
