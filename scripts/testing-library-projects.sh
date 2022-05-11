@@ -1,5 +1,30 @@
 #!/bin/bash
 
+############################################################
+# Help                                                     #
+############################################################
+Help() {
+    # Display Help
+    echo "Installs dependencies, builds a library project and runs all defined unit tests"
+    echo
+    echo "Syntax: testing-library-projects [dir] "
+    echo "where:"
+    echo "   dir     Directory of the library project"
+    echo
+
+    exit 1
+}
+
+# check if the bash script is called with no argument or
+# more arguments than one
+if [[ $# -ne 1 ]]; then
+    Help
+fi
+
+cd $1
+
+pwd
+
 echo \> apax --version
 
 apax --version

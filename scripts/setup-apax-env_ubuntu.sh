@@ -59,7 +59,7 @@ sudo rm -rf /var/lib/apt/lists/*
 # and adding the auth bearer to the npm config settings
 mkdir apax-dep
 npm init -y
-curl -H "Authorization: bearer $APAX_TOKEN" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\  >.npmrc
+curl -H "Authorization: bearer $1" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\  >.npmrc
 
 npm add @ax/apax-signed
 npm install

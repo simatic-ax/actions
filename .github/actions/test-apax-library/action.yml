@@ -1,5 +1,10 @@
 name: "Test an apax library"
 description: "Builds the library and runs all the test cases defined within"
+inputs: 
+  library-directory:
+    required: true
+    description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
+
 
 runs:
   using: "composite"
@@ -7,7 +12,7 @@ runs:
       - name: install_apax
         shell: bash
         env:
-          APAX_TOKEN: ${{ inputs.apax-access-token }}
+          LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
         run: | 
               chmod +x ./scripts/testing-library-projects.sh
-              ./scripts/testing-library-projects.sh
+              ./scripts/testing-library-projects.sh $LIBRARY_DIRECTORY
