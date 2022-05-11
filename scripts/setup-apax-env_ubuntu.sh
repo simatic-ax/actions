@@ -9,7 +9,7 @@ Help() {
     echo
     echo "Syntax: setup-apax-env-ubuntu [token] "
     echo "where:"
-    echo "   t     sets your personal apax access token"
+    echo "   token     sets your personal apax access token"
     echo
 
     exit 1

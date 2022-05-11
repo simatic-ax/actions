@@ -4,6 +4,9 @@ inputs:
   library-directory:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
+  apax-access-token:
+    required: true
+    description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
 
 
 runs:
@@ -14,6 +17,7 @@ runs:
         env:
           LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
           SCRIPT_PATH: ax_ci_workflows
+          APAX_TOKEN: apax-access-token
         run: | 
               chmod +x ./$SCRIPT_PATH/scripts/testing-library-projects.sh
-              ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY
+              ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY $APAX_TOKEN

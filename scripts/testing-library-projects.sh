@@ -7,17 +7,17 @@ Help() {
     # Display Help
     echo "Installs dependencies, builds a library project and runs all defined unit tests"
     echo
-    echo "Syntax: testing-library-projects [dir] "
+    echo "Syntax: testing-library-projects [dir] [token]"
     echo "where:"
     echo "   dir     Directory of the library project"
-    echo
+    echo "   token   Sets your personal apax access token"
 
     exit 1
 }
 
 # check if the bash script is called with no argument or
 # more arguments than one
-if [[ $# -ne 1 ]]; then
+if [[ $# -ne 2 ]]; then
     Help
 fi
 
@@ -33,6 +33,8 @@ if [ $exitcode -ne 0 ]; then
     echo "Apax is not installed, please install apax first"
     exit $exitcode
 fi
+
+apax login -p $2
 
 echo \> apax install
 apax install -L
