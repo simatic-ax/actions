@@ -53,7 +53,7 @@ libtinfo5 \
     git nodejs
 
 # Clean up apt lists
-rm -rf /var/lib/apt/lists/*
+sudo rm -rf /var/lib/apt/lists/*
 
 # Initialize a npm package in order to add apax as a dependency
 # and adding the auth bearer to the npm config settings
