@@ -34,7 +34,9 @@ if [ $exitcode -ne 0 ]; then
     exit $exitcode
 fi
 
-apax login -p $2
+echo $2
+
+apax login --password $2
 
 echo \> apax install
 apax install -L
