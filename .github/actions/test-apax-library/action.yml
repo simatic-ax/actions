@@ -17,7 +17,7 @@ runs:
         env:
           LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
           SCRIPT_PATH: ax_ci_workflows
-          APAX_TOKEN: apax-access-token
+          APAX_TOKEN: ${{ inputs.apax-access-token }}
         run: | 
               chmod +x ./$SCRIPT_PATH/scripts/testing-library-projects.sh
               ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY $APAX_TOKEN
