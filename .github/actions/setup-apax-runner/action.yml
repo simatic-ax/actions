@@ -16,7 +16,7 @@ runs:
             path: |
                 /usr/local/lib/node
                 /usr/local/lib/node_modules
-            key: ${{ runner.os }}-apax-${{ hashFiles('**/apax.yml') }}
+            key: ${{ runner.os }}-apax-${{ hashFiles('**/package.json') }}
 
       - name: setup_node
         if: steps.cache-env.outputs.cache-hit != 'true'
