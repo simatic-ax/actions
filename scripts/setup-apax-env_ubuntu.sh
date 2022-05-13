@@ -40,7 +40,6 @@ if ! command -v apt-get &>/dev/null; then
 fi
 
 
-sudo apt-get update
 apt-get install --assume-yes --no-install-recommends \
 # for libLLVM
     libtinfo5 \
