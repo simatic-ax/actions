@@ -8,11 +8,23 @@ inputs:
 runs:
   using: "composite"
   steps:
+
+      - name: Cache node paths
+        id: cache-env
+        uses: actions/cache@v3
+        with:
+            path: |
+                /usr/local/lib/node
+                /usr/local/lib/node_modules
+            key: ${{ runner.os }}-apax-${{ hashFiles('**/apax.yml') }}
+
       - name: setup_node
+        if: steps.cache-env.outputs.cache-hit != 'true'
         uses: actions/setup-node@v3
         with: 
             node-version: 14
       - name: install_apax
+        if: steps.cache-env.outputs.cache-hit != 'true'
         shell: bash
         env:
           APAX_TOKEN: ${{ inputs.apax-access-token }}
@@ -20,12 +32,3 @@ runs:
         run: | 
               chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
               ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
-      - name: Cache node paths
-        uses: actions/cache@v3
-        with:
-            path: |
-                /usr/local/lib/node
-                /usr/local/lib/node_modules
-            key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-                            ${{ runner.os }}-node-
