@@ -32,6 +32,12 @@ runs:
         uses: actions/download-artifact@v3
         with:
           name: build
+          path: $GITHUB_WORKSPACE/bin
+
+
+      - run: |
+              ls bin
+        shell: bash
 
       - name: Build apax package
         shell: bash
