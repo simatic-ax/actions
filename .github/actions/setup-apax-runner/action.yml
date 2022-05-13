@@ -17,7 +17,10 @@ runs:
                 /usr/local/lib/node
                 /usr/local/lib/node_modules
             key: ${{ runner.os }}-apax-${{ hashFiles('**/package.json') }}
-
+      - if: steps.cache-env.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+              echo "No cache hit, setup from scratch" 
       - name: setup_node
         if: steps.cache-env.outputs.cache-hit != 'true'
         uses: actions/setup-node@v3
