@@ -28,6 +28,11 @@ runs:
         run: apax install
         shell: bash
 
+      - name: Download a single artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: build
+
       - name: Build apax package
         shell: bash
         run: apax test
