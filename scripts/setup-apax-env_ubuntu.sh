@@ -39,35 +39,22 @@ if ! command -v apt-get &>/dev/null; then
     exit 1
 fi
 
-if ! command -v node &>/dev/null; then
-    echo "Installing nodejs from nodesource"
-    curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-else
-    # Abusing bash again.. (https://unix.stackexchange.com/questions/285924/how-to-compare-a-programs-version-in-a-shell-script)
-    # Check if node version >= 14 is installed as required by apax
-    nodeversion="$(node -v)"
-    requirednodever="14.0.0"
-
-    if [ "$(printf '%s\n' "$requirednodever" "$nodeversion" | sort -V | head -n1)" = "$requirednodever" ]; then
-        echo "NodeJs is already installed with the version $nodeversion"
-    else
-        echo "Installing nodejs from nodesource"
-        curl -fsSL https://deb.nodesource.com/setup_14.x | bash -
-    fi
-fi
 
 sudo apt-get update
-apt-get install --assume-yes --no-install-recommends
+apt-get install --assume-yes --no-install-recommends \
 # for libLLVM
-libtinfo5 \
+    libtinfo5 \
     git nodejs
-
-# Clean up apt lists
-sudo rm -rf /var/lib/apt/lists/*
 
 # Initialize a npm package in order to add apax as a dependency
 # and adding the auth bearer to the npm config settings
 mkdir apax-dep
+
+npm config set prefix "~/.local/"
+
+mkdir -p ~/.local/bin
+echo 'export PATH=~/.local/bin/:$PATH' >> ~/.bashrc
+
 npm init -y
 curl -H "Authorization: bearer $1" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\  >.npmrc
 
@@ -88,5 +75,5 @@ echo "-----END PUBLIC KEY-----" >>public.pem
 openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
 
 # installing apax globally
-sudo npm install -g ax-apax-*.tgz
+npm install -g ax-apax-*.tgz
 apax --version

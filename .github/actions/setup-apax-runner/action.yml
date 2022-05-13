@@ -14,8 +14,7 @@ runs:
         uses: actions/cache@v3
         with:
             path: |
-                /usr/local/lib/node
-                /usr/local/lib/node_modules
+                .local
             key: ${{ runner.os }}-apax
       - if: steps.cache-env.outputs.cache-hit != 'true'
         shell: bash
