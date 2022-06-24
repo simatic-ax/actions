@@ -1,6 +1,6 @@
 name: "Building an apax library or application"
 description: "Builds the package and returns it as an artifact"
-inputs: 
+inputs:
   library-directory:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
@@ -8,33 +8,31 @@ inputs:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
 
-
 runs:
   using: "composite"
   steps:
-      - name: Cache apax install
-        id: cache-apax
-        uses: actions/cache@v3
-        with:
-            path: |
-                $GITHUB_WORKSPACE/.apax
-            key: ${{ runner.os }}-apax--${{ hashFiles('**/apax.yml') }}
+    - name: Cache apax install
+      id: cache-apax
+      uses: actions/cache@v3
+      with:
+        path: |
+          $GITHUB_WORKSPACE/.apax
+        key: ${{ runner.os }}-apax--${{ hashFiles('**/apax.yml') }}
 
-      - name: Login to apax repository
-        run: apax login --password ${{ inputs.apax-access-token }}
-        shell: bash      
-      
-      - name: Install apax dependencies
-        run: apax install
-        shell: bash
+    - name: Login to apax repository
+      run: apax login --password ${{ inputs.apax-access-token }}
+      shell: bash
 
-      - name: Build apax package
-        shell: bash
-        run: apax build --coverage
+    - name: Install apax dependencies
+      run: apax install --update-lockfile
+      shell: bash
 
-      - name: Built binary
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          path: bin
-        
+    - name: Build apax package
+      shell: bash
+      run: apax build --coverage
+
+    - name: Built binary
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: bin
