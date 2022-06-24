@@ -32,7 +32,7 @@ runs:
         uses: actions/download-artifact@v3
         with:
           name: build
-          path: bin
+          path: $GITHUB_WORKSPACE/bin
 
 
       - run: |
