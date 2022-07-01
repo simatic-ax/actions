@@ -1,6 +1,6 @@
 name: "Setup the apax environment"
 description: "Installs apax and needed software on the runner in order to test, build, pack and release apax packages"
-inputs: 
+inputs:
   apax-access-token:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
@@ -8,20 +8,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-
-      
-      - shell: bash
-        run: |
-              echo "No cache hit, setup from scratch" 
-      - name: setup_node
-        uses: actions/setup-node@v3
-        with: 
-            node-version: 14
-      - name: install_apax
-        shell: bash
-        env:
-          APAX_TOKEN: ${{ inputs.apax-access-token }}
-          SCRIPT_PATH: ax_ci_workflows
-        run: | 
-              chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
-              ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
+    - shell: bash
+      run: |
+        echo "No cache hit, setup from scratch"
+    - name: setup_node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14
+    - name: install_apax
+      shell: bash
+      env:
+        APAX_TOKEN: ${{ inputs.apax-access-token }}
+        SCRIPT_PATH: actions
+      run: |
+        chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
+        ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
