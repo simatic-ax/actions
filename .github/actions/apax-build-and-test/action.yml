@@ -1,6 +1,6 @@
 name: "Test an apax library"
 description: "Builds the library and runs all the test cases defined within"
-inputs: 
+inputs:
   library-directory:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
@@ -8,23 +8,22 @@ inputs:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
 
-
 runs:
   using: "composite"
   steps:
-      - name: Cache apax install
-        id: cache-apax
-        uses: actions/cache@v3
-        with:
-            path: |
-                $GITHUB_WORKSPACE/.apax
-            key: ${{ runner.os }}-apax
-      - name: install_apax
-        shell: bash
-        env:
-          LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
-          SCRIPT_PATH: ax_ci_workflows
-          APAX_TOKEN: ${{ inputs.apax-access-token }}
-        run: | 
-              chmod +x ./$SCRIPT_PATH/scripts/testing-library-projects.sh
-              ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY $APAX_TOKEN
+    - name: Cache apax install
+      id: cache-apax
+      uses: actions/cache@v3
+      with:
+        path: |
+          $GITHUB_WORKSPACE/.apax
+        key: ${{ runner.os }}-apax
+    - name: install_apax
+      shell: bash
+      env:
+        LIBRARY_DIRECTORY: ${{ inputs.library-directory }}
+        SCRIPT_PATH: actions
+        APAX_TOKEN: ${{ inputs.apax-access-token }}
+      run: |
+        chmod +x ./$SCRIPT_PATH/scripts/testing-library-projects.sh
+        ./$SCRIPT_PATH/scripts/testing-library-projects.sh $LIBRARY_DIRECTORY $APAX_TOKEN
