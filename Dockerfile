@@ -1,49 +1,31 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04@sha256:fd92c36d3cb9b1d027c4d2a72c6bf0125da82425fc2ca37c414d4f010180dc19
 
-# users API access token
-ARG APAX_TOKEN=
 
 RUN apt-get update
-RUN apt-get -y install curl
+RUN apt-get -y install curl wget
 
-# install prerequisites
-RUN \ 
-# apax requires node.js https://github.com/nodesource/distributions
-echo "ℹ Downloading nodejs 14.x from nodesource.com" && \
-curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-apt-get update && \
-echo "ℹ Installing nodejs, git, libssl-dev and libtinfo5 for LLVM support" && \
-apt-get install --assume-yes --no-install-recommends \
-# for libLLVM
-libtinfo5 \
-git \
-nodejs
-# rm -rf /var/lib/apt/lists/*
+ADD https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb packages-microsoft-prod.deb
+RUN apt-get update; \
+    apt-get install -y  ca-certificates apt-transport-https; \	
+    dpkg -i packages-microsoft-prod.deb && \
+    rm packages-microsoft-prod.deb; \	
+    apt-get update && \
+    apt-get install -y dotnet-sdk-3.1 dotnet-sdk-6.0
 
-RUN \
-node -v && \
-git -v && \
-npm -v
+# Install npm
+ADD https://deb.nodesource.com/setup_18.x install_nodejs.sh
+RUN chmod 777 ./install_nodejs.sh && \
+    ./install_nodejs.sh
+RUN	apt-get install -y nodejs
 
-# RUN |
-#     cd /tmp
-# mkdir apax-dep
-# cd apax-dep
-# npm init -y
-# curl -H "Authorization: bearer $APAX_TOKEN" https://api.prod.ax.siemens.cloud/apax/login?format=npmrc\  >.npmrc
-# npm add @ax/apax-signed
-# npm install
-# cd node_modules/@ax/apax-signed
-# echo "-----BEGIN PUBLIC KEY-----" >public.pem
-# echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" >>public.pem
-# echo "03hNjjrw6JMKvj0skNJvSaNPq1cYwq1Q/cu86Ny/Wl+lJT+Nzl32oKcgPuU+eY1Z" >>public.pem
-# echo "VTm9ZYPmIuoO+WPEsW5v1q8u7LURJt5jMxyfVQLXakUzkrjdQY+8/fO77R/s7ndi" >>public.pem
-# echo "qOXvoDw4SC8RAcbFVoske7R9L8nr8+lAjyOAs7fcWEOAkXaFF3BNIddxAGtAjXr5" >>public.pem
-# echo "5y+ecHh0wom+diN3RdSDk5TqKl9F8lThAqd8LjFxRcjaeaKftruTB9yd+ppN/4wl" >>public.pem
-# echo "avwaTQ/7eYHbvNV5aYeELUzxFykhsqKlIeo93y/ncnU0xS7W6ccCvNJ74kRfRtJY" >>public.pem
-# echo "WwIDAQAB" >>public.pem
-# echo "-----END PUBLIC KEY-----" >>public.pem
-# cat public.pem
-# openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
-# npm install -g ax-apax-*.tgz
-# apax --version
+
+RUN apt-get install -y git libtinfo5
+
+# Install apax
+COPY apax.tgz apax.tgz
+RUN npm install --global apax.tgz
+RUN apax --version
+
+CMD  dotnet --info && \
+    node --version && \
+    npm --version

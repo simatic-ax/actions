@@ -2,3 +2,5 @@
 .apax/
 bin/
 obj/
+apax*
+public.pem
