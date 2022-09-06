@@ -24,7 +24,7 @@ runs:
       shell: bash
 
     - name: Install apax dependencies
-      run: apax install
+      run: apax install -L
       shell: bash
 
     - name: Download a single artifact
