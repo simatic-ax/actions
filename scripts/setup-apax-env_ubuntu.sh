@@ -53,7 +53,8 @@ mkdir -p ~/.local/bin
 echo 'export PATH=~/.local/bin/:$PATH' >>~/.bashrc
 
 npm init -y
-curl -H "Authorization: bearer $1" https://api.simatic-ax.siemens.io/apax/login?format=npmrc\ > .npmrc
+curl -H "Authorization: bearer $1" "https://api.simatic-ax.siemens.io/apax/login?format=npmrc\" > .npmrc
+
 
 npm add @ax/apax-signed
 npm install
