@@ -33,7 +33,7 @@ fi
 echo "Checking system requirements.."
 
 # Check if apt is installed and exiting early to save time
-if ! command -v apt-get &>/dev/null; then
+if ! command -v sudo apt-get &>/dev/null; then
     echo "Error: apt has not been found, make sure that apt is installed"
     exit 1
 fi
