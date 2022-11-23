@@ -21,5 +21,5 @@ runs:
         APAX_TOKEN: ${{ inputs.apax-access-token }}
         SCRIPT_PATH: actions
       run: |
-        chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
+        sudo chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
         ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
