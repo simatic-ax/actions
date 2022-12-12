@@ -10,9 +10,9 @@ on:
         required: false
         type: string
         default: release
-    env:
-      ACTIONS_TARGET_PATH: actions
 
+env:
+  ACTIONS_TARGET_PATH: "actions"
 jobs:
   build:
     runs-on: ubuntu-latest
