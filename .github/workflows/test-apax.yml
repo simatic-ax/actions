@@ -44,6 +44,8 @@ jobs:
         shell: bash
         run: |
           ls -a
+          ls -a bin/
+          ls -a "bin/build-artifact/"
           DIR="bin/build-artifact/axunit-llvm/"
           if [ -d "$DIR" ]; then
             echo "AXUnit directory exists, skipping build step"
