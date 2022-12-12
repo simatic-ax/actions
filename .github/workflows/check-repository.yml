@@ -15,11 +15,13 @@ jobs:
 
       - name: list files
         shell: bash
-        run: ls -a
+        run: |
+          ls -a
+          pwd
 
       - name: list files
         shell: bash
-        run: ls -a actions
+        run: ls -a ../
 
       - name: "Run repolinter"
         uses: ./actions/.github/actions/lint-repository
