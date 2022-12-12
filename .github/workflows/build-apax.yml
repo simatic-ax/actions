@@ -1,13 +1,10 @@
-name: build-apax
+name: apax-build
 on:
   workflow_call:
     secrets:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
-
-env:
-  ACTION_REPO_PATH: ./actions
 
 jobs:
   build:
@@ -20,13 +17,13 @@ jobs:
           repository: simatic-ax/actions
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
-          path: ${{ env.ACTION_REPO_PATH }}
+          path: ./actions
 
       - name: "Setup the apax runner"
-        uses: ${{ env.ACTION_REPO_PATH }}/actions/.github/actions/setup-apax-runner
+        uses: ./actions/actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ${{ env.ACTION_REPO_PATH }}/actions/.github/actions/build-apax-package
+        uses: ./actions/actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
