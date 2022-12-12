@@ -35,28 +35,8 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
-      - name: "Try download build artifact"
-        uses: actions/download-artifact@v3
-        with:
-          path: bin/
-
-      - name: "Check if build artifact exists"
-        shell: bash
-        run: |
-          ls -a
-          ls -a bin/
-          ls -a "bin/build-artifact/"
-          DIR="bin/build-artifact/axunit-llvm/"
-          if [ -d "$DIR" ]; then
-            echo "AXUnit directory exists, skipping build step"
-            ARTIFACT_EXISTS=true
-            cd build-artifact
-            mv * ../
-          fi
-
       - name: "Build the apax workspace"
         uses: ./actions/.github/actions/build-apax-package
-        if: ${{ !env.ARTIFACT_EXISTS }}
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
