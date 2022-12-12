@@ -25,7 +25,7 @@ runs:
         echo $APAX_TOKEN
         ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
         if command -v apax &>/dev/null; then
-          echo "Apax already installed, skip installation"
+          echo "Apax already installed, logging in.."
           apax login -p $1
           exit 0
         fi
