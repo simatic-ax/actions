@@ -12,11 +12,18 @@ runs:
       shell: bash
       run: |
         echo "Installing repolinter"
-        npm i repolinter
+        npm install --global repolinter
+
     - name: "checkout repo"
       uses: actions/checkout@v2.0.0
       with:
         fetch-depth: 0
+        path: _repolint
+
+    - name: "Switch directory"
+      shell: bash
+      run: cd _repolint
+
     - name: Run linter
       shell: bash
       run: repolinter lint
