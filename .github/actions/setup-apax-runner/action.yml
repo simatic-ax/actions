@@ -1,7 +1,7 @@
 name: "Setup the apax environment"
 description: "Installs apax and needed software on the runner in order to test, build, pack and release apax packages"
 inputs:
-  apax-access-token:
+  APAX_TOKEN:
     required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
 
@@ -18,10 +18,11 @@ runs:
     - name: install_apax
       shell: bash
       env:
-        APAX_TOKEN: ${{ inputs.apax-access-token }}
+        APAX_TOKEN: ${{ inputs.APAX_TOKEN }}
         SCRIPT_PATH: actions
       run: |
         chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
+        echo $APAX_TOKEN
         ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
         if command -v apax &>/dev/null; then
           echo "Apax already installed, skip installation"
