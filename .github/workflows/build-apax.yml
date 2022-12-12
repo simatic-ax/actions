@@ -11,10 +11,11 @@ on:
         type: string
         default: release
 
-env:
-  ACTIONS_TARGET_PATH: "actions"
 jobs:
   build:
+    env:
+      ACTIONS_TARGET_PATH: "actions"
+
     runs-on: ubuntu-latest
 
     steps:
