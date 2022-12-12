@@ -23,4 +23,4 @@ runs:
 
     - name: Build apax package
       shell: bash
-      run: apax build --coverage
+      run: apax build
