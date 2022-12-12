@@ -17,7 +17,7 @@ jobs:
           repository: simatic-ax/actions
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
-          path: ./actions
+          path: actions
 
       - name: "Setup the apax runner"
         uses: ./actions/actions/.github/actions/setup-apax-runner
