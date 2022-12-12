@@ -5,8 +5,9 @@ on: workflow_call
 jobs:
   repolint:
     runs-on: ubuntu-latest
-
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
       - name: "Run repolinter"
         uses: ./.github/actions/lint-repository
 
@@ -14,5 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
       - name: "Run markdownlinter"
         uses: ./.github/actions/lint-markdown

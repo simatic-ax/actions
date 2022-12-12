@@ -8,10 +8,14 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
     - name: setup_node
       uses: actions/setup-node@v3
       with:
         node-version: 14
+
     - name: lint commit message
       shell: bash
       run: |
