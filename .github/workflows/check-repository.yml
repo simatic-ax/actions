@@ -8,6 +8,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      - name: list files
+        shell: bash
+        run: ls -al
       - name: "Run repolinter"
         uses: ./.github/actions/lint-repository
 
