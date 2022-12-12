@@ -8,12 +8,24 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: "Checkout actions repository"
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 1
+        path: _repo
+
     - name: Switch working directory
       shell: bash
       run: |
         pwd
         ls -a
-        cd ..
+        cd _repo
+        ls -a
+
+    - name: Switch working directory
+      shell: bash
+      run: |
+        pwd
         ls -a
 
     - name: Login to apax repository
