@@ -27,17 +27,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: simatic-ax/actions
-          ref: ${{ ACTIONS_REF }}
+          ref: ${{ inputs.ACTIONS_REF }}
           fetch-depth: 1
-          path: ${{ ACTIONS_TARGET_PATH }}
+          path: ${{ env.ACTIONS_TARGET_PATH }}
 
       - name: "Setup the apax runner"
-        uses: ./${{ ACTIONS_TARGET_PATH}}/.github/actions/setup-apax-runner
+        uses: ./${{ env.ACTIONS_TARGET_PATH}}/.github/actions/setup-apax-runner
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
-        uses: ./${{ ACTIONS_TARGET_PATH }}/.github/actions/build-apax-package
+        uses: ./${{ env.ACTIONS_TARGET_PATH }}/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
