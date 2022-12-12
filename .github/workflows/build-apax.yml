@@ -5,6 +5,10 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
+
+env:
+  ACTION_REPO_PATH: ./actions
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,15 +17,16 @@ jobs:
       - name: "Checkout actions repository"
         uses: actions/checkout@v3
         with:
+          repository: simatic-ax/actions
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
-          path: actions
+          path: ${{ env.ACTION_REPO_PATH }}
 
       - name: "Setup the apax runner"
-        uses: ./actions/.github/actions/setup-apax-runner
+        uses: ${{ env.ACTION_REPO_PATH }}/actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ./actions/.github/actions/build-apax-package
+        uses: ${{ env.ACTION_REPO_PATH }}/actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 

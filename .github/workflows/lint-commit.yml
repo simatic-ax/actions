@@ -9,11 +9,12 @@ jobs:
       - name: "Checkout actions repository"
         uses: actions/checkout@v3
         with:
+          repository: simatic-ax/actions
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
           path: actions
 
       - name: "Run markdownlinter"
-        uses: ./.github/actions/lint-commit
+        uses: ./actions/.github/actions/lint-commit
         with:
           commit-message: ${{ github.event.head_commit.message }}
