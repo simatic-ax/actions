@@ -14,6 +14,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
+
       - name: "Checkout actions repository"
         uses: actions/checkout@v3
         with:
@@ -23,12 +24,12 @@ jobs:
           path: actions
 
       - name: "Setup the apax runner"
-        uses: ./.github/actions/setup-apax-runner
+        uses: ./actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ./.github/actions/build-apax-package
+        uses: ./actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Test apax artifact"
-        uses: ./.github/actions/test-apax-package
+        uses: ./actions/.github/actions/test-apax-package
