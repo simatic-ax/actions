@@ -20,10 +20,10 @@ jobs:
           path: actions
 
       - name: "Setup the apax runner"
-        uses: ./actions/actions/.github/actions/setup-apax-runner
+        uses: ./actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ./actions/actions/.github/actions/build-apax-package
+        uses: ./actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
