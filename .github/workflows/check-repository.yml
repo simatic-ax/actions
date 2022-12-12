@@ -12,16 +12,13 @@ jobs:
           repository: simatic-ax/actions
           ref: kruegerf-feat-reusable
           fetch-depth: 1
+          path: actions
 
       - name: list files
         shell: bash
         run: |
           ls -a
           pwd
-
-      - name: list files
-        shell: bash
-        run: ls -a ../
 
       - name: "Run repolinter"
         uses: ./actions/.github/actions/lint-repository
