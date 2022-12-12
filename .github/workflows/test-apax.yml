@@ -22,7 +22,11 @@ jobs:
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
           path: actions
-
+      - name: Show directory contents
+        shell: bash
+        run: |
+          pwd
+          ls -a
       - name: "Setup the apax runner"
         uses: ./actions/.github/actions/setup-apax-runner
 
