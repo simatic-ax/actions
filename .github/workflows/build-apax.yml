@@ -21,6 +21,8 @@ jobs:
 
       - name: "Setup the apax runner"
         uses: ./actions/.github/actions/setup-apax-runner
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
         uses: ./actions/.github/actions/build-apax-package
