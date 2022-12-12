@@ -10,11 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: "Checkout actions repository"
+        uses: actions/checkout@v3
+        with:
+          ref: "kruegerf-feat-reusable"
+          fetch-depth: 1
+          path: actions
+
       - name: "Setup the apax runner"
-        uses: ./.github/actions/setup-apax-runner
+        uses: ./actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ./.github/actions/build-apax-package
+        uses: ./actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 

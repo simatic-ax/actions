@@ -6,8 +6,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: "Checkout actions repository"
         uses: actions/checkout@v3
+        with:
+          ref: "kruegerf-feat-reusable"
+          fetch-depth: 1
+          path: actions
 
       - name: "Run markdownlinter"
         uses: ./.github/actions/lint-commit
