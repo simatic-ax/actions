@@ -8,14 +8,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: "Checkout actions repository"
-      uses: actions/checkout@v3
-      with:
-        path: _repo
-
     - name: Switch working directory
       shell: bash
-      run: cd _repo
+      run: |
+        pwd
+        ls -a
+        cd ..
+        ls -a
 
     - name: Login to apax repository
       run: apax login --password ${{ inputs.APAX_TOKEN }}
