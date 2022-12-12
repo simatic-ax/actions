@@ -5,6 +5,9 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
+env:
+  ARTIFACT_EXISTS: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,12 +35,30 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
+      - name: "Try download build artifact"
+        uses: actions/download-artifact@v3
+        with:
+          path: bin/
+
+      - name: "Check if build artifact exists"
+        shell: bash
+        run: |
+          DIR="bin/axunit-llvm/"
+          if [ -d "$DIR" ]; then
+            echo "AXUnit directory exists, skipping build step"
+            ARTIFACT_EXISTS=true
+          fi
+
+      - name: "Check if build artifact exists"
+        shell: bash
+        run: |
+          echo $ARTIFACT_EXISTS
+
       - name: "Build the apax workspace"
         uses: ./actions/.github/actions/build-apax-package
+        if: ${{ env.ARTIFACT_EXISTS == false }}
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Test apax artifact"
         uses: ./actions/.github/actions/test-apax-package
-        with:
-          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
