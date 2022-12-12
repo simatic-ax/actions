@@ -43,20 +43,15 @@ jobs:
       - name: "Check if build artifact exists"
         shell: bash
         run: |
+          ls -a
           DIR="bin/axunit-llvm/"
           if [ -d "$DIR" ]; then
             echo "AXUnit directory exists, skipping build step"
             ARTIFACT_EXISTS=true
           fi
 
-      - name: "Check if build artifact exists"
-        shell: bash
-        run: |
-          echo $ARTIFACT_EXISTS
-
       - name: "Build the apax workspace"
         uses: ./actions/.github/actions/build-apax-package
-        if: ${{ env.ARTIFACT_EXISTS == false }}
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
