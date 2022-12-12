@@ -1,0 +1,9 @@
+name: "Testing an apax library or application"
+description: "Tests the packages binaries and returns it as an artifact, requires build artifact"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Test apax package
+      shell: bash
+      run: apax test

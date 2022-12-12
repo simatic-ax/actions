@@ -1,0 +1,18 @@
+name: "Check repository"
+
+on: workflow_call
+
+jobs:
+  repolint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Run repolinter"
+        uses: ./.github/actions/lint-repository
+
+  markdownlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Run markdownlinter"
+        uses: ./.github/actions/lint-markdown

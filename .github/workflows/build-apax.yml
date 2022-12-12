@@ -1,0 +1,25 @@
+name: build-apax
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Setup the apax runner"
+        uses: ./.github/actions/setup-apax-runner
+
+      - name: "Build the apax workspace"
+        uses: ./.github/actions/build-apax-package
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Upload the build artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: bin/

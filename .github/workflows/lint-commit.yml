@@ -1,0 +1,12 @@
+name: "Check repository"
+
+on: workflow_call
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Run markdownlinter"
+        uses: ./.github/actions/lint-commit
+        with:
+          commit-message: ${{ github.event.head_commit.message }}
