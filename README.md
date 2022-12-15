@@ -10,9 +10,21 @@ In this you'll find some useful GitHub actions, which you can use in your own wo
 
 Install apax in your ci runner on GitHub to youse it in the current job.
 
-Parameter:
+**Usage**:
 
-**APAX_TOKEN**: your token you usually use to login in the AX registry.
+```yml
+- name: "Setup the apax in the ci runner"
+  uses: simatic-ax/actions/setup-apax-runner
+  with:
+    APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+```
+
+**Parameter**:
+
+|||
+|-|-|
+|*APAX_TOKEN*| your token you usually use to login in the AX registry.|
+|||
 
 > do not use your token in a readable text. Store it instead in a [GitHub secret](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces).
 
@@ -20,17 +32,36 @@ Parameter:
 
 Install the dependencies according the apax.yml in your SIMATIC AX project. And compile the ST code of the src folder in your SIMATIC AX project.
 
+**Usage**:
+
+```yml
+- name: "Compile the project (apax build)"
+  uses: simatic-ax/actions/apax-build
+  with:
+    APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+```
+
 > Note: before you can use it, you've to install apax first. That can be done with the action `setup-apax-runner`
 
-Parameter:
+**Parameter**:
+|||
+|-|-|
+|*APAX_TOKEN*| your token you usually use to login in the AX registry.|
+|||
 
-**APAX_TOKEN**: your token you usually use to login in the AX registry.
 
 > do not use your token in a readable text. Store it instead in a [GitHub secret](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces).
 
 ## Action: apax-test
 
 This action executes the AXunit tests.
+
+**Usage**:
+
+```yml
+- name: "Test apax artifact"
+  uses: ./actions/.github/actions/test-apax-package
+```
 
 > Note: before you can use it, you've to install apax first. That can be done with the action `apax-build`
 
@@ -61,7 +92,7 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
-      - name: "Build the apax workspace"
+      - name: "Compile the project (apax build)"
         uses: simatic-ax/actions/apax-build
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
@@ -74,8 +105,10 @@ jobs:
 
 - [GitHub Workflows](https://docs.github.com/en/actions/using-workflows)
 - [GitHub Actions](https://docs.github.com/de/actions)
+- [GitHub secrets](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces)
+  
 
-### Additional tools
+## Additional tools
 
 **Markdownlint-cli**
 
