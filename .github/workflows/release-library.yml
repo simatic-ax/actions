@@ -22,18 +22,18 @@ jobs:
           repository: simatic-ax/actions
           ref: "kruegerf-feat-reusable"
           fetch-depth: 1
-          path: ${{ env.ACTION_REPO_PATH }}
+          path: actions
 
       - name: "Setup the apax runner"
-        uses: ${{ env.ACTION_REPO_PATH }}/.github/actions/setup-apax-runner
+        uses: ./actions/.github/actions/setup-apax-runner
 
       - name: "Build the apax workspace"
-        uses: ${{ env.ACTION_REPO_PATH }}/.github/actions/build-apax-package
+        uses: ./actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Test apax artifact"
-        uses: ${{ env.ACTION_REPO_PATH }}/.github/actions/test-apax-package
+        uses: ./actions/.github/actions/test-apax-package
 
       - name: "Release apax library"
-        uses: ${{ env.ACTION_REPO_PATH }}/.github/actions/
+        uses: ./actions/.github/actions/
