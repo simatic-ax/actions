@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 1
 
       - name: "Run repolinter"
-        uses: simatic-ax/actions/.github/actions/lint-repository
+        uses: simatic-ax/actions/.github/actions/lint-repository@kruegerf-feat-reusable
 
   markdownlint:
     runs-on: ubuntu-latest
