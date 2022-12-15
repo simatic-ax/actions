@@ -5,8 +5,7 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
-env:
-  ACTION_REPO_PATH: ./actions
+
 jobs:
   build:
     runs-on: ubuntu-latest
