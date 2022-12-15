@@ -30,7 +30,7 @@ jobs:
           repository: simatic-ax/actions
           ref: ${{ inputs.ACTIONS_REF }}
           fetch-depth: 1
-          path: ${{ env.ACTIONS_TARGET_PATH }}
+          path: actions
 
       - name: "Setup the apax runner"
         uses: ./${{ env.ACTIONS_TARGET_PATH}}/.github/actions/setup-apax-runner
@@ -38,7 +38,7 @@ jobs:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
-        uses: ./${{ env.ACTIONS_TARGET_PATH }}/.github/actions/build-apax-package
+        uses: ./actions/.github/actions/build-apax-package
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
