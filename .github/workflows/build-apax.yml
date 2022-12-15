@@ -33,7 +33,7 @@ jobs:
           path: actions
 
       - name: "Setup the apax runner"
-        uses: ./${{ env.ACTIONS_TARGET_PATH}}/.github/actions/setup-apax-runner
+        uses: ./actions/.github/actions/setup-apax-runner
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
