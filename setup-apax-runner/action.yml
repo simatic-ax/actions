@@ -31,6 +31,7 @@ runs:
           echo "Error: apt has not been found, make sure that apt is installed"
           exit 1
         fi
+        sudo curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo5 \
         git nodejs
