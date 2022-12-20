@@ -63,4 +63,4 @@ runs:
         >>public.pem
         sudo openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
         sudo npm install -g ax-apax-*.tgz
-        apax --version
+        sudo apax --version
