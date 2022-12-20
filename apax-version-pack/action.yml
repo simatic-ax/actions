@@ -10,6 +10,6 @@ runs:
   steps:
     - shell: bash
       run: |
-        apax version ${ inputs.VERSION }
+        apax version ${{ inputs.VERSION }}
         apax build
         apax pack
