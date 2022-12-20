@@ -31,15 +31,15 @@ runs:
           echo "Error: apt has not been found, make sure that apt is installed"
           exit 1
         fi
-        apt-get install --assume-yes --no-install-recommends \
+        sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo5 \
         git nodejs
-        mkdir apax-dep
-        npm config set prefix "~/.local/"
-        mkdir -p ~/.local/bin
+        sudo mkdir apax-dep
+        sudo npm config set prefix "~/.local/"
+        sudo mkdir -p ~/.local/bin
         echo 'export PATH=~/.local/bin/:$PATH' >>~/.bashrc
-        npm init -y
-        curl -H "Authorization: bearer $1" "https://api.prod.ax.siemens.cloud/apax/login?format=npmrc"  >.npmrc
+        sudo npm init -y
+        sudo curl -H "Authorization: bearer $1" "https://api.prod.ax.siemens.cloud/apax/login?format=npmrc"  >.npmrc
         npm add @ax/apax-signed
         npm install
         cd node_modules/@ax/apax-signed
@@ -61,5 +61,5 @@ runs:
         >>public.pem
         echo "-----END PUBLIC KEY-----" \
         >>public.pem
-        openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
-        npm install -g ax-apax-*.tgz
+        sudo openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
+        sudo npm install -g ax-apax-*.tgz
