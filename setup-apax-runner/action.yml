@@ -11,10 +11,7 @@ runs:
     - shell: bash
       run: |
         echo "No cache hit, setup from scratch"
-    - name: setup_node
-      uses: actions/setup-node@v3
-      with:
-        node-version: 14
+
     - name: install_apax
       shell: bash
       env:
@@ -54,5 +51,6 @@ runs:
         >>public.pem
         echo "-----END PUBLIC KEY-----" \
         >>public.pem
+        sudo openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
         sudo npm install -g ax-apax-*.tgz
         sudo apax --version
