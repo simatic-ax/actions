@@ -19,26 +19,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Checkout actions repository"
+      - name: "Checkout repository"
         uses: actions/checkout@v3
         with:
           fetch-depth: 1
-
-      - name: "Checkout actions repository"
-        uses: actions/checkout@v3
-        with:
-          repository: simatic-ax/actions
-          ref: ${{ inputs.ACTIONS_REF }}
-          fetch-depth: 1
-          path: actions
 
       - name: "Setup the apax runner"
-        uses: ./actions/.github/actions/setup-apax-runner
+        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
-        uses: ./actions/.github/actions/build-apax-package
+        uses: simatic-ax/actions/build-apax-package@kruegerf-feat-reusable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 

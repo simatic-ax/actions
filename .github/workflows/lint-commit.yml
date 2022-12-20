@@ -12,6 +12,6 @@ jobs:
           fetch-depth: 1
 
       - name: "Run markdownlinter"
-        uses: simatic-ax/actions/.github/actions/lint-commit@kruegerf-feat-reusable
+        uses: simatic-ax/actions/lint-commit@kruegerf-feat-reusable
         with:
           commit-message: ${{ github.event.head_commit.message }}

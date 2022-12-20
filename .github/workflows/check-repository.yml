@@ -6,13 +6,8 @@ jobs:
   repolint:
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout actions repository"
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
-
       - name: "Run repolinter"
-        uses: simatic-ax/actions/.github/actions/lint-repository@kruegerf-feat-reusable
+        uses: simatic-ax/actions/lint-repository@kruegerf-feat-reusable
 
   markdownlint:
     runs-on: ubuntu-latest
@@ -21,10 +16,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
         with:
-          repository: simatic-ax/actions
-          ref: kruegerf-feat-reusable
           fetch-depth: 1
-          path: actions
 
       - name: "Run markdownlinter"
-        uses: ./actions/.github/actions/lint-markdown
+        uses: simatix-ax/actions/lint-markdown@kruegerf-feat-reusable

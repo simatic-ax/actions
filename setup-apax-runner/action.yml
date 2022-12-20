@@ -21,9 +21,6 @@ runs:
         APAX_TOKEN: ${{ inputs.APAX_TOKEN }}
         SCRIPT_PATH: actions
       run: |
-        chmod +x ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh
-        echo $APAX_TOKEN
-        ./$SCRIPT_PATH/scripts/setup-apax-env_ubuntu.sh $APAX_TOKEN
         if command -v apax &>/dev/null; then
           echo "Apax already installed, logging in.."
           apax login -p $APAX_TOKEN

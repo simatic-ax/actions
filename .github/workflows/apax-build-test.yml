@@ -16,27 +16,15 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: "Checkout actions repository"
-        uses: actions/checkout@v3
-        with:
-          repository: simatic-ax/actions
-          ref: "kruegerf-feat-reusable"
-          fetch-depth: 1
-          path: actions
-      - name: Show directory contents
-        shell: bash
-        run: |
-          pwd
-          ls -a
       - name: "Setup the apax runner"
-        uses: ./actions/.github/actions/setup-apax-runner
+        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
-        uses: ./actions/.github/actions/build-apax-package
+        uses: simatic-ax/actions/build-apax-package@kruegerf-feat-reusable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Test apax artifact"
-        uses: ./actions/.github/actions/test-apax-package
+        uses: simatic-ax/actions/test-apax-package@kruegerf-feat-reusable

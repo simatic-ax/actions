@@ -20,4 +20,3 @@ runs:
       uses: avto-dev/markdown-lint@v1
       with:
         args: "**/*.md"
-        ignore: ./LICENSE.md
