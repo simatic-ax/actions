@@ -22,7 +22,9 @@ runs:
         sudo curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo5 \
-        git nodejs
+        git 
+        npm -v
+        node -v
         sudo mkdir apax-dep
         sudo npm config set prefix "~/.local/"
         sudo mkdir -p ~/.local/bin
