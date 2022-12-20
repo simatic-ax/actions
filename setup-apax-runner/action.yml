@@ -54,5 +54,5 @@ runs:
         echo "-----END PUBLIC KEY-----" \
         >>public.pem
         sudo openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz
-        sudo npm install -g ax-apax-*.tgz --verbose
-        sudo apax --version
+        npm install --global ax-apax-*.tgz --verbose
+        apax --version
