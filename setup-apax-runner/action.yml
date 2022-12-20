@@ -34,7 +34,7 @@ runs:
         sudo curl -H "Authorization: bearer $APAX_TOKEN" "https://api.simatic-ax.siemens.io/apax/login?format=npmrc" -o .npmrc --verbose
         sudo npm add @ax/apax-signed
         sudo npm install
-        sudo cd node_modules/@ax/apax-signed
+        cd node_modules/@ax/apax-signed
         echo "-----BEGIN PUBLIC KEY-----" \
         >public.pem
         sudo echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" \
