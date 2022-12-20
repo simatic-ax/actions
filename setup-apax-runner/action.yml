@@ -21,16 +21,7 @@ runs:
         APAX_TOKEN: ${{ inputs.APAX_TOKEN }}
         SCRIPT_PATH: actions
       run: |
-        if command -v apax &>/dev/null; then
-          echo "Apax already installed, logging in.."
-          apax login -p $APAX_TOKEN
-          exit 0
-        fi
 
-        if ! command -v apt-get &>/dev/null; then
-          echo "Error: apt has not been found, make sure that apt is installed"
-          exit 1
-        fi
         sudo curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo5 \
@@ -38,15 +29,15 @@ runs:
         sudo mkdir apax-dep
         sudo npm config set prefix "~/.local/"
         sudo mkdir -p ~/.local/bin
-        echo 'export PATH=~/.local/bin/:$PATH' >>~/.bashrc
+        sudo echo 'export PATH=~/.local/bin/:$PATH' >>~/.bashrc
         sudo npm init -y
         sudo curl -H "Authorization: bearer $APAX_TOKEN" "https://api.simatic-ax.siemens.io/apax/login?format=npmrc" -o .npmrc --verbose
-        npm add @ax/apax-signed
-        npm install
-        cd node_modules/@ax/apax-signed
+        sudo npm add @ax/apax-signed
+        sudo npm install
+        sudo cd node_modules/@ax/apax-signed
         echo "-----BEGIN PUBLIC KEY-----" \
         >public.pem
-        echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" \
+        sudo echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" \
         >>public.pem
         echo "03hNjjrw6JMKvj0skNJvSaNPq1cYwq1Q/cu86Ny/Wl+lJT+Nzl32oKcgPuU+eY1Z" \
         >>public.pem
