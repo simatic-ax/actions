@@ -1,0 +1,42 @@
+name: apax-publish
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+    inputs:
+      VERSION:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Version and pack package"
+        uses: simatic-ax/actions/apax-version-pack@kruegerf-feat-reusable
+        with:
+          VERSION: ${{ inputs.VERSION }}
+
+      - name: "Login to the private repo"
+        run: |
+          apax login \
+          --registry "https://npm.pkg.github.com" \
+          --password ${{ secrets.CI_KIT_TOKEN }}
+
+      - name: "Publish package"
+        shell: bash
+        run: |
+          apax publish --package *.apax.tgz --registry https://npm.pkg.github.com

@@ -1,0 +1,15 @@
+name: "Version an apax project and pack for release"
+description: "Versions and pack for release"
+inputs:
+  VERSION:
+    required: true
+    description: "Semantic version for the newly created package"
+
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        apax version ${ inputs.VERSION }
+        apax build
+        apax pack
