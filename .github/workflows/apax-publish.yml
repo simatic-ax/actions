@@ -35,7 +35,7 @@ jobs:
           chmod +x ./clog
           ./clog -V
           ./clog --from $( git tag -l | head -2 | tail -1 ) --setversion ${{ inputs.VERSION }} > changelog
-          echo ./changelog
+          cat ./changelog
 
       - name: "Login to the private repo"
         run: |
