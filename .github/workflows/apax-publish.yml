@@ -5,6 +5,9 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
+      DEPLOY_KEY:
+        description: "Key for logging into the github registry"
+        required: true
     inputs:
       VERSION:
         required: true
