@@ -50,4 +50,4 @@ jobs:
       - name: "Publish package"
         shell: bash
         run: |
-          apax publish --package *.apax.tgz --registry https://npm.pkg.github.com
+          apax publish --registry https://npm.pkg.github.com --package *.apax.tgz
