@@ -39,7 +39,6 @@ jobs:
 
       - name: "Pack and publish the library"
         run: |
-          cat .version
           apax version "${{ inputs.VERSION }}"
           apax pack 2>.package.err 1>.signature
           PACKAGE="$(grep -oP '(?<=\").+.apax\.tgz(?=\")' .package.err)"
