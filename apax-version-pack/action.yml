@@ -4,6 +4,9 @@ inputs:
   VERSION:
     required: true
     description: "Semantic version for the newly created package"
+  APAX_TOKEN:
+    required: true
+    description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
 
 runs:
   using: "composite"
@@ -15,7 +18,7 @@ runs:
     - name: "Build the apax workspace"
       uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
       with:
-        APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+        APAX_TOKEN: ${{ inputs.APAX_TOKEN }}
 
     - shell: bash
       run: |
