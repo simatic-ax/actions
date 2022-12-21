@@ -32,9 +32,7 @@ jobs:
 
       - name: "Login to the private repo"
         run: |
-          apax login \
-          --registry "https://npm.pkg.github.com" \
-          --password ${{ secrets.DEPLOY_KEY }}
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
 
       - name: "Build the apax workspace"
         uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
