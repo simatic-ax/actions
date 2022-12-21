@@ -21,7 +21,7 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@v3
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: "Setup the apax runner"
         uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
@@ -34,7 +34,8 @@ jobs:
           tar -xvf ./clog.tar.gz
           chmod +x ./clog
           ./clog -V
-          ./clog --from $( git tag -l | head -2 | tail -1 ) --setversion ${{ inputs.VERSION }}
+          ./clog --from $( git tag -l | head -2 | tail -1 ) --setversion ${{ inputs.VERSION }} > changelog
+          echo ./changelog
 
       - name: "Login to the private repo"
         run: |
