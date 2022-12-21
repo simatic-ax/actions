@@ -28,6 +28,12 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
+      - name: "Fetch clog"
+        run: |
+          sudo apt install clog-cli
+          clog -V
+          clog --from $( git tag -l | head -2 | tail -1 ) --setversion ${{ inputs.VERSION }}
+
       - name: "Login to the private repo"
         run: |
           apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
