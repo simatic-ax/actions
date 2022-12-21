@@ -14,12 +14,3 @@ runs:
     - shell: bash
       run: |
         apax version ${{ inputs.VERSION }}
-
-    - name: "Build the apax workspace"
-      uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
-      with:
-        APAX_TOKEN: ${{ inputs.APAX_TOKEN }}
-
-    - shell: bash
-      run: |
-        apax pack

@@ -36,6 +36,16 @@ jobs:
           --registry "https://npm.pkg.github.com" \
           --password ${{ secrets.CI_KIT_TOKEN }}
 
+      - name: "Build the apax workspace"
+        uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Pack apax package"
+        shell: bash
+        run: |
+          apax pack
+
       - name: "Publish package"
         shell: bash
         run: |
