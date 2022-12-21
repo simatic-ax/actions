@@ -28,11 +28,6 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
-      - name: "Version and pack package"
-        uses: simatic-ax/actions/apax-version-pack@kruegerf-feat-reusable
-        with:
-          VERSION: ${{ inputs.VERSION }}
-
       - name: "Login to the private repo"
         run: |
           apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
@@ -42,12 +37,10 @@ jobs:
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
-      - name: "Pack apax package"
-        shell: bash
+      - name: "Pack and publish the library"
         run: |
-          apax pack
-
-      - name: "Publish package"
-        shell: bash
-        run: |
-          apax publish --registry https://npm.pkg.github.com --package *.apax.tgz
+          cat .version
+          apax version "${{ inputs.VERSION }}"
+          apax pack 2>.package.err 1>.signature
+          PACKAGE="$(grep -oP '(?<=\").+.apax\.tgz(?=\")' .package.err)"
+          apax publish --package $PACKAGE --registry https://npm.pkg.github.com
