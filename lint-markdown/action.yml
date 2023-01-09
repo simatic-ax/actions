@@ -20,3 +20,4 @@ runs:
       uses: avto-dev/markdown-lint@v1
       with:
         args: "**/*.md"
+        config: ".markdownlint.yml"
