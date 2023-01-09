@@ -1,0 +1,22 @@
+name: "Check repository"
+
+on: workflow_call
+
+jobs:
+  repolint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Run repolinter"
+        uses: simatic-ax/actions/lint-repository@kruegerf-feat-reusable
+
+  markdownlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Run markdownlinter"
+        uses: simatic-ax/actions/lint-markdown@kruegerf-feat-reusable

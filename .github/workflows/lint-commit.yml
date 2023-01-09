@@ -1,0 +1,17 @@
+name: "Check repository"
+
+on: workflow_call
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout actions repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Run markdownlinter"
+        uses: simatic-ax/actions/lint-commit@kruegerf-feat-reusable
+        with:
+          commit-message: ${{ github.event.head_commit.message }}

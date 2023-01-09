@@ -1,0 +1,25 @@
+name: "Lint repository"
+description: "Lints files and directories with repolinter, checking for required files e.g. documentation and readme"
+
+runs:
+  using: "composite"
+  steps:
+    - name: setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 14
+    - name: install repolinter
+      shell: bash
+      run: |
+        echo "Installing repolinter"
+        npm install --global repolinter
+
+    - name: "checkout repo"
+      uses: actions/checkout@v2.0.0
+      with:
+        fetch-depth: 0
+        path: _repolint
+
+    - name: Run linter
+      shell: bash
+      run: repolinter lint _repolint

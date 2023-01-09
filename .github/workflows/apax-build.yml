@@ -1,0 +1,41 @@
+name: apax-build
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+    inputs:
+      ACTIONS_REF:
+        required: false
+        type: string
+        default: release
+
+jobs:
+  build:
+    env:
+      ACTIONS_TARGET_PATH: "actions"
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Build the apax workspace"
+        uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Upload the build artifact"
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifact
+          path: bin/

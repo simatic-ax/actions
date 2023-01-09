@@ -1,0 +1,30 @@
+name: test-apax
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout actions repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Build the apax workspace"
+        uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Test apax artifact"
+        uses: simatic-ax/actions/apax-build-test@kruegerf-feat-reusable
