@@ -25,12 +25,12 @@ jobs:
           fetch-depth: 1
 
       - name: "Setup the apax runner"
-        uses: simatic-ax/actions/setup-apax-runner@kruegerf-feat-reusable
+        uses: simatic-ax/actions/setup-apax-runner@stable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Build the apax workspace"
-        uses: simatic-ax/actions/apax-build@kruegerf-feat-reusable
+        uses: simatic-ax/actions/apax-build@stable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
