@@ -10,6 +10,9 @@ on:
         required: false
         type: string
         default: release
+      LOGIN_SIMATIC_AX:
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -28,6 +31,11 @@ jobs:
         uses: simatic-ax/actions/setup-apax-runner@stable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Login to simatic-ax registry"
+        if: ${{ inputs.LOGIN_SIMATIC_AX }}
+        run: |
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.GITHUB_TOKEN }}"
 
       - name: "Build the apax workspace"
         uses: simatic-ax/actions/apax-build@stable
