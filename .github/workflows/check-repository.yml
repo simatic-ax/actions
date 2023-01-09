@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run repolinter"
-        uses: simatic-ax/actions/lint-repository@kruegerf-feat-reusable
+        uses: simatic-ax/actions/lint-repository@stable
 
   markdownlint:
     runs-on: ubuntu-latest
@@ -19,4 +19,4 @@ jobs:
           fetch-depth: 1
 
       - name: "Run markdownlinter"
-        uses: simatic-ax/actions/lint-markdown@kruegerf-feat-reusable
+        uses: simatic-ax/actions/lint-markdown@stable
