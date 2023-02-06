@@ -1,4 +1,4 @@
-name: apax-publish
+name: apax-publish-application-example
 on:
   workflow_call:
     secrets:
@@ -35,7 +35,7 @@ jobs:
         run: |
           apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
 
-      - name: "Create an empty template"
+      - name: "Create an empty apax template"
         run: |
           mkdir simatic-ax-${{ inputs.PROJECT_NAME }}
           cd simatic-ax-${{ inputs.PROJECT_NAME }}
@@ -53,12 +53,11 @@ jobs:
         with:
           path: ./simatic-ax-${{ inputs.PROJECT_NAME }}/template
 
-      - name: "Pack and publish the library"
+      - name: "Pack and publish the application example as package"
         run: |
           cd ./simatic-ax-${{ inputs.PROJECT_NAME }}
           cat ./template/apax-files-section.yml >> ./apax.yml
           cat apax.yml
-          apax pack 2>.package.err 1>.signature
           apax pack 2>.package.err 1>.signature
           PACKAGE="$(grep -oP '(?<=\").+.apax\.tgz(?=\")' .package.err)"
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
