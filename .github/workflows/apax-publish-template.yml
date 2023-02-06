@@ -1,0 +1,61 @@
+name: apax-publish
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+      DEPLOY_KEY:
+        description: "Key for logging into the github registry"
+        required: true
+    inputs:
+      VERSION:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@stable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Login to the private repo"
+        run: |
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
+
+      - name: "Create an empty template"
+        run: |
+          mkdir simatic-ax-${{ env.PROJECT_NAME }}
+          cd simatic-ax-${{ env.PROJECT_NAME }}
+          mkdir template
+          VERSION=${{ inputs.VERSION }}
+          echo name: "'@simatic-ax/template-${{ env.PROJECT_NAME }}'" >> apax.yml
+          echo version: $VERSION >> apax.yml
+          echo type: generic >> apax.yml
+          cat apax.yml
+          # files section will be created in the "pack" step
+          cd ..
+
+      - name: "Clone the library repository into the template folder"
+        uses: actions/checkout@v3
+        with:
+          path: ./simatic-ax-${{ env.PROJECT_NAME }}/template
+
+      - name: "Pack and publish the library"
+        run: |
+          cd ./simatic-ax-${{ env.PROJECT_NAME }}
+          cat ./template/apax-files-section.yml >> ./apax.yml
+          cat apax.yml
+          apax pack 2>.package.err 1>.signature
+          apax pack 2>.package.err 1>.signature
+          PACKAGE="$(grep -oP '(?<=\").+.apax\.tgz(?=\")' .package.err)"
+          apax publish --package $PACKAGE --registry https://npm.pkg.github.com
