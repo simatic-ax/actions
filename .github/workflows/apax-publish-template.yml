@@ -12,6 +12,9 @@ on:
       VERSION:
         required: true
         type: string
+      PROJECT_NAME:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -34,11 +37,11 @@ jobs:
 
       - name: "Create an empty template"
         run: |
-          mkdir simatic-ax-${{ env.PROJECT_NAME }}
-          cd simatic-ax-${{ env.PROJECT_NAME }}
+          mkdir simatic-ax-${{ inputs.PROJECT_NAME }}
+          cd simatic-ax-${{ inputs.PROJECT_NAME }}
           mkdir template
           VERSION=${{ inputs.VERSION }}
-          echo name: "'@simatic-ax/template-${{ env.PROJECT_NAME }}'" >> apax.yml
+          echo name: "'@simatic-ax/template-${{ inputs.PROJECT_NAME }}'" >> apax.yml
           echo version: $VERSION >> apax.yml
           echo type: generic >> apax.yml
           cat apax.yml
@@ -48,11 +51,11 @@ jobs:
       - name: "Clone the library repository into the template folder"
         uses: actions/checkout@v3
         with:
-          path: ./simatic-ax-${{ env.PROJECT_NAME }}/template
+          path: ./simatic-ax-${{ inputs.PROJECT_NAME }}/template
 
       - name: "Pack and publish the library"
         run: |
-          cd ./simatic-ax-${{ env.PROJECT_NAME }}
+          cd ./simatic-ax-${{ inputs.PROJECT_NAME }}
           cat ./template/apax-files-section.yml >> ./apax.yml
           cat apax.yml
           apax pack 2>.package.err 1>.signature
