@@ -12,7 +12,10 @@ on:
       VERSION:
         required: true
         type: string
-
+      RUN_BUILD:
+        description: 'execute the apax build step. default value true'
+        default: true
+        type: boolean
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,6 +45,7 @@ jobs:
           apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.DEPLOY_KEY }}"
 
       - name: "Build the apax workspace"
+        if: ${{ inputs.RUN_BUILD }}
         uses: simatic-ax/actions/apax-build@stable
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
