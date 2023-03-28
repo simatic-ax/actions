@@ -35,8 +35,10 @@ runs:
         sudo npm install
         cd node_modules/@ax/apax-signed
         ls -a
+        sudo touch public.pem
+        sudo chmod 777 public.pem
         echo "-----BEGIN PUBLIC KEY-----" \
-        >public.pem
+        >>public.pem
         sudo echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" \
         >>public.pem
         echo "03hNjjrw6JMKvj0skNJvSaNPq1cYwq1Q/cu86Ny/Wl+lJT+Nzl32oKcgPuU+eY1Z" \
