@@ -34,7 +34,8 @@ runs:
         sudo npm add @ax/apax-signed
         sudo npm install
         cd node_modules/@ax/apax-signed
-        ls -a
+        ls -al
+        sudo chmod 777 .
         echo "-----BEGIN PUBLIC KEY-----" \
         >public.pem
         sudo echo "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4m2LqXil8zyn+Z9v0J93" \
