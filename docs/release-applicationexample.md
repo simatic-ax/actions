@@ -3,7 +3,7 @@
 
 ## Use the release workflow
 
-Insert a workflow file like `release-applicationexample.yml` in thr folder `.github\workflows`
+Insert a workflow file like `release-applicationexample.yml` in the folder `.github\workflows`
 
 The file should have the following content:
 

@@ -1,4 +1,4 @@
-name: tiax-create-handoverfiles
+name: apax-export-tialib
 on:
   workflow_call:
     secrets:
