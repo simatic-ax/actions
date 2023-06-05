@@ -1,0 +1,41 @@
+name: tiax-create-handoverfiles
+on:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+    inputs:
+      LOGIN_SIMATIC_AX:
+        type: boolean
+        default: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout actions repository"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@stable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Login to simatic-ax registry"
+        if: ${{ inputs.LOGIN_SIMATIC_AX }}
+        run: |
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: "Build the apax workspace"
+        uses: simatic-ax/actions/apax-build@stable
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Test apax artifact"
+        uses: simatic-ax/actions/apax-build-test@stable
+
+      - name: "Create handover files"
+        uses: simatic-ax/actions/export-tialib@stable
