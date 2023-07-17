@@ -8,6 +8,10 @@ on:
       DEPLOY_KEY:
         description: "Key for logging into the github registry"
         required: true
+      APAX_SIGNKEY:
+        description: "Private key for signing the packages on the organization"
+        required: true
+
     inputs:
       VERSION:
         required: true
@@ -53,6 +57,6 @@ jobs:
       - name: "Pack and publish the library"
         run: |
           apax version "${{ inputs.VERSION }}"
-          apax pack 2>.package.err 1>.signature
+          apax pack --key ${{ secrets.APAX_SIGNKEY }} 2>.package.err 1>.signature
           PACKAGE="$(grep -oP '(?<=\").+.apax\.tgz(?=\")' .package.err)"
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
