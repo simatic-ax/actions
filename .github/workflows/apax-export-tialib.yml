@@ -5,6 +5,9 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
+      GITHUB_TOKEN:
+        description: "Access token for installing packages from github registry, required if LOGIN_SIMATIC_AX is true"
+        required: false
     inputs:
       LOGIN_SIMATIC_AX:
         type: boolean
