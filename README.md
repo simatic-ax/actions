@@ -44,9 +44,10 @@ Install the dependencies according the apax.yml in your SIMATIC AX project. And 
 > Note: before you can use it, you've to install apax first. That can be done with the action `setup-apax-runner`
 
 **Parameter**:
-|||
-|-|-|
-|*APAX_TOKEN*| your token you usually use to login in the AX registry.|
+||||
+|-|-|-|
+|*APAX_TOKEN*| your token you usually use to login in the AX registry.|required|
+|*GITHUB_TOKEN*| your token you usually use to login in the AX registry.|optional
 |||
 
 
