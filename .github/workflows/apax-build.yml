@@ -5,7 +5,7 @@ on:
       APAX_TOKEN:
         description: "Access token for installing apax sdk"
         required: true
-      GITHUB_TOKEN:
+      SIMATIC_AX_TOKEN:
         description: "Access token for installing packages from github registry, required if LOGIN_SIMATIC_AX is true"
         required: false
     inputs:
@@ -38,7 +38,7 @@ jobs:
       - name: "Login to simatic-ax registry"
         if: ${{ inputs.LOGIN_SIMATIC_AX }}
         run: |
-          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.GITHUB_TOKEN }}"
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.SIMATIC_AX_TOKEN }}"
 
       - name: "Build the apax workspace"
         uses: simatic-ax/actions/apax-build@stable
