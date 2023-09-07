@@ -19,7 +19,7 @@ runs:
         SCRIPT_PATH: actions
       run: |
 
-        sudo curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
+        sudo curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo5 \
         git 
