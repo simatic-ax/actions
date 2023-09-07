@@ -30,7 +30,7 @@ runs:
         sudo mkdir -p ~/.local/bin
         sudo echo 'export PATH=~/.local/bin/:$PATH' >>~/.bashrc
         sudo npm init -y
-        sudo curl -H "Authorization: bearer $APAX_TOKEN" "https://api.simatic-ax.siemens.io/apax/login?format=npmrc" -o .npmrc --verbose
+        sudo curl -f -H "Authorization: bearer $APAX_TOKEN" https://api.simatic-ax.siemens.io/apax/login?format=npmrc > .npmrc
         sudo npm add @ax/apax-signed
         sudo npm install
         cd node_modules/@ax/apax-signed
