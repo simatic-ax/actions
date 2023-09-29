@@ -18,7 +18,7 @@ runs:
       shell: bash
 
     - name: Install apax dependencies
-      run: apax install --update-lockfile
+      run: apax install --immutable
       shell: bash
 
     - name: Build apax package
