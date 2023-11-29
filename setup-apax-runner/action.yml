@@ -13,9 +13,9 @@ runs:
         echo "No cache hit, setup from scratch"
         
     - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20.x'
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.x'
           
     - name: install_apax
       shell: bash
