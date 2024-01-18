@@ -42,6 +42,7 @@ jobs:
           do
             echo "::add-mask::${line}"
           done < .npmrc
+          curl -LJO https://raw.githubusercontent.com/simatic-ax/actions/main/renovate-config.js
 
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v39.1.1
