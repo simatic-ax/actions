@@ -1,11 +1,12 @@
 const apaxNpmrc = process.env.RENOVATE_NPMRC;
 
 const prFooter = `:space_invader: :sparkles: This merge request is proudly presented by [Renovate Bot](https://code.siemens.com/ax/devops/renovate-bot).`;
-const autodiscoverFilter = "simatic-ax/*"
+const autodiscoverFilter = "simatic-ax/*";
 module.exports = {
   platform: "github",
   gitAuthor: "AX Bot <botax.industry@siemens.com>",
   prFooter: prFooter,
+  requireConfig: "required",
   autodiscoverFilter: autodiscoverFilter,
   autodiscover: true,
   allowPostUpgradeCommandTemplating: true,
@@ -17,7 +18,7 @@ module.exports = {
   exposeAllEnv: true,
   ignoreScripts: true,
   npmrc: process.env.RENOVATE_NPMRC,
-  labels: ["renovate", `renovate-v${process.env.VERSION}`],
+  labels: ["renovate"],
   hostRules: [
     {
       hostType: "npm",
@@ -62,7 +63,7 @@ module.exports = {
           `
           cd ./{{{packageFileDir}}} && 
           if test -f apax-lock.json; then 
-            if apax install --update-lockfile --ignore-scripts; then
+            if apax install; then
               echo Successfully updated lock file.
             else
               echo Failed to update lock file.
