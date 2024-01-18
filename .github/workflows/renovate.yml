@@ -1,13 +1,6 @@
 name: renovate
 on:
-  workflow_call:
-    secrets:
-      APAX_TOKEN:
-        description: "Access token for installing apax sdk"
-        required: true
-      RENOVATE_TOKEN:
-        description: "Github Token for creating merge requests"
-        required: true
+  workflow_dispatch:
 
 jobs:
   renovate:
@@ -42,7 +35,6 @@ jobs:
           do
             echo "::add-mask::${line}"
           done < .npmrc
-          curl -LJO https://raw.githubusercontent.com/simatic-ax/actions/main/renovate-config.js
 
       - name: Self-hosted Renovate
         uses: renovatebot/github-action@v39.1.1

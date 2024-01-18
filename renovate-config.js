@@ -1,10 +1,13 @@
 const apaxNpmrc = process.env.RENOVATE_NPMRC;
 
 const prFooter = `:space_invader: :sparkles: This merge request is proudly presented by [Renovate Bot](https://code.siemens.com/ax/devops/renovate-bot).`;
+const autodiscoverFilter = "simatic-ax/*"
 module.exports = {
   platform: "github",
   gitAuthor: "AX Bot <botax.industry@siemens.com>",
   prFooter: prFooter,
+  autodiscoverFilter: autodiscoverFilter,
+  autodiscover: true,
   allowPostUpgradeCommandTemplating: true,
   allowedPostUpgradeCommands: [".+"],
   logFile: process.env.LOG_FILE,
@@ -13,15 +16,15 @@ module.exports = {
   allowScripts: true,
   exposeAllEnv: true,
   ignoreScripts: true,
-  repositories: ["simatic-ax/actions-test"],
   npmrc: process.env.RENOVATE_NPMRC,
   labels: ["renovate", `renovate-v${process.env.VERSION}`],
   hostRules: [
     {
-      hostType: 'npm',
-      matchHost: 'registry.simatic-ax.siemens.io',
+      hostType: "npm",
+      matchHost: "registry.simatic-ax.siemens.io",
       token: process.env.RENOVATE_APAX_TOKEN,
-    }],
+    },
+  ],
   regexManagers: [
     {
       fileMatch: ["(^|\\/)(test.|test-windows.)?apax.ya?ml$"],
