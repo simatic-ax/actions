@@ -1,6 +1,13 @@
 name: renovate
 on:
-  workflow_dispatch:
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+      RENOVATE_TOKEN:
+        description: "Github Token for creating merge requests"
+        required: true
 
 jobs:
   renovate:
