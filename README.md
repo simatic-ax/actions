@@ -5,6 +5,7 @@ In this you'll find some useful GitHub actions, which you can use in your own wo
 - **setup-apax-runner**: Install apax in the ci pipeline on GitHub
 - **apax-build**: Execute the apax build command in the ci pipeline on GitHub
 - **test-apax**: Run the AxUnit tests in the ci pipeline on GitHub
+- [**apax-publish**](#workflow-apax-publish): Publish a package on the GitHub registry
 
 ## Action setup-apax-runner
 
@@ -100,6 +101,39 @@ jobs:
 
       - name: "Test apax artifact"
         uses: ./actions/.github/actions/test-apax-package
+```
+
+## Workflow apax-publish
+
+This workflow consists of the following steps:
+* Checkout the repository
+* Login to the registry
+* [optionally call `apax build`]
+* Pack and publish the library
+
+### Usage example:
+
+create a `*.yml` file in your `.github/workflows` in your repository with the following content
+
+```yml
+on:
+  push:
+    # Pattern matched against refs/tags
+    tags:        
+      - '*'
+
+jobs:
+  release-apax-lib:
+    uses: simatic-ax/actions/.github/workflows/apax-publish.yml@stable
+    secrets:
+      APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      APAX_SIGNKEY: ${{ secrets.APAX_SIGNKEY }}
+
+    with:
+      VERSION: ${{ github.ref_name }} # package version which will be created
+      RUN_BUILD: false # execute `apax build in the workflow` default true
+
 ```
 
 ## Additional resources
