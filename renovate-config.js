@@ -4,7 +4,7 @@ const prFooter = `:space_invader: :sparkles: This merge request is proudly prese
 const autodiscoverFilter = "simatic-ax/*";
 module.exports = {
   platform: "github",
-  gitAuthor: "AX Bot <botax.industry@siemens.com>",
+  gitAuthor: "simatic-ax-bot <ax-public@gmx.de>",
   prFooter: prFooter,
   requireConfig: "required",
   autodiscoverFilter: autodiscoverFilter,
