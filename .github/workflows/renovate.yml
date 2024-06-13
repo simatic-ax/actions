@@ -1,0 +1,47 @@
+name: renovate
+on:
+  workflow_dispatch:
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - name: "Setup the apax runner"
+        uses: simatic-ax/actions/setup-apax-runner@main
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+
+      - name: "Login to simatic-ax registry"
+        run: |
+          apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: install_apax
+        shell: bash
+        env:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+        run: |
+          curl -H "Authorization: Bearer $APAX_TOKEN" "https://api.simatic-ax.siemens.io/apax/login?format=npmrc" -o .npmrc
+          # Store the npmrc file in the RENOVATE_NPMRC variable so that it can be used in the next step:
+          {
+            echo 'RENOVATE_NPMRC<<EOF'
+            cat .npmrc
+            echo EOF
+          } >> "$GITHUB_ENV"
+          # Mask the contents of the npmrc file so that they don't appear in job logs:
+          while read -r line;
+          do
+            echo "::add-mask::${line}"
+          done < .npmrc
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v39.1.1
+        with:
+          docker-cmd-file: .github/renovate-entrypoint.sh
+          docker-user: root
+          configurationFile: renovate-config.js
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          LOG_LEVEL: debug
