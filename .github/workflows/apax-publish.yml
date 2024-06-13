@@ -59,4 +59,5 @@ jobs:
           apax version "${{ inputs.VERSION }}"
           apax pack --key ${{ secrets.APAX_SIGNKEY }} 2>.package.err 1>.signature
           PACKAGE="$(grep -oP '(?<=[\s\"])[A-Za-z0-9.-]+.apax\.tgz' .package.err)"
+          echo publish --package $PACKAGE to https://npm.pkg.github.com
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
