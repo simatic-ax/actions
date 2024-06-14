@@ -58,5 +58,6 @@ jobs:
         run: |
           apax version "${{ inputs.VERSION }}"
           apax pack --key ${{ secrets.APAX_SIGNKEY }} 2>.package.err 1>.signature
+          cat .package.err
           PACKAGE="$(grep -oP '(?<=[\s\"])[a-z0-9.-_]+.apax\.tgz' .package.err)"
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
