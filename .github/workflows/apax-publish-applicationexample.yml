@@ -69,5 +69,8 @@ jobs:
           cat apax.yml
           apax pack 2>.package.err 1>.signature
           apax pack 2>.package.err 1>.signature
+          echo "pack done"
           PACKAGE="$(grep -oP '(?<=[\s\"])[a-z0-9.-_]+.apax\.tgz' .package.err)"
+          echo "package name: $PACKAGE"
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
+          echo "pack done"
