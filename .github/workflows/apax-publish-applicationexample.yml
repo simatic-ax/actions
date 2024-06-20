@@ -65,11 +65,13 @@ jobs:
       - name: "Pack and publish the application example"
         run: |
           cd ./simatic-ax-${{ inputs.PROJECT_NAME }}
+          ls apax.yml
           cat ./template/apax-files-section.yml >> ./apax.yml
           cat apax.yml
           apax pack 2>.package.err 1>.signature
-          echo "pack done"
-          PACKAGE="$(grep -oP '(?<=[\s\"])[a-z0-9.-_]+.apax\.tgz' .package.err | head -n 1)"
-          echo publish $PACKAGE to --registry https://npm.pkg.github.com
+          ls *.tgz
+          echo "pack done" 
+          PACKAGE="$(grep -oP '(?<=[\s\"])[_a-z0-9.-]+.apax\.tgz' .package.err | head -n 1)"
+          echo apax publish --package $PACKAGE --registry https://npm.pkg.github.com
           apax publish --package $PACKAGE --registry https://npm.pkg.github.com
           echo "pack done"
