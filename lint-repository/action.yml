@@ -20,6 +20,11 @@ runs:
         fetch-depth: 0
         path: _repolint
 
+    - name: "check branch"
+      shell: bash
+      run: |
+        echo "----------------Test with new path----------------"
+
     - name: Run linter
       shell: bash
-      run: repolinter lint _repolint
+      run: repolinter lint _repolint --rulesetUrl simatic-ax/actions/lint-repository/repolint.json
