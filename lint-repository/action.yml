@@ -27,4 +27,4 @@ runs:
 
     - name: Run linter
       shell: bash
-      run: repolinter lint _repolint --rulesetUrl https://github.com/simatic-ax/actions/tree/main/lint-repository
+      run: repolinter lint _repolint --rulesetUrl https://github.com/simatic-ax/actions/blob/main/lint-repository/repolint.json
