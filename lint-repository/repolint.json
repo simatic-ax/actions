@@ -12,7 +12,7 @@
       "rule": {
         "type": "file-existence",
         "options": {
-          "globsAny": [ "LICENSE.md" ],
+          "globsAny": ["LICENSE*", "COPYING*"],
           "nocase": true
         }
       }
@@ -22,7 +22,60 @@
       "rule": {
         "type": "file-existence",
         "options": {
-          "globsAny": [ "README*.md" ],
+          "globsAny": ["README*"],
+          "nocase": true
+        }
+      }
+    },
+    "contributing-file-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["{docs/,.github/,}CONTRIB*"],
+          "nocase": true
+        }
+      }
+    },
+    "code-of-conduct-file-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": [
+            "{docs/,.github/,}CODEOFCONDUCT*",
+            "{docs/,.github/,}CODE-OF-CONDUCT*",
+            "{docs/,.github/,}CODE_OF_CONDUCT*"
+          ],
+          "nocase": true
+        }
+      }
+    },
+    "changelog-file-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["CHANGELOG*"],
+          "nocase": true
+        }
+      }
+    },
+    "security-file-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["{docs/,.github/,}SECURITY.md"]
+        }
+      }
+    },
+    "support-file-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["{docs/,.github/,}SUPPORT*"],
           "nocase": true
         }
       }
@@ -32,7 +85,7 @@
       "rule": {
         "type": "file-contents",
         "options": {
-          "globsAll": [ "README*" ],
+          "globsAll": ["README*"],
           "content": "license",
           "flags": "i"
         }
@@ -43,36 +96,16 @@
       "rule": {
         "type": "file-type-exclusion",
         "options": {
-          "type": [ "**/*.exe", "**/*.dll", "!node_modules/**" ]
+          "type": ["**/*.exe", "**/*.dll", "!node_modules/**"]
         }
       }
     },
     "test-directory-exists": {
-      "level": "warning",
+      "level": "error",
       "rule": {
         "type": "directory-existence",
         "options": {
-          "globsAny": [ "**/test*" ],
-          "nocase": true
-        }
-      }
-    },
-    "source-directory-exists": {
-      "level": "warning",
-      "rule": {
-        "type": "directory-existence",
-        "options": {
-          "globsAny": [ "**/src*" ],
-          "nocase": true
-        }
-      }
-    },
-    "additional-docs-directory-exists": {
-      "level": "warning",
-      "rule": {
-        "type": "directory-existence",
-        "options": {
-          "globsAny": [ "**/docs*" ],
+          "globsAny": ["**/test*", "**/specs"],
           "nocase": true
         }
       }
@@ -83,85 +116,174 @@
         "type": "file-existence",
         "options": {
           "globsAny": [
-            ".github/workflows/*"
+            ".gitlab-ci.yml",
+            ".travis.yml",
+            "appveyor.yml",
+            ".appveyor.yml",
+            "circle.yml",
+            ".circleci/config.yml",
+            "Jenkinsfile",
+            ".drone.yml",
+            ".github/workflows/*",
+            "azure-pipelines.yml"
           ]
         }
       }
     },
-    "markdownlint-config-exit": {
+    "code-of-conduct-file-contains-email": {
       "level": "error",
-      "rule": {
-        "type": "file-existence",
-        "options": {
-          "globsAny": [
-            ".markdownlint.yml"
-          ]
-        }
-      }
-    },
-    "apax-yml-exit": {
-      "level": "error",
-      "rule": {
-        "type": "file-existence",
-        "options": {
-          "globsAny": [
-            "apax.yml"
-          ]
-        }
-      }
-    },
-    "apax-yml-keywords": {
-      "level": "off",
       "rule": {
         "type": "file-contents",
         "options": {
-          "globsAll": [ "apax.yml" ],
-          "content": "name:.*verion:.*type:.*description:.*targets:.*installStrategy:.*apaxVersion:.*Dependencies:",
+          "globsAll": [
+            "CODEOFCONDUCT*",
+            "CODE-OF-CONDUCT*",
+            "CODE_OF_CONDUCT*",
+            ".github/CODEOFCONDUCT*",
+            ".github/CODE-OF-CONDUCT*",
+            ".github/CODE_OF_CONDUCT*"
+          ],
+          "content": ".+@.+\\..+",
+          "flags": "i",
+          "human-readable-content": "email address"
+        }
+      }
+    },
+    "source-license-headers-exist": {
+      "level": "warning",
+      "rule": {
+        "type": "file-starts-with",
+        "options": {
+          "globsAll": ["**/*.js", "!node_modules/**"],
+          "lineCount": 5,
+          "patterns": ["Copyright", "License"],
           "flags": "i"
         }
       }
     },
-    "gitignore-exit": {
+    "github-issue-template-exists": {
       "level": "error",
       "rule": {
         "type": "file-existence",
         "options": {
+          "dirs": true,
+          "globsAny": ["ISSUE_TEMPLATE*", ".github/ISSUE_TEMPLATE*"]
+        }
+      }
+    },
+    "github-pull-request-template-exists": {
+      "level": "error",
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "dirs": true,
           "globsAny": [
-            ".gitignore"
+            "PULL_REQUEST_TEMPLATE*",
+            ".github/PULL_REQUEST_TEMPLATE*",
+            ".github/pull_request_template.md",
+            "docs/pull_request_template.md",
+            "docs/PULL_REQUEST_TEMPLATE*",
+            "pull_request_template.md"
           ]
         }
       }
     },
-    "gitattributes-exit": {
+    "javascript-package-metadata-exists": {
       "level": "error",
+      "where": ["language=javascript"],
       "rule": {
         "type": "file-existence",
         "options": {
-          "globsAny": [
-            ".gitattributes"
-          ]
+          "globsAny": ["package.json"]
         }
       }
     },
-    "apax-files-section-exit": {
+    "ruby-package-metadata-exists": {
       "level": "error",
+      "where": ["language=ruby"],
       "rule": {
         "type": "file-existence",
         "options": {
-          "globsAny": [
-            "apax-files-section.yml"
-          ]
+          "globsAny": ["Gemfile"]
         }
       }
     },
-    "CODEOWNERS-exit": {
+    "java-package-metadata-exists": {
       "level": "error",
+      "where": ["language=java"],
       "rule": {
         "type": "file-existence",
         "options": {
-          "globsAny": [
-            "CODEOWNERS"
-          ]
+          "globsAny": ["pom.xml", "build.xml", "build.gradle"]
+        }
+      }
+    },
+    "python-package-metadata-exists": {
+      "level": "error",
+      "where": ["language=python"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["setup.py", "requirements.txt"]
+        }
+      }
+    },
+    "objective-c-package-metadata-exists": {
+      "level": "error",
+      "where": ["language=objective-c"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["Cartfile", "Podfile", "*.podspec"]
+        }
+      }
+    },
+    "swift-package-metadata-exists": {
+      "level": "error",
+      "where": ["language=swift"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["Package.swift"]
+        }
+      }
+    },
+    "erlang-package-metadata-exists": {
+      "level": "error",
+      "where": ["language=erlang"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["rebar.config"]
+        }
+      }
+    },
+    "elixir-package-metadata-exists": {
+      "level": "error",
+      "where": ["language=elixir"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["mix.exs"]
+        }
+      }
+    },
+    "license-detectable-by-licensee": {
+      "level": "off",
+      "where": ["license=*"],
+      "rule": {
+        "type": "license-detectable-by-licensee",
+        "options": {}
+      }
+    },
+    "notice-file-exists": {
+      "level": "error",
+      "where": ["license=Apache-2.0"],
+      "rule": {
+        "type": "file-existence",
+        "options": {
+          "globsAny": ["NOTICE*"],
+          "fail-message": "The NOTICE file is described in section 4.4 of the Apache License version 2.0. Its presence is not mandated by the license itself, but by ASF policy."
         }
       }
     },
