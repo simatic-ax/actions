@@ -23,8 +23,14 @@ runs:
     - name: "check branch"
       shell: bash
       run: |
-        echo "----------------Test with new path----------------"
+          FILE=/home/runner/work/ae-trafficlight/ae-trafficlight/_repolint/repolint.json
+          if [ -f "$FILE" ]; then
+              echo "$FILE exists."
+          else 
+              echo "$FILE does not exist."
+          fi
 
-    - name: Run linter
-      shell: bash
-      run: repolinter lint _repolint --rulesetUrl https://raw.githubusercontent.com/simatic-ax/actions/refs/heads/test_repo_lint_fabian_unglert/lint-repository/repolint.json
+
+#    - name: Run linter
+ #     shell: bash
+ #     run: repolinter lint _repolint --rulesetUrl https://raw.githubusercontent.com/simatic-ax/actions/refs/heads/test_repo_lint_fabian_unglert/lint-repository/repolint.json
