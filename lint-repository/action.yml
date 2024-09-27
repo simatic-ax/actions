@@ -25,12 +25,7 @@ runs:
       run: |
           FILE=/home/runner/work/ae-trafficlight/ae-trafficlight/_repolint/repolint.json
           if [ -f "$FILE" ]; then
-              echo "$FILE exists."
+              repolinter lint _repolint
           else 
-              echo "$FILE does not exist."
+              repolinter lint _repolint --rulesetUrl https://raw.githubusercontent.com/simatic-ax/actions/refs/heads/test_repo_lint_fabian_unglert/lint-repository/repolint.json
           fi
-
-
-#    - name: Run linter
- #     shell: bash
- #     run: repolinter lint _repolint --rulesetUrl https://raw.githubusercontent.com/simatic-ax/actions/refs/heads/test_repo_lint_fabian_unglert/lint-repository/repolint.json
