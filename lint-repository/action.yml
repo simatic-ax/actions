@@ -20,7 +20,7 @@ runs:
         fetch-depth: 0
         path: _repolint
 
-    - name: "check branch"
+    - name: "Run linter"
       shell: bash
       run: |
           FILE=/home/runner/work/ae-trafficlight/ae-trafficlight/_repolint/repolint.json
