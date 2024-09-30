@@ -25,7 +25,9 @@ runs:
       run: |
           FILE=/home/runner/work/ae-trafficlight/ae-trafficlight/_repolint/repolint.json
           if [ -f "$FILE" ]; then
+              echo "Execute the local settings file from the repository"
               repolinter lint _repolint
           else 
+              echo "Execute the general settings"
               repolinter lint _repolint --rulesetUrl https://raw.githubusercontent.com/simatic-ax/actions/refs/heads/test_repo_lint_fabian_unglert/lint-repository/repolint.json
           fi
