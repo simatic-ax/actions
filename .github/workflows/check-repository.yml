@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Run repolinter"
-        uses: simatic-ax/actions/lint-repository@test_repo_lint_fabian_unglert
+        uses: simatic-ax/actions/lint-repository@stable
 
   markdownlint:
     runs-on: ubuntu-latest
