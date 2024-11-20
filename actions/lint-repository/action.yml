@@ -1,9 +1,6 @@
 name: "Run Repolinter"
 description: "Runs Repolinter using a provided or default ruleset"
 inputs:
-  ruleset-repo:
-    description: "Optional: URL of the repository containing the ruleset"
-    required: false
   ruleset-path:
     description: "Optional: Path to the ruleset file in the repository"
     required: false
@@ -15,13 +12,6 @@ runs:
     - name: Checkout target repository
       uses: actions/checkout@v3
 
-    # Clone the ruleset repository if provided
-    - name: Clone ruleset repository
-      if: ${{ inputs.ruleset-repo }}
-      shell: bash
-      run: |
-        git clone ${{ inputs.ruleset-repo }} ruleset-repo
-
     # Copy the ruleset from the provided repository or use the default one
     - name: Prepare ruleset
       shell: bash
@@ -29,9 +19,6 @@ runs:
         if [[ -f $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} ]]; then
           echo "Using provided ruleset from target repository."
           cp $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} repolinter-ruleset.json
-        elif [[ -d ruleset-repo ]]; then
-          echo "Using ruleset from ruleset repository."
-          cp ruleset-repo/${{ inputs.ruleset-path }} repolinter-ruleset.json
         else
           echo "Using default ruleset."
           cp $GITHUB_ACTION_PATH/default-repolinter-ruleset.json repolinter-ruleset.json
