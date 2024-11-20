@@ -45,4 +45,4 @@ runs:
     # Run Repolinter
     - name: Run Repolinter
       shell: bash
-      run: repolinter --ruleset-file ruleset.json
+      run: repolinter --ruleset-file repolinter-ruleset.json
