@@ -7,7 +7,7 @@ inputs:
   ruleset-path:
     description: "Optional: Path to the ruleset file in the repository"
     required: false
-    default: ".repolinter.json"
+    default: "actions/lint-repository/default-repolinter-ruleset.json"
 runs:
   using: "composite"
   steps:
