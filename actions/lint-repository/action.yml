@@ -17,6 +17,7 @@ runs:
           CONFIG_FILE="$GITHUB_ACTION_PATH/default-repolinter-ruleset.json"
         fi
         
+        echo "$CONFIG_FILE"
         npm install -g repolinter
         
         # Run the Repolinter tool with the specified configuration
