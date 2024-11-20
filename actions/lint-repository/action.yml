@@ -18,11 +18,13 @@ runs:
     # Clone the ruleset repository if provided
     - name: Clone ruleset repository
       if: ${{ inputs.ruleset-repo }}
+      shell: bash
       run: |
         git clone ${{ inputs.ruleset-repo }} ruleset-repo
 
     # Copy the ruleset from the provided repository or use the default one
     - name: Prepare ruleset
+      shell: bash
       run: |
         if [[ -f $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} ]]; then
           echo "Using provided ruleset from target repository."
@@ -37,8 +39,10 @@ runs:
 
     # Install Repolinter
     - name: Install Repolinter
+      shell: bash
       run: npm install -g repolinter
 
     # Run Repolinter
     - name: Run Repolinter
+      shell: bash
       run: repolinter --ruleset-file ruleset.json
