@@ -16,7 +16,7 @@ runs:
     - name: Determine ruleset
       shell: bash
       env:
-        CONFIG_FILE: ${{ inputs.config-file }}
+        CONFIG_FILE: ${{ inputs.config-path }}
       run: |
         # Use default configuration if no config file is provided
         if [ -z "$CONFIG_FILE" ]; then
