@@ -4,20 +4,14 @@ description: "Lints files and directories with repolinter, checking for required
 runs:
   using: "composite"
   steps:
+
+    # checkout the repository
     - name: Checkout Code
       uses: actions/checkout@v3
-      with:
-        path: _markdown
 
-    - name: Switch directory
-      shell: bash
-      run: cd _markdown
-    - name: pwd
-      shell: bash
-      run: pwd
-
+    ## Run the markdown check
     - name: Check markdown files
       uses: avto-dev/markdown-lint@v1
       with:
         args: "**/*.md"
-        config: ".markdownlint.yml"
+        config: "markdownlint.yml"
