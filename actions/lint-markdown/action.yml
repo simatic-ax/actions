@@ -9,9 +9,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Determine ruleset
+    - name: Setup Node.js version
+      uses: actions/setup-node@v2
       with:
         node-version: '20'
+    - name: Determine ruleset
       shell: bash
       env:
         CONFIG_FILE: ${{ inputs.config-file }}
