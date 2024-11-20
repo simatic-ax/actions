@@ -1,17 +1,36 @@
-name: "Lint repository"
-description: "Lints files and directories with repolinter, checking for required files e.g. documentation and readme"
+name: "Markdownlint"
+description: "Runs Markdownlint with an optional custom configuration"
+
+inputs:
+  config-path:
+    description: "Path to a Markdownlint configuration file"
+    required: false
 
 runs:
   using: "composite"
   steps:
-
-    # checkout the repository
-    - name: Checkout Code
+    # Check out the target repository
+    - name: Checkout target repository
       uses: actions/checkout@v3
 
-    ## Run the markdown check
-    - name: Check markdown files
-      uses: avto-dev/markdown-lint@v1
-      with:
-        args: "**/*.md"
-        config: "markdownlint.yml"
+    # Determine which configuration to use
+    - name: Set up Markdownlint configuration
+      shell: bash
+      run: |
+        if [[ -n "${{ inputs.config-path }}" && -f "${{ inputs.config-path }}" ]]; then
+          echo "Using provided configuration: ${{ inputs.config-path }}"
+          cp "${{ inputs.config-path }}" markdownlint-ruleset.yml
+        else
+          echo "Using default configuration"
+          cp $GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml markdownlint-ruleset.yml
+        fi
+
+    # Install Markdownlint CLI
+    - name: Install Markdownlint CLI
+      shell: bash
+      run: npm install -g markdownlint-cli
+
+    # Run Markdownlint
+    - name: Run Markdownlint
+      shell: bash
+      run: markdownlint "**/*.md" --config markdownlint-ruleset.yml

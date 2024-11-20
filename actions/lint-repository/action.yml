@@ -28,14 +28,12 @@ runs:
       run: |
         if [[ -f $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} ]]; then
           echo "Using provided ruleset from target repository."
-          echo "$GITHUB_WORKSPACE/${{ inputs.ruleset-path }}"
           cp $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} repolinter-ruleset.json
         elif [[ -d ruleset-repo ]]; then
           echo "Using ruleset from ruleset repository."
           cp ruleset-repo/${{ inputs.ruleset-path }} repolinter-ruleset.json
         else
           echo "Using default ruleset."
-          echo "$GITHUB_ACTION_PATH"
           cp $GITHUB_ACTION_PATH/default-repolinter-ruleset.json repolinter-ruleset.json
         fi
 
