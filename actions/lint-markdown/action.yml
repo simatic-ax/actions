@@ -10,6 +10,8 @@ runs:
   using: composite
   steps:
     - name: Determine ruleset
+      with:
+        node-version: 20
       shell: bash
       env:
         CONFIG_FILE: ${{ inputs.config-file }}
