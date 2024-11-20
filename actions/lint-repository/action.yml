@@ -1,35 +1,23 @@
-name: "Run Repolinter"
-description: "Runs Repolinter using a provided or default ruleset"
+name: Repolinter Action
+description: Runs the Repolinter tool with a given configuration
 inputs:
-  ruleset-path:
-    description: "Optional: Path to the ruleset file in the repository"
+  config-file:
+    description: 'Path to the Repolinter configuration file (in JSON format)'
     required: false
-    default: "actions/lint-repository/default-repolinter-ruleset.json"
 runs:
-  using: "composite"
+  using: composite
   steps:
-    # Check out the target repository
-    - name: Checkout target repository
-      uses: actions/checkout@v3
-
-    # Copy the ruleset from the provided repository or use the default one
-    - name: Prepare ruleset
+    - name: Determine ruleset
       shell: bash
+      env:
+        CONFIG_FILE: ${{ inputs.config-file }}
       run: |
-        if [[ -f $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} ]]; then
-          echo "Using provided ruleset from target repository."
-          cp $GITHUB_WORKSPACE/${{ inputs.ruleset-path }} repolinter-ruleset.json
-        else
-          echo "Using default ruleset."
-          cp $GITHUB_ACTION_PATH/default-repolinter-ruleset.json repolinter-ruleset.json
+        # Use default configuration if no config file is provided
+        if [ -z "$CONFIG_FILE" ]; then
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-repolinter-ruleset.json"
         fi
-
-    # Install Repolinter
-    - name: Install Repolinter
-      shell: bash
-      run: npm install -g repolinter
-
-    # Run Repolinter
-    - name: Run Repolinter
-      shell: bash
-      run: repolinter --ruleset-file repolinter-ruleset.json
+        
+        npm install -g repolinter
+        
+        # Run the Repolinter tool with the specified configuration
+        repolinter --ruleset-file "$CONFIG_FILE"
