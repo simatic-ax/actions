@@ -7,30 +7,19 @@ inputs:
     required: false
 
 runs:
-  using: "composite"
+  using: composite
   steps:
-    # Check out the target repository
-    - name: Checkout target repository
-      uses: actions/checkout@v3
-
-    # Determine which configuration to use
-    - name: Set up Markdownlint configuration
+    - name: Determine ruleset
       shell: bash
+      env:
+        CONFIG_FILE: ${{ inputs.config-file }}
       run: |
-        if [[ -n "${{ inputs.config-path }}" && -f "${{ inputs.config-path }}" ]]; then
-          echo "Using provided configuration: ${{ inputs.config-path }}"
-          cp "${{ inputs.config-path }}" markdownlint-ruleset.yml
-        else
-          echo "Using default configuration"
-          cp $GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml markdownlint-ruleset.yml
+        # Use default configuration if no config file is provided
+        if [ -z "$CONFIG_FILE" ]; then
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-repolinter-ruleset.json"
         fi
-
-    # Install Markdownlint CLI
-    - name: Install Markdownlint CLI
-      shell: bash
-      run: npm install -g markdownlint-cli
-
-    # Run Markdownlint
-    - name: Run Markdownlint
-      shell: bash
-      run: markdownlint "**/*.md" --config markdownlint-ruleset.yml
+        
+        npm install -g markdownlint-cli
+        
+        # Run the Repolinter tool with the specified configuration
+        markdownlint "**/*.md" --config "$CONFIG_FILE"
