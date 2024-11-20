@@ -16,7 +16,7 @@ runs:
       run: |
         # Use default configuration if no config file is provided
         if [ -z "$CONFIG_FILE" ]; then
-          CONFIG_FILE="$GITHUB_ACTION_PATH/default-repolinter-ruleset.json"
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml"
         fi
         
         echo "$CONFIG_FILE"
