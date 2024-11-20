@@ -1,0 +1,24 @@
+name: Repolinter Action
+description: Runs the Repolinter tool with a given configuration
+inputs:
+  config-file:
+    description: 'Path to the Repolinter configuration file (in JSON format)'
+    required: false
+runs:
+  using: composite
+  steps:
+    - name: Determine ruleset
+      shell: bash
+      env:
+        CONFIG_FILE: ${{ inputs.config-file }}
+      run: |
+        # Use default configuration if no config file is provided
+        if [ -z "$CONFIG_FILE" ]; then
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-repolinter-ruleset.json"
+        fi
+        
+        echo "$CONFIG_FILE"
+        npm install -g repolinter
+        
+        # Run the Repolinter tool with the specified configuration
+        repolinter --ruleset-file "$CONFIG_FILE"

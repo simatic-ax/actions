@@ -94,7 +94,7 @@
         "type": "file-existence",
         "options": {
           "globsAny": [
-            ".markdownlint.yml"
+            "markdownlint-ruleset.yml"
           ]
         }
       }

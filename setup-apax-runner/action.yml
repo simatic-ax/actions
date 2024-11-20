@@ -24,7 +24,7 @@ runs:
         SCRIPT_PATH: actions
       run: |
         sudo apt-get install --assume-yes --no-install-recommends \
-        libtinfo5 \
+        libtinfo6 \
         git 
         npm -v
         node -v
