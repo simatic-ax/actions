@@ -23,7 +23,8 @@ runs:
     - name: "Run linter"
       shell: bash
       run: |
-          FILE=/home/runner/work/ae-trafficlight/ae-trafficlight/_repolint/repolint.json
+          FILE="$GITHUB_WORKSPACE/_repolint/repolint.json"
+          echo "The value of the varibale File is set to: $File"
           if [ -f "$FILE" ]; then
               echo "Execute the local settings file from the repository"
               repolinter lint _repolint
