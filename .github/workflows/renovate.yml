@@ -1,6 +1,13 @@
 name: renovate
 on:
-  workflow_call
+  workflow_call:
+    secrets:
+      APAX_TOKEN:
+        description: "Access token for installing apax sdk"
+        required: true
+      SIMATIC_AX_TOKEN:
+        description: "Access token for installing packages from github registry, required if LOGIN_SIMATIC_AX is true"
+        required: false
 
 jobs:
   renovate:
