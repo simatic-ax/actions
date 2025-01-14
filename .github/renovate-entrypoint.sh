@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo apt-get install --assume-yes --no-install-recommends \
-        libtinfo5 \
+        libtinfo6 \
         git 
 sudo mkdir apax-dep
 sudo npm config set prefix "~/.local/"
