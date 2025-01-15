@@ -2,6 +2,12 @@ name: renovate
 on:
   workflow_dispatch:
 
+#  workflow_call:
+#    secrets:
+#      APAX_TOKEN:
+#        description: "Access token for installing apax sdk"
+#        required: true
+
 jobs:
   renovate:
     runs-on: ubuntu-latest
