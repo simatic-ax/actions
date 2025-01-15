@@ -1,10 +1,12 @@
 name: renovate
 on:
-  workflow_call:
-    secrets:
-      APAX_TOKEN:
-        description: "Access token for installing apax sdk"
-        required: true
+  workflow_dispatch:
+
+#  workflow_call:
+#    secrets:
+#      APAX_TOKEN:
+#        description: "Access token for installing apax sdk"
+#        required: true
 
 jobs:
   renovate:
