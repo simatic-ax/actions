@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 1
 
       - name: "Setup the apax runner"
-        uses: simatic-ax/actions/setup-apax-runner@stable
+        uses: simatic-ax/actions/setup-apax-runner@fix/libtinfo6_use_for_tests
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
@@ -33,9 +33,9 @@ jobs:
           apax login --registry "https://npm.pkg.github.com" --password "${{ secrets.SIMATIC_AX_TOKEN }}"
 
       - name: "Build the apax workspace"
-        uses: simatic-ax/actions/apax-build@stable
+        uses: simatic-ax/actions/apax-build@fix/libtinfo6_use_for_tests
         with:
           APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
 
       - name: "Test apax artifact"
-        uses: simatic-ax/actions/apax-build-test@stable
+        uses: simatic-ax/actions/apax-build-test@fix/libtinfo6_use_for_tests
