@@ -63,4 +63,6 @@ runs:
         sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5
         sudo echo 'install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb'
         sudo apt update
-        sudo apt install libncurses5
+        cd ~/Downloads
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libncurses5_6.3-2ubuntu0.1_amd64.deb 
+        sudo apt install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb ./libncurses5_6.3-2ubuntu0.1_amd64.deb
