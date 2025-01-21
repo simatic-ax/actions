@@ -59,9 +59,6 @@ runs:
         >>public.pem
         npm install --global ax-apax-*.tgz --verbose
         apax --version
-        sudo echo 'find'
-        cd /usr
-        find / -type d -name libtinfo.so.6
         sudo echo '/usr/lib'
         cd /usr/lib
         ls -al
