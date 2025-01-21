@@ -25,7 +25,9 @@ runs:
       run: |
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo6 \
-        ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5 
+        cd /usr 
+        ls
+        ln -s /usr/lib64/libtinfo.so.6 /usr/lib64/libtinfo.so.5
         git 
         npm -v
         node -v
