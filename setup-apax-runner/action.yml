@@ -64,7 +64,7 @@ runs:
         sudo echo 'start install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb'
         sudo apt update
         cd /usr
-        mkdir download
-        sudo echo 'created directory'
+        ls -al
+        cd /usr/bin
         wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libncurses5_6.3-2ubuntu0.1_amd64.deb 
         sudo apt install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb ./libncurses5_6.3-2ubuntu0.1_amd64.deb
