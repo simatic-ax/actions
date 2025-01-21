@@ -59,20 +59,13 @@ runs:
         >>public.pem
         npm install --global ax-apax-*.tgz --verbose
         apax --version
-        sudo echo 'create link between /usr/lib/x86_64-linux-gnu/libtinfo.so.6 and /usr/lib/libtinfo.so.5'
-        sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5
-        sudo echo 'start install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb'
+        # LLVM lib needs libncurses5 - Ubuntu only includes 6 > so need to install it manually, until LLVM Lib use new version
+        sudo echo '>> start install libncurses5 and libtinfo5'
         sudo apt update
-        sudo echo 'home'
-        cd ~
-        ls -al
-        sudo echo '/usr'
-        cd /usr
-        ls -al
         cd ~
         wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
         wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libncurses5_6.3-2ubuntu0.1_amd64.deb
-        sudo echo 'after download'
+        sudo echo '>> download of both packeges successfull. Start install now'
         ls -al
         sudo apt install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb 
         sudo apt install ./libncurses5_6.3-2ubuntu0.1_amd64.deb
