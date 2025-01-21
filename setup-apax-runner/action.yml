@@ -59,18 +59,6 @@ runs:
         >>public.pem
         npm install --global ax-apax-*.tgz --verbose
         apax --version
-        sudo echo '/usr/lib'
-        cd /usr/lib
-        ls -al
-        sudo echo '/usr/lib/x86_64-linux-gnu/'
-        cd /usr/lib/x86_64-linux-gnu/
-        ls -al
-        sudo echo '/usr/lib32'
-        cd /usr/lib32
-        ls -al
-        sudo echo '/usr/lib64'
-        cd /usr/lib64
-        ls -al
         sudo echo 'create link between /usr/lib/x86_64-linux-gnu/libtinfo.so.6 and /usr/lib/libtinfo.so.5'
         sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5
         sudo echo 'install libncurses5 libncurses5:i386'
