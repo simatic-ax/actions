@@ -1,0 +1,30 @@
+name: "Markdownlint"
+description: "Runs Markdownlint with an optional custom configuration"
+
+inputs:
+  config-path:
+    description: "Path to a Markdownlint configuration file"
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js version
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+    - name: Determine ruleset
+      shell: bash
+      env:
+        CONFIG_FILE: ${{ inputs.config-path }}
+      run: |
+        # Use default configuration if no config file is provided
+        if [ -z "$CONFIG_FILE" ]; then
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml"
+        fi
+        
+        echo "$CONFIG_FILE"
+        npm install -g markdownlint-cli
+        
+        # Run the Repolinter tool with the specified configuration
+        markdownlint "**/*.md" --config "$CONFIG_FILE"
