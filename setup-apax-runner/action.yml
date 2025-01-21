@@ -59,10 +59,13 @@ runs:
         >>public.pem
         npm install --global ax-apax-*.tgz --verbose
         apax --version
-        cd /usr/
+        sudo echo '/usr/lib'
+        cd /usr/lib
         ls -al
-        cd local/
+        sudo echo '/usr/lib32'
+        cd /usr/lib32
         ls -al
-        cd lib/
+        sudo echo '/usr/lib64'
+        cd /usr/lib64
         ls -al
         ln -s /usr/local/lib/libtinfo.so.6 /usr/local/lib/libtinfo.so.5
