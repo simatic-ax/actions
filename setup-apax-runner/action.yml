@@ -61,6 +61,8 @@ runs:
         apax --version
         sudo echo 'create link between /usr/lib/x86_64-linux-gnu/libtinfo.so.6 and /usr/lib/libtinfo.so.5'
         sudo ln -s /usr/lib/x86_64-linux-gnu/libtinfo.so.6 /usr/lib/libtinfo.so.5
-        sudo echo 'install libncurses5 libncurses5:i386'
-        sudo add-apt-repository universe
-        sudo apt-get install libncurses5 libncurses5:i386
+        sudo echo 'install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb'
+        sudo apt update
+        cd /usr/lib/
+        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        sudo apt install ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
