@@ -25,10 +25,6 @@ runs:
       run: |
         sudo apt-get install --assume-yes --no-install-recommends \
         libtinfo6 \
-        sudo ls
-        sudo cd /usr/local/lib/
-        sudo ls
-        sudo ln -s /usr/local/lib/libtinfo.so.6 /usr/local/lib/libtinfo.so.5
         git 
         npm -v
         node -v
@@ -63,3 +59,10 @@ runs:
         >>public.pem
         npm install --global ax-apax-*.tgz --verbose
         apax --version
+        cd /usr/
+        ls -al
+        cd local/
+        ls -al
+        cd lib/
+        ls -al
+        ln -s /usr/local/lib/libtinfo.so.6 /usr/local/lib/libtinfo.so.5
