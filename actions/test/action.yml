@@ -1,9 +1,14 @@
-name: "Testing an apax library or application"
+name: Run ST tests
 description: "Tests the packages binaries and returns it as an artifact, requires build artifact"
 
 runs:
   using: "composite"
   steps:
+    - name: Checkout Repository Code
+      uses: actions/checkout@v3
     - name: Test apax package
       shell: bash
       run: apax test
+    
+
+    

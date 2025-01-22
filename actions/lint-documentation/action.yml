@@ -1,0 +1,35 @@
+name: Lint Markdown Files
+description: "Runs a markdown linter on all markdown files in the repository that have changed."
+inputs:
+  config-path:
+    description: "Path to a Markdownlint configuration file"
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout Repository Code
+      uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+    - name: Install markdownlint-cli
+      shell: bash
+      run: npm install -g markdownlint-cli
+
+    - name: Run markdownlint
+      shell: bash
+      env:
+        CONFIG_FILE: ${{ inputs.config-path }}
+      run: |
+      # Use default configuration if no config file is provided
+        if [ -z "$CONFIG_FILE" ]; then
+          CONFIG_FILE="$GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml"
+        fi
+      markdownlint "**/*.md" --config "$CONFIG_FILE"
+    
+
+    
+
+    

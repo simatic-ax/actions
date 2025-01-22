@@ -1,0 +1,17 @@
+name: An exemplatory usage of predefined actions
+on: # run only in case a PR is opened against main
+  pull_request:
+    branches:
+      - main
+
+jobs: # define the content and structure of the workflow
+  check-documentation:
+    runs-on: ubuntu-24.04
+    steps:
+      uses: simatic-ax/actions/actions/lint-markdown@centralize-and-distribute-actions
+  # build:
+  #   runs-on: ubuntu-24.04
+  # test:
+  #   runs-on: ubuntu-24.04
+  # deploy:
+  #   runs-on: ubuntu-24.04

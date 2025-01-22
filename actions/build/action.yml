@@ -1,10 +1,10 @@
-name: "Building an apax library or application"
-description: "Builds the package and returns it as an artifact"
+name: "Build package"
+description: "Build the package based on the projects apax.yaml file"
 inputs:
   APAX_TOKEN:
-    required: true
     description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
-
+    required: true
+    
 runs:
   using: "composite"
   steps:
@@ -14,12 +14,12 @@ runs:
         pwd
         ls -a
     - name: Login to apax repository
-      run: apax login --password ${{ inputs.APAX_TOKEN }}
       shell: bash
+      run: apax login --password ${{ inputs.APAX_TOKEN }}
 
     - name: Install apax dependencies
-      run: apax install --immutable
       shell: bash
+      run: apax install --immutable
 
     - name: Build apax package
       shell: bash
