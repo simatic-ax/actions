@@ -27,7 +27,7 @@ runs:
         if [ -z "$CONFIG_FILE" ]; then
           CONFIG_FILE="$GITHUB_ACTION_PATH/default-markdownlint-ruleset.yml"
         fi
-      markdownlint "**/*.md" --config "$CONFIG_FILE"
+        markdownlint "**/*.md" --config "$CONFIG_FILE"
     
 
     
