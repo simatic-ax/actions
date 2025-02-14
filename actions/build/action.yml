@@ -8,11 +8,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Show contents of folder
-      shell: bash
-      run: |
-        pwd
-        ls -a
     - name: Login to apax repository
       shell: bash
       run: apax login --password ${{ inputs.APAX_TOKEN }}
