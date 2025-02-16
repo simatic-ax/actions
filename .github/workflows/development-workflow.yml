@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: simatic-ax/actions-test
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CLONE_REPO_TOKEN }}
           path: 'actions-test'
           ref: 'main'
 
