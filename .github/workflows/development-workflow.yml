@@ -21,9 +21,12 @@ jobs:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
     steps:
       
-      # Checks out a repository for exemplatory purposes only
-      # Once incorporated into your project, the with clause should be removed completely
       - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Checks out a repository for exemplatory purposes only
+      # Once incorporated into your project, the "Checkout repo under test" step should be removed completely
+      - name: Checkout repo under test
         uses: actions/checkout@v4
         with:
           repository: simatic-ax/actions-test
