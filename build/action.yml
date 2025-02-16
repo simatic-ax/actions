@@ -2,7 +2,7 @@ name: "Build package"
 description: "Build the package based on the projects apax.yaml file"
 inputs:
   APAX_TOKEN:
-    description: "The access token is used to log into the apax registry in order to retrieve apax npm package"
+    description: "The access token is used to log into the apax registry in order to retrieve apax packages"
     required: true
     
 runs:

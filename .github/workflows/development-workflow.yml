@@ -1,0 +1,37 @@
+# This workflow is going to be used during the development phase of the image
+# The workflow builds and tests the the sources on the following triggers:
+#   - once a change is pushed to the main branch or any of its sub-branches
+name: Development Workflow
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'main/**'
+  pull_request:
+    branches:
+      - 'main'
+      - 'main/**'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+    steps:
+      
+      # Checks out a repository for exemplatory purposes only
+      # Once incorporated into your project, the with clause should be removed completely
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          repository: simatic-ax/actions-test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: 'actions-test'
+          ref: 'main'
+
+      - name: Build source code
+        uses: ./build
+        with:
+          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
