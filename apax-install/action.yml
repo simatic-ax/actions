@@ -39,6 +39,10 @@ runs:
     - name: Install apax dependencies
       shell: bash
       run: |
+
+        # Change to the project directory
+        cd ${{ inputs.path }}
+        
         # base command
         cmd="apax install"
 
@@ -69,7 +73,6 @@ runs:
           exit 1
         fi
 
-        cd ${{ inputs.path }}
         # perfom the install
         eval "$cmd"
   

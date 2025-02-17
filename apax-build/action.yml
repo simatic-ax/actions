@@ -1,0 +1,65 @@
+name: "Build source code"
+description: "Builds the source code based on the projects apax.yaml file"
+inputs:
+  apax-build-args:
+    description: "A newline-delimited string of arguments to pass to the apax build command"
+    required: false
+  apax-build-targets:
+    description: "A newline-delimited string of targets to build"
+    required: false
+  predefined-preprocessor-symbols:
+    description: "A newline-delimited string of preprocessor symbols to define"
+    required: false
+  path:
+    description: "The relative path to the project which is to be built"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Build apax package
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+        
+        # base command
+        CMD="apax build"
+
+        # Process the inputs and add them to the command
+        APAX_BUILD_ARGS=""
+        APAX_BUILD_TARGETS=""
+        DEFINED_PREPROCESSOR_SYMBOLS=""
+
+        # convert apax-build-args to variables
+        if [ ! -z "${{ inputs.apax-build-args }}" ]; then
+          while IFS= read -r line; do
+            if [ ! -z "$line" ]; then
+              APAX_BUILD_ARGS="${APAX_BUILD_ARGS:+${APAX_BUILD_ARGS} }$line"
+            fi
+          done <<< "${{ inputs.apax-build-args }}"
+          CMD="$CMD --variables APAX_BUILD_ARGS='$APAX_BUILD_ARGS'"
+        fi
+
+        # convert apax-build-targets to variables
+        if [ ! -z "${{ inputs.apax-build-targets }}" ]; then
+          while IFS= read -r line; do
+            if [ ! -z "$line" ]; then
+              APAX_BUILD_TARGETS="${APAX_BUILD_TARGETS:+${APAX_BUILD_TARGETS},}$line"
+            fi
+          done <<< "${{ inputs.apax-build-targets }}"
+          CMD="$CMD --variables APAX_BUILD_TARGETS=$APAX_BUILD_TARGETS"
+        fi
+
+        # convert predefined-preprocessor-symbols to variables
+        if [ ! -z "${{ inputs.defined-preprocessor-symbols }}" ]; then
+          while IFS= read -r line; do
+            if [ ! -z "$line" ]; then
+              PREDEFINED_PREPROCESSOR="${PREDEFINED_PREPROCESSOR:+${PREDEFINED_PREPROCESSOR},}$line"
+            fi
+          done <<< "${{ inputs.defined-preprocessor-symbols }}"
+          CMD="$CMD --variables PREDEFINED_PREPROCESSOR=$PREDEFINED_PREPROCESSOR"
+        fi
+
+        echo "Running command: $CMD"
+        eval $CMD
