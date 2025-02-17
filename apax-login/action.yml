@@ -1,0 +1,35 @@
+name: "Apax login"
+description: "Logs the user in to a package registry"
+inputs:
+  apax-token:
+    description: "The access token is used to log into the apax registry in order to retrieve apax packages"
+    required: true
+  registries:
+    description: "A newline-delimited string of registries with URL and token (format: url1,token1\nurl2,token2...)"
+    required: false
+  
+runs:
+  using: "composite"
+  steps:
+    - name: Login to SIMATIC AX registry
+      shell: bash
+      run: apax login --password ${{ inputs.apax-token }}
+
+    - name: "Authenticate with additional registries"
+      shell: bash
+      run: |
+        # pipe the registries input into a while loop
+        # read each line and split it by comma
+        # assign the URL and token to variables
+        # check if the URL and token are not empty
+        # if they are not empty, log in to the registry
+        while IFS= read -r line; do
+          IFS=',' read -ra DETAILS <<< "$line"
+          url="${DETAILS[0]}"
+          token="${DETAILS[1]}"          
+          if [[ -n "$url" && -n "$token" ]]; then
+            apax login --registry "$url" --password "$token"
+          else
+            echo "Skipping empty or incomplete registry entry"
+          fi
+        done <<< "${{ inputs.registries }}"
