@@ -36,7 +36,7 @@ jobs:
           path: actions-test
 
       - name: Build source code
-        uses: ./apax-build # replace with simatic-ax/actions/build@v1
+        uses: ./apax-build # replace with simatic-ax/actions/apax-build@v1
         with:
           path: actions-test
           apax-build-targets: |
@@ -45,3 +45,10 @@ jobs:
           apax-build-args: |
             --debug
             --log Debug
+      
+      - name: Test source code
+        uses: ./apax-test # replace with simatic-ax/actions/apax-test@v1
+        with:
+          path: actions-test
+          coverage: true
+          loglevel: debug
