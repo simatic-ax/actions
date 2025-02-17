@@ -86,7 +86,6 @@ runs:
         if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
           CMD="$CMD --loglevel ${{ inputs.loglevel }}"
         fi
-        
-        # Ausführbefehl
+
         echo "Running command: $CMD"
         eval $CMD

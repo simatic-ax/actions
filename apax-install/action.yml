@@ -73,6 +73,6 @@ runs:
           exit 1
         fi
 
-        # perfom the install
+        echo "Running command: $CMD"
         eval "$cmd"
   

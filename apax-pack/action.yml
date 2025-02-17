@@ -1,0 +1,48 @@
+name: "Package source code"
+description: "Packages the source code of the project based on the procjects apax.yaml file"
+inputs:
+  key:
+    description: "Pack with a specific private key"
+    required: false
+    default: ""
+  key-version-v2:
+    description: "Pack with a specific private key but in version v2"
+    required: false
+    default: "false"
+  ignore-scripts:
+    description: "Pack without executing prepack and postpack scripts"
+    required: false
+    default: "false"
+  path:
+    description: "The relative path to the project which is to be packed"
+    required: false
+    default: ".
+runs:
+  using: "composite"
+  steps:
+    - name: Pack source code
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # process inputs
+
+        # --ignore-scripts Flag
+        if [ "${{ inputs.ignore-scripts }}" == "true" ]; then
+          CMD="$CMD --ignore-scripts"
+        fi
+        # --key Flag
+        if [ -n "${{ inputs.key }}" ]; then
+          CMD="$CMD --key '${{ inputs.key }}'"
+          # --keyVersion v2, nur wenn key vorhanden ist
+          if [ "${{ inputs.key-version-v2 }}" == "true" ]; then
+            CMD="$CMD --keyVersion v2"
+          fi
+        elif [[ "${{ inputs.key-version-v2 }}" == "true" ]]; then
+          echo "Error: The --keyVersion flag can only be used with the --key flag."
+          exit 1
+        fi
+
+        echo "Running command: $CMD"
+        eval $CMD
