@@ -16,7 +16,7 @@ inputs:
   path:
     description: "The relative path to the project which is to be packed"
     required: false
-    default: ".
+    default: "."
 runs:
   using: "composite"
   steps:
@@ -24,7 +24,11 @@ runs:
       shell: bash
       run: |
         # Change to the project directory
+        
         cd ${{ inputs.path }}
+
+        # base command
+        CMD="apax pack"
 
         # process inputs
 
@@ -46,3 +50,4 @@ runs:
 
         echo "Running command: $CMD"
         eval $CMD
+        ls -a

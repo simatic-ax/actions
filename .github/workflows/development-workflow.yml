@@ -52,3 +52,17 @@ jobs:
           path: actions-test
           coverage: true
           loglevel: debug
+
+      - name: Package source code
+        uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v1
+        with:
+          path: actions-test
+      
+      - name: Publish apax package
+        uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v1
+        with:
+          registries: |
+            https://npm.pkg.github.com
+          tag: latest
+          path: actions-test
+
