@@ -28,7 +28,7 @@ jobs:
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
-            https://npm.pkg.github.com/,${{ secrets.GITHUB_TOKEN }}
+            https://npm.pkg.github.com/,${{ secrets.DEPLOY_TOKEN }}
 
       - name: Install dependencies
         uses: ./apax-install # replace with simatic-ax/actions/apax-install@v1
