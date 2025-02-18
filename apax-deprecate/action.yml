@@ -24,7 +24,7 @@ runs:
         CMD="apax deprecate"
 
         # Add the registry
-        CMD="$CMD --registry \"${{ inputs.registry }}\""
+        CMD="$CMD --registry ${{ inputs.registry }}"
 
         # Add the un-deprecate flag if true
         if [ "${{ inputs.un-deprecate }}" == "true" ]; then
