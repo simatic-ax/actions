@@ -24,9 +24,10 @@ runs:
       shell: bash
       run: |
         # Change to the project directory
-        
+        cwd
         cd ${{ inputs.path }}
-
+        cwd
+        ls -a
         # base command
         CMD="apax pack"
 
