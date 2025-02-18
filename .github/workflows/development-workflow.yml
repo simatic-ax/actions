@@ -58,11 +58,11 @@ jobs:
         with:
           path: actions-test # remove
       
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: my-artifact
-          path: actions-test/simatic-ax-actions-test-0.0.1.apax.tgz
+      # - name: Upload artifact
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: my-artifact
+      #     path: actions-test/simatic-ax-actions-test-0.0.1.apax.tgz
 
       - name: Publish apax package
         uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3

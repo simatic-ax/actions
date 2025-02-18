@@ -25,4 +25,5 @@ variables:
 
 # Files, which will be shipped with the library
 files:
-  - ./bin
+  - bin
+  - "!bin/axunit-artifacts"
