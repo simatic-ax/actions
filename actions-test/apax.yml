@@ -25,4 +25,4 @@ variables:
 
 # Files, which will be shipped with the library
 files:
-  - bin
+  - ./bin
