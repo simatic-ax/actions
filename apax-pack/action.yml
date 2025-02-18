@@ -28,6 +28,7 @@ runs:
         cd ${{ inputs.path }}
         pwd
         ls -a
+        ls -R ./bin
         # base command
         CMD="apax pack"
 
