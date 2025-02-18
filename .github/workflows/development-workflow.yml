@@ -71,4 +71,13 @@ jobs:
             https://npm.pkg.github.com
           tag: latest
           path: actions-test
+      
+      - name: Deprecate package
+        uses: ./apax-deprecate # replace with simatic-ax/actions/apax-deprecate@v3
+        with:
+          registry: https://npm.pkg.github.com
+          package-name: simatic-ax/actions-test
+          versions-to-deprecate: |
+            0.0.1
+          un-deprecate: false
 
