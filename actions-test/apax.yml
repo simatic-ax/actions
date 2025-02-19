@@ -22,3 +22,8 @@ devDependencies:
 variables:
   APAX_BUILD_ARGS:
     - "--debug" # Generate debug information for target "1500"
+
+# Files, which will be shipped with the library
+files:
+  - bin
+  - "!bin/axunit-artifacts"
