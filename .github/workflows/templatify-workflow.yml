@@ -1,0 +1,35 @@
+
+name: Templatify workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository-url:
+        description: "The URL of the repository to templatify"
+        required: true
+
+jobs:
+  templatify:
+    name: Templatify
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+    steps: 
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to required registries
+        uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
+        with:
+          apax-token: ${{ secrets.APAX_TOKEN }}
+          registries: |
+            https://npm.pkg.github.com/,${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Templatify repository
+        uses: ./apax-templatify # replace with simatic-ax/actions/apax-login@v3
+        with:
+          repository-url: ${{ inputs.repository-url }}
+          token: ${{ secrets.DEPLOY_TOKEN }}
+
+      
+
