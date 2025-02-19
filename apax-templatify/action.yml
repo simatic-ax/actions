@@ -16,6 +16,7 @@ runs:
         # adapt the lib/ app to the template structure
         echo "adapt the lib/ app to the template structure"
         
+        echo ${{ inputs.path }}
         cd ${{ inputs.path }}
         echo "Your're currently working here"
         ls -a -1
@@ -26,46 +27,17 @@ runs:
         original_name=${original_name#@simatic-ax/}
         
         # carve out unnecessary files and folders
-        # Datei mit der files-Sektion
-        FILE="templatify-meta-information.yml"
+        # Pfad zur Datei templatify-meta-information.yml
+        META_INFO_FILE="templatify-meta-information.yml"
 
-        # Extrahiere die Liste der Dateien und Ordner
-        ALLOWED_PATHS=($(awk '/^files:/ {flag=1; next} /^[^ ]/ {flag=0} flag && /^\s*- / {sub(/^\s*- /, ""); print}' "$FILE"))
+        # Extrahiere die Liste der Dateien und Ordner aus der Datei
+        ALLOWED_PATHS=($(awk '/^files:/ {flag=1; next} /^[^ ]/ {flag=0} flag && /^\s*- / {sub(/^\s*- /, ""); print}' "$META_INFO_FILE"))
 
-        echo "Erlaubte Dateien/Verzeichnisse:"
+        # Debugging: Überprüfe, ob ALLOWED_PATHS korrekt gefüllt ist
+        echo "Extrahierte Pfade:"
         for path in "${ALLOWED_PATHS[@]}"; do
             echo "$path"
         done
-        # Set für erlaubte Dateien und Verzeichnisse erstellen
-        declare -A ALLOWED
-        for path in "${ALLOWED_PATHS[@]}"; do
-            ALLOWED["$path"]=1
-            full_path="$path"
-            while [ "$full_path" != "$(dirname "$full_path")" ] && [ "$full_path" != "." ]; do
-                full_path=$(dirname "$full_path")
-                ALLOWED["$full_path"]=1
-            done
-        done
-
-        # Debugging: Liste der erlaubten Elemente ausgeben
-        echo "Erlaubte Dateien/Verzeichnisse:"
-        for key in "${!ALLOWED[@]}"; do
-            echo "$key"
-        done
-
-        # Alle Dateien und Verzeichnisse im aktuellen Verzeichnis prüfen und löschen
-        for item in .* *; do
-            if [ "$item" != "." ] && [ "$item" != ".." ]; then
-                if [[ ! -v ALLOWED["$item"] ]]; then
-                    echo "Lösche: $item"
-                    rm -rf -- "$item"
-                else
-                    echo "Behalte: $item"
-                fi
-            fi
-        done
-
-        echo "Folder structure after cleaning"
-        ls -a -1
+        
 
         # include newly to be created CHANGELOG.md

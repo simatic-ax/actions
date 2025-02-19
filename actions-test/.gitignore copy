@@ -1,7 +1,0 @@
-.apax
-.env
-bin
-obj
-tmp
-TestResult
-*.tgz
