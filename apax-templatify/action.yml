@@ -1,0 +1,62 @@
+name: "Templatify repository"
+description: "Clones the given repository and creates an apax template out of it"
+inputs:
+  repository-url:
+    description: "The URL of the repository to templatify"
+    required: true
+  token:
+    description: "The token to use for cloning the repository"
+    required: true
+  path:
+    description: "The directory to work in"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Templatify
+      shell: bash
+      run: |
+        cd ${{ inputs.path }}
+        git clone ${{ inputs.repository-url }} repository
+        
+        cd repository
+        # Parsing the apax.yml file to extract the files section
+        files_to_keep=$(awk '/^files:/,/^$/ {if ($1 ~ /^[^ ]/) print; else print "" }' apax.yml | sed '1d' | xargs)
+        echo "Files to keep: $files_to_keep"
+
+        # Converting files_to_keep to an array for easier processing
+        IFS=' ' read -r -a files_array <<< "$files_to_keep"
+
+        # Remove files/folders not listed in files_array, including hidden ones
+        for item in .* *; do
+            if [[ "$item" != "." && "$item" != ".." && ! " ${files_array[@]} " =~ " $item " ]]; then
+                rm -rf "$item"
+            fi
+        done
+
+        apax_file="apax.yml"
+
+        # Extrahiere den ursprünglichen Projektnamen aus der apax.yml Datei und entferne das Präfix @simatic-ax/ falls vorhanden
+        original_name=$(awk -F': ' '/^name:/ {print $2}' "$apax_file" | sed 's/^@simatic-ax\///')
+        echo $original_name
+        
+        # Setze die Version auf 0.0.1
+        sed -i "s/^version:.*/version: 0.0.1/" "$apax_file"
+        cat $apax_file
+        cd ..
+        cd template-template
+        ls -a -1
+
+
+        echo "Repo content after cleaning"
+        ls -a -1
+
+        apax_file="apax.yml"
+
+        # Setze den neuen Namen mit dem Template Namen Format
+        new_name="@simatic-ax/template-${original_name}"
+        sed -i "s/^name:.*/name: ${new_name}/" "$apax_file"
+
+        cat $apax_file
+        

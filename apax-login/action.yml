@@ -11,6 +11,7 @@ inputs:
 runs:
   using: "composite"
   steps:
+    # This step is always required, since the SIMATIC AX tooling requires a login to the SIMATIC AX registry
     - name: Login to SIMATIC AX registry
       shell: bash
       run: apax login --password ${{ inputs.apax-token }}

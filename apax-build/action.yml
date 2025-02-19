@@ -2,7 +2,7 @@ name: "Build source code"
 description: "Builds the source code based on the projects apax.yaml file"
 inputs:
   apax-build-args:
-    description: "A newline-delimited string of arguments to pass to the apax build command"
+    description: "A newline-delimited string of arguments to pass to the apax build command. The default will be taken from the apax.yml"
     required: false
   apax-build-targets:
     description: "A newline-delimited string of targets to build"

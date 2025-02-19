@@ -1,0 +1,6 @@
+{
+    "event_name": "workflow_dispatch",
+    "inputs": {
+        "repository-url": "https://github.com/simatic-ax/ae-trafficlight"
+    }
+}

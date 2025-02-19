@@ -1,5 +1,5 @@
 # General information
-name: "actions-test"
+name: "@simatic-ax/actions-test"
 version: 0.0.1
 type: lib
 keywords:
