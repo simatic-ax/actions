@@ -57,12 +57,6 @@ jobs:
         uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v3
         with:
           path: actions-test # remove
-      
-      # - name: Upload artifact
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: my-artifact
-      #     path: actions-test/simatic-ax-actions-test-0.0.1.apax.tgz
 
       - name: Publish apax package
         uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3
@@ -71,13 +65,4 @@ jobs:
             https://npm.pkg.github.com
           tag: latest
           path: actions-test
-      
-      - name: Deprecate package
-        uses: ./apax-deprecate # replace with simatic-ax/actions/apax-deprecate@v3
-        with:
-          registry: https://npm.pkg.github.com
-          package-name: simatic-ax/actions-test
-          versions-to-deprecate: |
-            0.0.1
-          un-deprecate: false
 
