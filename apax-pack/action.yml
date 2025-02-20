@@ -24,7 +24,6 @@ runs:
       shell: bash
       run: |
         # Change to the project directory
-        
         cd ${{ inputs.path }}
 
         # base command

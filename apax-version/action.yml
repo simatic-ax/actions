@@ -14,7 +14,23 @@ runs:
     - name: Set version
       shell: bash
       run: |
+        
+        version_regex="^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+
+        # Check version against regex expression
+        if [[ ${{ inputs.version }} =~ $version_regex ]]; then
+          echo "The version ${{ inputs.version }} is compliant to semantic versioning."
+        else
+          echo "Error: The version ${{ inputs.version }} is not compliant to semantic versioning."
+          exit 1
+        fi
+
+        # Change to the project directory
         cd ${{ inputs.path }}
+        
+        # built command
         CMD="apax set-version --version ${{ inputs.version }}"
+        
+        # execute command
         echo "Running command: $CMD"
         eval $CMD

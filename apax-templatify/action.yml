@@ -14,12 +14,13 @@ runs:
     - name: Templatify
       shell: bash
       run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+        
         # We might be faced with strange control signs due to line endings, hence we need a 3rd-party tool to convert them.
         # Otherwise it is not possible to properly extract content from the required files.
         apt-get update
         apt-get install dos2unix
-        
-        cd ${{ inputs.path }}
 
         # extract original name
         dos2unix apax.yml
