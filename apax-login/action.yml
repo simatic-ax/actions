@@ -37,6 +37,7 @@ runs:
           if [[ -n "$url" && -n "$token" ]]; then
             if [[ "$url" =~ $url_regex ]]; then
               echo "Found valid URL: $url"
+              echo "Running command: apax login --registry $url --password $token"
               apax login --registry "$url" --password "$token"
             else
               echo "Invalid URL: $url"
