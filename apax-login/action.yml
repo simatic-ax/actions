@@ -17,8 +17,6 @@ runs:
       env:
         APAX_TOKEN: ${{ inputs.apax-token }}
       run: |
-        echo "length of APAX_TOKEN: ${#APAX_TOKEN}"
-        echo "length of apax-token: ${{ inputs.apax-token }}"
         if [ -z "$APAX_TOKEN" ]; then
           echo "Error: APAX_TOKEN is empty"
           exit 1
