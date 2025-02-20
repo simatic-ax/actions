@@ -1,0 +1,26 @@
+name: Delete Package Versions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Läuft jeden Tag um Mitternacht UTC
+
+jobs:
+  delete_versions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install PyGithub
+
+    - name: Delete package versions
+      env:
+        PACKAGE_DELETE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: python delete_package_versions.py
