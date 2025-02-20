@@ -1,11 +1,11 @@
 name: "Templatify repository"
-description: "Clones the given repository and creates an apax template out of it"
+description: "Creates a template based on the project. This template could be later on used as a template during an apax create, e.g. apax create @simatic-ax/template-my-project new-project-name"
 inputs:
   version:
-    description: "The version to set in the apax.yml file"
+    description: "The version of the template package itself"
     required: true
   path:
-    description: "The directory to work in"
+    description: "The relative path to the folder to the project which is to be templatified"
     required: false
     default: "."
 runs:
@@ -16,6 +16,12 @@ runs:
       run: |
         # Change to the project directory
         cd ${{ inputs.path }}
+        
+        # check existence of templatify-meta-information.yml
+        if [ ! -f "templatify-meta-information.yml" ]; then
+          echo "Error: templatify-meta-information.yml not found in the specified path."
+          exit 1
+        fi
         
         # We might be faced with strange control signs due to line endings, hence we need a 3rd-party tool to convert them.
         # Otherwise it is not possible to properly extract content from the required files.
@@ -46,9 +52,9 @@ runs:
         done < "$yml_content"
 
         shopt -s dotglob
-        # Durchsuche den aktuellen Ordner nach Dateien und Ordnern
+        # Search the current directory for files and folders not matching the files_arrays content
         for item in *; do
-          # Überprüfen, ob das Item im Array vorhanden ist
+          # Check if the item is in the array
           found=false
           for file in "${files_array[@]}"; do
             if [ "$item" == "$file" ]; then
@@ -56,7 +62,7 @@ runs:
               break
             fi
           done
-          # Lösche das Item, wenn es nicht im Array ist
+          # Delete the item if it was not found in the array
           if [ "$found" = false ]; then
             rm -rf "$item"
           fi
@@ -64,26 +70,17 @@ runs:
 
         mkdir "${original_name}-template"
 
-        # Erstelle und schreibe die Datei apax.yml im erstellten Ordner
+        # Create and fill the apax.yml file inside the newly created directory
         cat <<EOL > "${original_name}-template/apax.yml"
         name: "@simatic-ax/template-$original_name"
         version: ${{ inputs.version }}
         type: generic
         EOL
-        ls -a -1
 
         mkdir "${original_name}-template/template"
-        # Verschiebe alle Dateien und Ordner, außer dem neu erstellten, in den 'template' Unterordner
+        # Move all files, except ${original_name}-template, to the 'template' subfolder
         for item in *; do
           if [ "$item" != "${original_name}-template" ]; then
             mv "$item" "${original_name}-template/template/"
           fi
         done
-        echo "Content of the directory:"
-        ls -a -1 "${original_name}-template"
-        ls -a -1 "${original_name}-template/template"
-        cat "${original_name}-template/apax.yml"
-        echo "Done"
-        # include newly to be created CHANGELOG.md
-
-        echo "Final artifact"
