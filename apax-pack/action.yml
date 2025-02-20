@@ -1,10 +1,9 @@
-name: "Package source code"
-description: "Packages the source code of the project based on the procjects apax.yaml file"
+name: "Create apax package"
+description: "Creates an apax package based on the procjects apax.yaml file"
 inputs:
   key:
     description: "Pack with a specific private key"
-    required: false
-    default: ""
+    required: true
   key-version-v2:
     description: "Pack with a specific private key but in version v2"
     required: false
@@ -49,4 +48,3 @@ runs:
 
         echo "Running command: $CMD"
         eval $CMD
-        ls -a
