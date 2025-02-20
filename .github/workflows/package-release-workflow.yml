@@ -12,6 +12,9 @@ jobs:
     name: Execute the development workflow
     if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
+    secrets:
+      APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
     with:
       ref: ${{ github.ref }}
   release:

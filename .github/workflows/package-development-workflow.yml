@@ -13,6 +13,11 @@ on:
       - 'main'
       - 'main/**'
   workflow_call:
+    secrets:
+      APAX_TOKEN:
+        required: true
+      DEPLOY_TOKEN:
+        required: true
     inputs:
       ref:
         required: true
