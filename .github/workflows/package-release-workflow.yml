@@ -12,6 +12,9 @@ jobs:
     name: Execute the development workflow
     if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
+    secrets:
+      APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
     with:
       ref: ${{ github.ref }}
   release:
@@ -46,7 +49,14 @@ jobs:
         with:
           key: ${{ secrets.APAX_SIGNKEY }}
           path: actions-test # remove later, for test purposes only
-  
+          
+      - name: Login to required registries
+        uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
+        with:
+          apax-token: ${{ secrets.APAX_TOKEN }}
+          registries: |
+            https://npm.pkg.github.com/,${{ secrets.DEPLOY_TOKEN }}
+            
       - name: Publish apax package
         uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3
         with:

@@ -14,7 +14,14 @@ runs:
     # This step is always required, since the SIMATIC AX tooling requires a login to the SIMATIC AX registry
     - name: Login to SIMATIC AX registry
       shell: bash
-      run: apax login --password ${{ inputs.apax-token }}
+      env:
+        APAX_TOKEN: ${{ inputs.apax-token }}
+      run: |
+        if [ -z "$APAX_TOKEN" ]; then
+          echo "Error: APAX_TOKEN is empty"
+          exit 1
+        fi
+        apax login --password "$APAX_TOKEN"
 
     - name: "Authenticate with additional registries"
       shell: bash
