@@ -47,6 +47,6 @@ The action will fail under the following conditions:
 
 1. **Invalid URL Format**: If any provided URL in the `registries` input does not match the expected URL format, the action will fail with an error message.
 2. **Incomplete Registry Entry**: If any registry entry in the `registries` input is incomplete (missing URL or token), the action will fail with an error message.
-3. **Invalid Token**: If the provided `apax-token` is invalid, the action will fail when attempting to log in to the SIMATIC AX registry.
+3. **Invalid Token**: If the provided `apax-token` is empty, the action will fail.
 
 Ensure that the `apax-token` is valid and that the `registries` input follows the correct format to avoid these failures.
