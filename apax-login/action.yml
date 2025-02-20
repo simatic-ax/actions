@@ -1,8 +1,8 @@
 name: "Apax login"
-description: "Logs the user in to a package registry"
+description: "Performs a login to the SIMATIC AX registry and optionally to additional registries"
 inputs:
   apax-token:
-    description: "The access token is used to log into the apax registry in order to retrieve apax packages"
+    description: "The token to authenticate with the SIMATIC AX registry"
     required: true
   registries:
     description: "A newline-delimited string of registries with URL and token (format: url1,token1\nurl2,token2...)"
@@ -19,18 +19,30 @@ runs:
     - name: "Authenticate with additional registries"
       shell: bash
       run: |
-        # pipe the registries input into a while loop
-        # read each line and split it by comma
-        # assign the URL and token to variables
-        # check if the URL and token are not empty
-        # if they are not empty, log in to the registry
+        # Remove any potential trailing newlines
+        trimmed_registries=$(echo "${{ inputs.registries }}" | sed '/^$/d' | tr -s '\n')
+        url_regex="https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[a-zA-Z0-9#?=&%+._-]*)?"
+
+        # Process every entry of the registries input
         while IFS= read -r line; do
+          # Skip empty lines
+          if [[ -z "$line" ]]; then
+            continue
+          fi
+
           IFS=',' read -ra DETAILS <<< "$line"
           url="${DETAILS[0]}"
-          token="${DETAILS[1]}"          
+          token="${DETAILS[1]}"
+
           if [[ -n "$url" && -n "$token" ]]; then
-            apax login --registry "$url" --password "$token"
+            if [[ "$url" =~ $url_regex ]]; then
+              echo "Found valid URL: $url"
+              apax login --registry "$url" --password "$token"
+            else
+              echo "Invalid URL: $url"
+              exit 1
+            fi
           else
             echo "Skipping empty or incomplete registry entry"
           fi
-        done <<< "${{ inputs.registries }}"
+        done <<< "$trimmed_registries"
