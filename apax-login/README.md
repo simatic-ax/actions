@@ -34,7 +34,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Apax Login
-        uses: simatic-ax/actions/apax-login
+        uses: simatic-ax/actions/apax-login@v3
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
