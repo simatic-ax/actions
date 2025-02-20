@@ -68,7 +68,6 @@ jobs:
       # Only upload build artifacts if the workflow is called by another workflow
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        if: github.event_name == 'workflow_call'
         with:
           name: build-artifacts
           path: |
