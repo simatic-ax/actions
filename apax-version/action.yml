@@ -5,7 +5,7 @@ inputs:
     description: "The version to set in the apax.yml"
     required: true
   path:
-    description: "The relative path to the project which is to be built"
+    description: "The relative path to the project which is to be versioned"
     required: false
     default: "."
 runs:
