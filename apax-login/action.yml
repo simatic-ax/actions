@@ -43,6 +43,7 @@ runs:
               exit 1
             fi
           else
-            echo "Skipping empty or incomplete registry entry"
+            echo "Error: Empty or incomplete registry entry"
+            exit 1
           fi
         done <<< "$trimmed_registries"
