@@ -57,7 +57,6 @@ runs:
         cd ${{ inputs.path }}
 
         # base command
-
         CMD="apax test"
         
         # process inputs
