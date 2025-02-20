@@ -48,3 +48,5 @@ runs:
 
         echo "Running command: $CMD"
         eval $CMD
+
+        # TODO: While signing the package an "incomplete input" error is thrown

@@ -52,10 +52,16 @@ jobs:
           path: actions-test
           coverage: true
           loglevel: debug
-
+      
+      - name: Version package
+        uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
+        with:
+          version: 2.0.8
+          path: actions-test # remove
       - name: Package source code
         uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v3
         with:
+          key: ${{ secrets.APAX_SIGNKEY }}
           path: actions-test # remove
 
       - name: Publish apax package
