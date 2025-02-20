@@ -22,5 +22,5 @@ jobs:
 
     - name: Delete package versions
       env:
-        PACKAGE_DELETE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: python delete_package_versions.py
+        PACKAGE_DELETE_TOKEN: ${{ secrets.PACKAGE_DELETE_TOKEN }}
+      run: python ./maintenance-scripts/delete_package_versions.py
