@@ -17,16 +17,15 @@ inputs:
     description: "Specifies log level --> `info`(default), `debug` "
     required: false
     default: "Info"
-  # question to the team: are multiple filters possible at once? e.g -f="Category=Foo,Category=Bar", or -f="Category=Foo" -f="Category=Bar"
-  filter:
-    description: "Specifies the filter for the test cases"
-    required: false
-    default: "Runs specific tests with a filter"
   path:
     description: "The relative path to the project which is to be built"
     required: false
     default: "."
   # currently not supported
+  # filter:
+  #   description: "Specifies the filter for the test cases"
+  #   required: false
+  #   default: "Runs specific tests with a filter"
   # engine:
   #   description: "Engine for running test(s) -> llvm, mc7p or plcsim"
   #   required: false
