@@ -9,7 +9,7 @@ on:
 
 jobs:
   call-development:
-    name: Execute the development workflow
+    name: Build the package
     if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
     secrets:
