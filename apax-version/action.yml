@@ -29,7 +29,7 @@ runs:
         cd ${{ inputs.path }}
         
         # built command
-        CMD="apax set-version --version ${{ inputs.version }}"
+        CMD="apax version ${{ inputs.version }}"
         
         # execute command
         echo "Running command: $CMD"
