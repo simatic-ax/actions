@@ -10,15 +10,16 @@ on:
 jobs:
   call-development:
     name: Execute the development workflow
-    if: startsWith(github.ref, 'refs/tags/') && startsWith(github.event.release.target_commitish, '^release/v[0-9]+$')
+    if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
     with:
       ref: ${{ github.ref }}
   release:
     name: Release the package
+    needs: call-development
     # Only run the workflow if the release is a tag and the target_commitish is a release branch
     # Matching the correct branch is being done using naming conventions
-    if: startsWith(github.ref, 'refs/tags/') && startsWith(github.event.release.target_commitish, '^release/v[0-9]+$')
+    if: ${{ true }}
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
@@ -26,7 +27,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.target_commitish }}
+          ref: ${{ github.ref }}
 
       - name: Version package
         uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
