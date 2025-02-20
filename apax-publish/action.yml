@@ -1,5 +1,5 @@
 name: "Publish apax package"
-description: "Publishes an apax package to a remote registry"
+description: "Publishes an apax package to one or multiple remote registries"
 inputs:
   registries:
     description: "A newline-delimited string of registries the package is to be published to"
@@ -9,7 +9,7 @@ inputs:
     required: false
     default: "latest"
   path:
-    description: "The relative path to the apax package"
+    description: "The relative path to the folder where the apax package is located"
     required: false
     default: "."
 runs:
@@ -24,11 +24,10 @@ runs:
         # base command
         CMD="apax publish"
 
-
-        # Suche nach .apax.tgz Datei
+        # search for the .apax.tgz file
         PACKAGE_FILES=$(find . -maxdepth 1 -name "*.apax.tgz")
 
-        # Zähle die gefundenen Dateien
+        # Count the found files
         PACKAGE_COUNT=$(echo "$PACKAGE_FILES" | wc -l)
 
         if [ "$PACKAGE_COUNT" -eq 0 ]; then
@@ -41,28 +40,34 @@ runs:
 
         PACKAGE_FILE=$(echo "$PACKAGE_FILES" | head -n 1)
 
-        # Option für Paketnamen
+        # add package file to command
         CMD="$CMD --package $PACKAGE_FILE"
 
-        # Option für Tag
+        # add tag to command
         if [ -n "${{ inputs.tag }}" ]; then
           CMD="$CMD --tag '${{ inputs.tag }}'"
         else
           CMD="$CMD --tag 'latest'"
         fi
         
-        # process registries and execute the publish command per registry
-        if [ -n "${{ inputs.registries }}" ]; then
-          while IFS= read -r registry; do
-            if [ ! -z "$registry" ]; then
-
-              echo "Running command: $CMD --registry $registry"
-              eval "$CMD --registry $registry"
+        # URL Regular Expression
+        trimmed_registries=$(echo "${{ inputs.registries }}" | sed '/^$/d' | tr -s '\n')
+        url_regex="https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[a-zA-Z0-9#?=&%+._-]*)?"
+        
+        # Process registries input
+        while IFS= read -r url; do
+          if [[ -n "$url" ]]; then
+            if [[ "$url" =~ $url_regex ]]; then
+              echo "Found valid URL: $url"
+              echo "Running command: $CMD --registry $url"
+              eval "$CMD --registry $url"
+            else
+              echo "Invalid URL: $url"
+              exit 1
             fi
-          done <<< "${{ inputs.registries }}"
-        else
-          # Wenn keine registries angegeben sind, die Standardaktion durchführen
-          echo "Publishing to default registry"
-          eval "$CMD"
-        fi
+          else
+            echo "Error: Empty registry entry"
+            exit 1
+          fi
+        done <<< "$trimmed_registries"
  
