@@ -19,8 +19,8 @@ on:
         type: string
 
 jobs:
-  build:
-    name: Build
+  build-and-test:
+    name: Build and Test
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
@@ -59,4 +59,12 @@ jobs:
           path: actions-test
           coverage: true
           loglevel: debug
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: bin/
+          retention-days: 90
+          if-no-files-found: error
 

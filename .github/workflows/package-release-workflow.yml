@@ -29,6 +29,12 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: bin
+          
       - name: Version package
         uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
         with:
