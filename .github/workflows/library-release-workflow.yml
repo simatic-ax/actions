@@ -1,18 +1,17 @@
-# This workflow is going to be used during the development phase of the project
-# The workflow builds and tests the the sources on the following triggers:
-#   - once a change is pushed to the main branch or any of its sub-branches
-name: Development Workflow
-
+# This workflow is going to be used for a release of a library
+# The workflow builds, tests and publishes the package
+# Publishing a package needs to be done manually
+name: Library release workflow
 on:
-  push:
-    branches:
-      - 'main'
-      - 'main/**'
-  pull_request:
-    branches:
-      - 'main'
-      - 'main/**'
-
+    workflow_dispatch:
+    push:
+        branches:
+        - 'main'
+        - 'main/**'
+    pull_request:
+        branches:
+        - 'main'
+        - 'main/**'
 jobs:
   build:
     name: Build

@@ -1,0 +1,20 @@
+name: "Set version"
+description: "Sets the version property of the apax.yml to the provided version"
+inputs:
+  version:
+    description: "The version to set in the apax.yml"
+    required: true
+  path:
+    description: "The relative path to the project which is to be built"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Set version
+      shell: bash
+      run: |
+        cd ${{ inputs.path }}
+        CMD="apax set-version --version ${{ inputs.version }}"
+        echo "Running command: $CMD"
+        eval $CMD

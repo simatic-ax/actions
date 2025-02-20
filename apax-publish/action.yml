@@ -50,6 +50,7 @@ runs:
         else
           CMD="$CMD --tag 'latest'"
         fi
+        
         # process registries and execute the publish command per registry
         if [ -n "${{ inputs.registries }}" ]; then
           while IFS= read -r registry; do

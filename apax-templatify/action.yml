@@ -1,6 +1,9 @@
 name: "Templatify repository"
 description: "Clones the given repository and creates an apax template out of it"
 inputs:
+  version:
+    description: "The version to set in the apax.yml file"
+    required: true
   path:
     description: "The directory to work in"
     required: false
@@ -11,33 +14,75 @@ runs:
     - name: Templatify
       shell: bash
       run: |
-        echo "Your starting point"
-        ls -a -1
-        # adapt the lib/ app to the template structure
-        echo "adapt the lib/ app to the template structure"
+        # We might be faced with strange control signs due to line endings, hence we need a 3rd-party tool to convert them.
+        # Otherwise it is not possible to properly extract content from the required files.
+        apt-get update
+        apt-get install dos2unix
         
-        echo ${{ inputs.path }}
         cd ${{ inputs.path }}
-        echo "Your're currently working here"
-        ls -a -1
 
         # extract original name
+        dos2unix apax.yml
         apax_file="apax.yml"
         original_name=$(grep '^name:' "$apax_file" | awk -F ': ' '{print $2}' | tr -d '"')
         original_name=${original_name#@simatic-ax/}
+
+        # set version to 0.0.1
+        sed -i 's/^version: .*/version: 0.0.1/' "$apax_file"
         
         # carve out unnecessary files and folders
-        # Pfad zur Datei templatify-meta-information.yml
-        META_INFO_FILE="templatify-meta-information.yml"
+        dos2unix templatify-meta-information.yml
 
-        # Extrahiere die Liste der Dateien und Ordner aus der Datei
-        ALLOWED_PATHS=($(awk '/^files:/ {flag=1; next} /^[^ ]/ {flag=0} flag && /^\s*- / {sub(/^\s*- /, ""); print}' "$META_INFO_FILE"))
+        yml_content="templatify-meta-information.yml"
+        files_array=()
+        while IFS= read -r line || [ -n "$line" ]; do
+          # Überprüfen, ob die Zeile mit einem Bindestrich beginnt (Eintrag in der Liste)
+          if [[ $line =~ ^[[:space:]]*-[[:space:]]* ]]; then
+            # Entferne das Präfix mit dem Bindestrich und Leerzeichen
+            entry=$(echo $line | sed 's/^[[:space:]]*-[[:space:]]*//')
+            files_array+=("$entry")
+          fi
+        done < "$yml_content"
 
-        # Debugging: Überprüfe, ob ALLOWED_PATHS korrekt gefüllt ist
-        echo "Extrahierte Pfade:"
-        for path in "${ALLOWED_PATHS[@]}"; do
-            echo "$path"
+        shopt -s dotglob
+        # Durchsuche den aktuellen Ordner nach Dateien und Ordnern
+        for item in *; do
+          # Überprüfen, ob das Item im Array vorhanden ist
+          found=false
+          for file in "${files_array[@]}"; do
+            if [ "$item" == "$file" ]; then
+              found=true
+              break
+            fi
+          done
+          # Lösche das Item, wenn es nicht im Array ist
+          if [ "$found" = false ]; then
+            rm -rf "$item"
+          fi
         done
-        
 
+        mkdir "${original_name}-template"
+
+        # Erstelle und schreibe die Datei apax.yml im erstellten Ordner
+        cat <<EOL > "${original_name}-template/apax.yml"
+        name: "@simatic-ax/template-$original_name"
+        version: ${{ inputs.version }}
+        type: generic
+        EOL
+        ls -a -1
+
+        mkdir "${original_name}-template/template"
+        # Verschiebe alle Dateien und Ordner, außer dem neu erstellten, in den 'template' Unterordner
+        for item in *; do
+          if [ "$item" != "${original_name}-template" ]; then
+            mv "$item" "${original_name}-template/template/"
+          fi
+        done
+        echo "Content of the directory:"
+        ls -a -1 "${original_name}-template"
+        ls -a -1 "${original_name}-template/template"
+        cat "${original_name}-template/apax.yml"
+        echo "Done"
         # include newly to be created CHANGELOG.md
+
+        echo "Final artifact"
