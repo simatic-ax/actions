@@ -12,6 +12,11 @@ on:
     branches:
       - 'main'
       - 'main/**'
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -22,6 +27,8 @@ jobs:
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
       - name: Login to required registries
         uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
@@ -52,23 +59,4 @@ jobs:
           path: actions-test
           coverage: true
           loglevel: debug
-      
-      - name: Version package
-        uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
-        with:
-          version: 2.0.8
-          path: actions-test # remove
-      - name: Package source code
-        uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v3
-        with:
-          key: ${{ secrets.APAX_SIGNKEY }}
-          path: actions-test # remove
-
-      - name: Publish apax package
-        uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3
-        with:
-          registries: |
-            https://npm.pkg.github.com
-          tag: latest
-          path: actions-test
 

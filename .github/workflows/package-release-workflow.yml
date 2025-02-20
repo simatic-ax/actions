@@ -1,0 +1,49 @@
+# This workflow is triggered when a release is published via the UI
+# The workflow is only executed if the release is a tag and the target_commitish is a release branch
+name: Release workflow
+
+# Start the workflow as soon as a release has been published via the UI
+on:
+  release:
+    types: [published]
+
+jobs:
+  call-development:
+    name: Execute the development workflow
+    if: startsWith(github.ref, 'refs/tags/') && startsWith(github.event.release.target_commitish, '^release/v[0-9]+$')
+    uses: ./.github/workflows/package-development-workflow.yml
+    with:
+      ref: ${{ github.ref }}
+  release:
+    name: Release the package
+    # Only run the workflow if the release is a tag and the target_commitish is a release branch
+    # Matching the correct branch is being done using naming conventions
+    if: startsWith(github.ref, 'refs/tags/') && startsWith(github.event.release.target_commitish, '^release/v[0-9]+$')
+    runs-on: ubuntu-24.04
+    container:
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+    steps: 
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.target_commitish }}
+
+      - name: Version package
+        uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
+        with:
+          version: ${{ github.event.release.tag_name }}
+          path: actions-test # remove later, for test purposes only
+  
+      - name: Package source code
+        uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v3
+        with:
+          key: ${{ secrets.APAX_SIGNKEY }}
+          path: actions-test # remove later, for test purposes only
+  
+      - name: Publish apax package
+        uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3
+        with:
+          registries: |
+            https://npm.pkg.github.com
+          tag: latest
+          path: actions-test # remove later, for test purposes only
