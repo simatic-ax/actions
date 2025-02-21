@@ -1,0 +1,8 @@
+name: Repo maintenance workflow
+description: This workflow is used to execute actions which are targeting at keeping the repository in a good shape. It is being run whenever a push happens to any of the branches
+
+on: [push, pull_request]
+
+jobs:
+  check-links-and-commit-messages:
+    name: Check links in documentation
