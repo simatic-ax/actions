@@ -13,7 +13,7 @@ on:
 jobs:
     call-apax-login-tests:
         name: Execute apax-login tests
-        uses: ./apax-login/tests/apax-login-tests-workflow.yml
+        uses: ./.github/workflows/apax-login-tests-workflow.yml
         secrets:
             APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
             DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
