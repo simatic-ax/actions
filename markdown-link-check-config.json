@@ -15,25 +15,10 @@
     ],
     "ignorePatterns": [
       {
-        "pattern": "^https://internal-site.com"
-      },
-      {
-        "pattern": "^node_modules/"
-      },
-      {
         "pattern": "^.git/"
       },
       {
-        "pattern": "^dist/"
-      },
-      {
-        "pattern": "^build/"
-      },
-      {
-        "pattern": "^.cache/"
-      },
-      {
-        "pattern": "./actions-test/"
+        "pattern": "./actions-test/.*"
       }
     ],
     "timeout": "20s",
