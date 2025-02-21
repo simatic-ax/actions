@@ -90,8 +90,7 @@ jobs:
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
-            https://registry1.siemens.com,token1
-            https://registry2.siemens.com,token2
+            https://npm.pkg.github.com/,${{ secrets.DEPLOY_TOKEN }}
 
       - name: Verify Valid Configuration Success
         run: |
