@@ -4,7 +4,6 @@
 
 This application example shows how to use the state framework of the package `@simatic-ax/statemachine`. In this example a simple traffic light will be realized.
 
-![statechart](doc/state.png)
 
 ## Execute the Application Example (AX Code local)
 
@@ -58,8 +57,6 @@ This application example shows how to use the state framework of the package `@s
 1. Open the monitoring file mon.mon
 
 1. Go online
-
-      ![traffic light](./doc/trafficlight.gif)
 
 ## Tips and tricks
 
