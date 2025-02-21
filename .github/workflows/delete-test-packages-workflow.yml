@@ -1,3 +1,4 @@
+# Automatically deletes previously uploaded test packages every day at midnight UTC
 name: Delete Package Versions
 
 on:
@@ -22,5 +23,5 @@ jobs:
 
     - name: Delete package versions
       env:
-        PACKAGE_DELETE_TOKEN: ${{ secrets.PACKAGE_DELETE_TOKEN }}
+        PACKAGE_DELETE_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
       run: python ./maintenance-scripts/delete_package_versions.py
