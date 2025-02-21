@@ -80,6 +80,14 @@ This repository also includes predefined workflows for development and release p
 
 The development workflow (`package-development-workflow.yml`) is triggered on pushes and pull requests to the `main` branch. It builds and tests the source code.
 
+Further details and information can be found in the [documentation](./docs/development-workflow.md).
+
 ### Release Workflow
 
 The release workflow (`package-release-workflow.yml`) is triggered when a release is published via the GitHub UI. It first calls the development workflow and then proceeds to version, package, and publish the source code.
+
+Further details and information can be found in the [documentation](./docs/release-workflow.md).
+
+### Templatify Workflow
+
+The templatify workflow (`templatify-workflow.yml`) is triggered manually. This workflow aims to take the repository, create an apax compliant template package out of it and publish it to the GitHub Container registry.

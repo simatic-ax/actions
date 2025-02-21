@@ -2,8 +2,15 @@
 # It is being run whenever a push happens to any of the branches
 name: Repo maintenance workflow
 
-
-on: [push, pull_request]
+on:
+  push:
+      branches:
+        - 'main'
+        - 'main/**'
+  pull_request:
+      branches:
+        - 'main'
+        - 'main/**'
 
 jobs:
   check-links-and-commit-messages:

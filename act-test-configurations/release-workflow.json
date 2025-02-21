@@ -1,8 +1,0 @@
-{
-  "release": {
-    "type": "published",
-    "tag_name": "1.0.0",
-    "target_commitish": "cleanup-actions"
-  },
-  "ref": "refs/heads/cleanup-actions"
-}
