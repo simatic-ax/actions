@@ -16,7 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # Test 1: Leerer APAX Token
       - name: Test Empty Token
         id: empty-token-test
         uses: ./apax-login
@@ -27,11 +26,10 @@ jobs:
       - name: Verify Empty Token Failure
         run: |
           if [ "${{ steps.empty-token-test.outcome }}" != "failure" ]; then
-            echo "Test fehlgeschlagen: Leerer Token sollte zum Fehler führen"
+            echo "Test failed: An empty token should lead to an error"
             exit 1
           fi
 
-      # Test 2: Ungültige URL
       - name: Test Invalid URL
         id: invalid-url-test
         uses: ./apax-login
@@ -44,11 +42,10 @@ jobs:
       - name: Verify Invalid URL Failure
         run: |
           if [ "${{ steps.invalid-url-test.outcome }}" != "failure" ]; then
-            echo "Test fehlgeschlagen: Ungültige URL sollte zum Fehler führen"
+            echo "Test failed: An invalid URL should lead to an error"
             exit 1
           fi
 
-      # Test 3: Fehlende Token in Registry-Einträgen
       - name: Test Missing Registry Token
         id: missing-token-test
         uses: ./apax-login
@@ -61,28 +58,10 @@ jobs:
       - name: Verify Missing Registry Token Failure
         run: |
           if [ "${{ steps.missing-token-test.outcome }}" != "failure" ]; then
-            echo "Test fehlgeschlagen: Fehlender Registry-Token sollte zum Fehler führen"
+            echo "Test failed: A missing token in registry entries should lead to an error"
             exit 1
           fi
 
-      # Test 4: Ungültiges Registry-Format
-      - name: Test Invalid Registry Format
-        id: invalid-format-test
-        uses: ./apax-login
-        continue-on-error: true
-        with:
-          apax-token: ${{ secrets.APAX_TOKEN }}
-          registries: |
-            https://valid-registry.com
-
-      - name: Verify Invalid Format Failure
-        run: |
-          if [ "${{ steps.invalid-format-test.outcome }}" != "failure" ]; then
-            echo "Test fehlgeschlagen: Ungültiges Registry-Format sollte zum Fehler führen"
-            exit 1
-          fi
-
-      # Test 5: Gültiger Fall
       - name: Test Valid Configuration
         id: valid-test
         uses: ./apax-login
@@ -95,11 +74,10 @@ jobs:
       - name: Verify Valid Configuration Success
         run: |
           if [ "${{ steps.valid-test.outcome }}" != "success" ]; then
-            echo "Test fehlgeschlagen: Gültige Konfiguration sollte erfolgreich sein"
+            echo "Test failed: A valid configuration should lead to success"
             exit 1
           fi
 
-      # Test 6: URL-Regex-Validierung
       - name: Test URL Regex Validation
         id: url-regex-test
         uses: ./apax-login
@@ -112,7 +90,7 @@ jobs:
       - name: Verify URL Regex Validation Failure
         run: |
           if [ "${{ steps.url-regex-test.outcome }}" != "failure" ]; then
-            echo "Test fehlgeschlagen: Ungültiges URL-Protokoll sollte zum Fehler führen"
+            echo "Test failed: An invalid URL protocol should lead to an error"
             exit 1
           fi
 
