@@ -1,0 +1,51 @@
+{
+    "replacementPatterns": [
+      {
+        "pattern": "^/",
+        "replacement": "/github/workspace/"
+      },
+      {
+        "pattern": "^../",
+        "replacement": "/github/workspace/"
+      },
+      {
+        "pattern": "^./",
+        "replacement": "/github/workspace/"
+      }
+    ],
+    "ignorePatterns": [
+      {
+        "pattern": "^https://internal-site.com"
+      },
+      {
+        "pattern": "^node_modules/"
+      },
+      {
+        "pattern": "^.git/"
+      },
+      {
+        "pattern": "^dist/"
+      },
+      {
+        "pattern": "^build/"
+      },
+      {
+        "pattern": "^.cache/"
+      },
+      {
+        "pattern": "./actions-test/"
+      }
+    ],
+    "timeout": "20s",
+    "retryOn429": true,
+    "retryCount": 5,
+    "fallbackRetryDelay": "30s",
+    "aliveStatusCodes": [200, 206],
+    "markdown": {
+      "ignoreLinks": [
+        {
+          "pattern": "^#"
+        }
+      ]
+    }
+  }
