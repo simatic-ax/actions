@@ -1,6 +1,9 @@
 name: "Update apax"
 description: "Updates apax itself. Use this action with caution, as new major versions of apax aren't guaranteed to work with every CI image"
 inputs:
+  version:
+    description: "The version of apax to update to. If not specified, the latest version within the current  major version will be installed."
+    required: false
   check:
     description: "Check whether an update is available, but do not install it."
     required: false
@@ -9,8 +12,6 @@ inputs:
     description: "Force update to latest version. Be aware that could be a major version update which might includes breaking changes."
     required: false
     default: "false"
-  version:
-    description: "The version of apax to update to. If not specified, the latest version within the current  major version will be installed."
 runs:
   using: "composite"
   steps:

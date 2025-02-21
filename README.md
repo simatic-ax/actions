@@ -46,6 +46,11 @@ Sets the version property of the `apax.yaml` file to the provided version.
 
 Further details and information can be found in the [documentation](apax-version/README.md).
 
+### [apax-self-update](apax-self-update/action.yml)
+Updates the Apax tool itself. Use this action with caution, as new major versions of Apax aren't guaranteed to work with every CI image.
+
+Further details and information can be found in the [documentation](apax-self-update/README.md).
+
 ## Usage
 
 Each action can be used within your GitHub workflows to automate specific tasks. Refer to the individual action's documentation for detailed usage instructions and examples.
