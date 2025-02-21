@@ -9,7 +9,7 @@ on:
 
 jobs:
   call-development:
-    name: Execute the development workflow
+    name: Build the package
     if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
     secrets:
@@ -36,7 +36,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: bin
+          path: actions-test/bin
           
       - name: Version package
         uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
