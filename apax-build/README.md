@@ -38,11 +38,11 @@ jobs:
         uses: simatic-ax/actions/apax-build@v3
         with:
           apax-build-args: |
-            --arg1
-            --arg2
+            --debug
+            --log Debug
           apax-build-targets: |
-            target1
-            target2
+            llvm
+            1500
           predefined-preprocessor-symbols: |
             SYMBOL1
             SYMBOL2
