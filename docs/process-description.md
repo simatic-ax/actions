@@ -1,7 +1,7 @@
 # GitHub Development and Release Process Documentation
  
 ## Overview
-This documentation describes the process for feature development and release management in GitHub. The process ensures structured development and controlled publication of software versions.
+This documentation describes the process for feature development and release management in GitHub. It follows a structured approach with major version release branches and automated tag management.
  
 ## Process Flow
  
@@ -27,44 +27,60 @@ This documentation describes the process for feature development and release man
 6. Fill out the pull request description
 7. Wait for review and merge
  
-### 2. Release Process
+### 2. Major Version Release Branch
  
-#### Create a Release Branch:
-1. Ensure you are on the main branch
-2. Click the branch button
-3. Create a new branch: `release/v1`
-4. Confirm with "Create branch"
+#### Create Major Release Branch:
+1. Go to the repository in GitHub
+2. Ensure you are on the main branch
+3. Click the branch button
+4. Create a new branch named `release/v1` (for major version 1)
+5. Confirm with "Create branch"
  
-#### Feature for specific release version:
-1. Create a feature branch from the release branch:
-   - Choose `release/v1` as base
-   - Name the branch e.g., `feature/release-v1-bugfix`
-2. Develop the feature
-3. Create a pull request back to the release branch
+#### Feature Development for Major Version:
+1. Create feature branch from release branch:
+   - Navigate to `release/v1` branch
+   - Click branch button
+   - Create new branch (e.g., `feature/abc` or `fix/bug-123`)
+2. Develop feature or fix
+3. Create pull request back to `release/v1`
  
-#### Create Release:
-1. Go to "Releases" in the repository
-2. Click "Draft a new release"
-3. Select the release branch
-4. Create a tag (e.g., "v1")
-5. Fill in release notes
-6. Click "Publish release"
+### 3. Release Management
  
-#### Merge changes back to main:
-1. Create a pull request
+#### Creating a New Release:
+1. Ensure all required changes are merged to `release/v1`
+2. Go to "Releases" in the repository
+3. Click "Draft a new release"
+4. Click "Choose a tag" and enter specific version (e.g., "v1.0.0")
+5. Select target branch (`release/v1`)
+6. Fill in release title
+7. Add detailed release notes
+8. Click "Publish release"
+ 
+#### Merge back to main:
+1. After release, create a pull request
 2. Base: main, Compare: release/v1
-3. Title: "Merge release v1 back to main"
-4. Create the pull request
+3. Title: "Merge release v1.x.x back to main"
+4. Create pull request
 5. Merge after successful review
  
+## Release Checklist
+- [ ] All changes merged to release branch
+- [ ] Release created via GitHub UI with specific version tag
+- [ ] Release notes published
+- [ ] Automated workflow completed (major version tag updated)
+- [ ] Changes merged back to main
+ 
 ## Important Notes
-- Use meaningful branch names
-- Follow version conventions (Semantic Versioning)
-- Document changes carefully in pull requests
-- Ensure all changes from release branches are merged back to main
-
-## Branch structure
-
+- Major version branches (e.g., `release/v1`) are long-lived
+- Specific version tags (e.g., v1.0.0) are created manually via UI
+- Major version tags (e.g., v1) are managed automatically
+- When referencing in dependencies:
+  - Use `@v1.0.0` for exact version (stable)
+  - Use `@v1` for latest release in major version (auto-updating)
+- Always merge release changes back to main
+ 
+## Graphical Representation
+ 
 ```mermaid
 graph TD
     A[main] -->|branch| B[feature/xyz]
@@ -74,6 +90,9 @@ graph TD
     C -->|branch| F[fix/bug-123]
     D -->|Pull Request| C
     F -->|Pull Request| C
-    C -.->|tag| E((v1))
-    C -->|Pull Request| A
+    C -.->|manual tag| E((v1.0.0))
+    C -.->|auto tag| G((v1))
+    C -->|Merge back| A
+    style E fill:#f9f,stroke:#333,stroke-width:2px
+    style G fill:#bbf,stroke:#333,stroke-width:2px
 ```
