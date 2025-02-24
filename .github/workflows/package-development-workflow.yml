@@ -29,13 +29,16 @@ jobs:
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DEPLOY_KEY }}
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           # Use the ref input if it is provided, otherwise use the github.ref
           ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
- 
+      
 
       - name: Login to required registries
         uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
