@@ -66,42 +66,45 @@ jobs:
           path: actions-test # remove later, for test purposes only
 
       # This step manages the version tags after a successful release
-      # Input: Release tag (e.g., 1.2.3) from the GitHub release
-      # Output: - Keeps the specific version tag (1.2.3)
+      # Input: Release tag (e.g., 1.2.3) from the GitHub release UI
+      # Output: - Replaces UI tag with v-prefixed tag (v1.2.3)
       #         - Updates or creates the major version tag (v1)
-      - name: Update major version tag
+      - name: Update version tags
         run: |
-          # Extract full version from release tag (e.g., 1.2.3)
+          # Get version from release event (e.g., 1.2.3)
           VERSION=${{ github.event.release.tag_name }}
-          
+
           # Validate semantic versioning format (X.Y.Z)
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Extract major version number and add v prefix for the major version tag
-            # From 1.2.3 -> v1
+            # Define tag names
+            SPECIFIC_VERSION="v${VERSION}"
             MAJOR_VERSION="v$(echo $VERSION | cut -d. -f1)"
-            
+
             echo "Processing release version: $VERSION"
+            echo "Creating specific version tag: $SPECIFIC_VERSION"
             echo "Updating major version tag: $MAJOR_VERSION"
-            
+
             # Configure git for the tag operation
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
-            
-            # Remove existing major version tag if it exists
-            # This is necessary to move the major tag to the new release
+
+            # Remove original UI tag
+            echo "Removing original UI tag..."
+            git push origin :refs/tags/$VERSION
+
+            # Create specific version tag with v prefix
+            echo "Creating specific version tag..."
+            git tag -f $SPECIFIC_VERSION
+            git push origin $SPECIFIC_VERSION --force
+
+            # Update major version tag
             echo "Removing existing major version tag if it exists..."
             git push origin :refs/tags/$MAJOR_VERSION || true
-            
-            # Create new major version tag pointing to the current commit
-            # This tag will move with each release of the same major version
+
             echo "Creating new major version tag..."
             git tag -f $MAJOR_VERSION
-            
-            # Push the updated major version tag
-            # --force is needed because we're moving an existing tag
-            echo "Pushing updated major version tag..."
             git push origin $MAJOR_VERSION --force
-            
+
             echo "Tag management completed successfully"
           else
             echo "Error: Invalid version format: $VERSION"

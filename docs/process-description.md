@@ -50,7 +50,7 @@ This documentation describes the process for feature development and release man
 1. Ensure all required changes are merged to `release/v1`
 2. Go to "Releases" in the repository
 3. Click "Draft a new release"
-4. Click "Choose a tag" and enter specific version (e.g., "v1.0.0")
+4. Click "Choose a tag" and enter specific version (e.g., "1.0.0")
 5. Select target branch (`release/v1`)
 6. Fill in release title
 7. Add detailed release notes
