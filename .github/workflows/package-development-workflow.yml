@@ -33,7 +33,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref }}
+          # Use the ref input if it is provided, otherwise use the github.ref
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+ 
 
       - name: Login to required registries
         uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
@@ -67,6 +69,7 @@ jobs:
 
       # Only upload build artifacts if the workflow is called by another workflow
       - name: Upload build artifacts
+        if: github.event_name == 'workflow_call'
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
