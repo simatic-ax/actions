@@ -62,6 +62,7 @@ runs:
         
         # --ignore-scripts Flag
         if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+          echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
         
@@ -69,6 +70,7 @@ runs:
         if [ -n "${{ inputs.playlist }}" ]; then
           if [ -f "${{ inputs.playlist }}" ]; then
             CMD="$CMD --playlist '${{ inputs.playlist }}'"
+            echo "Info: Add --playlist with parameters ${{ inputs.playlist }} to cmd"
           else
             echo "Error: The specified playlist path '${{ inputs.playlist }}' does not exist."
             exit 1
@@ -77,11 +79,13 @@ runs:
         
         # --coverage Flag
         if [ "${{ inputs.coverage }}" == "true" ]; then
+          echo "Info: Add --coverage to cmd"
           CMD="$CMD --coverage"
         fi
         
         # --loglevel
         if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
+          echo "Info: Add --loglevel with parameter ${{ inputs.loglevel }} to cmd"
           CMD="$CMD --loglevel ${{ inputs.loglevel }}"
         fi
 
