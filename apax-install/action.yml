@@ -48,24 +48,30 @@ runs:
 
         # Check the inputs and add the corresponding flags to the command
         if [[ "${{ inputs.immutable }}" == "true" ]]; then
+          echo "add --immutable to cmd"
           cmd+=" --immutable"
         fi
 
         if [[ "${{ inputs.redownload }}" == "true" ]]; then
+          echo "add --redownload to cmd"
           cmd+=" --redownload"
         fi
 
         if [[ "${{ inputs.copy-local }}" == "true" ]]; then
+          echo "add --copy-local to cmd"
           cmd+=" --copy-local"
         fi
 
         if [[ "${{ inputs.verbose }}" == "true" ]]; then
+          echo "add --verbose to cmd"
           cmd+=" --verbose"
         fi
 
         if [[ "${{ inputs.catalog }}" != "false" ]]; then
+          echo "add --catalog to cmd"
           cmd+=" --catalog ${{ inputs.catalog }}"
           if [[ "${{ inputs.strict }}" == "true" ]]; then
+            echo "add --strict to cmd"
             cmd+=" --strict"
           fi
         elif [[ "${{ inputs.strict }}" == "true" ]]; then
