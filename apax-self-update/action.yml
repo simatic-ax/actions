@@ -46,15 +46,18 @@ runs:
           # Validate version format
           validate_semver "${{ inputs.version }}"
           CMD="$CMD ${{ inputs.version }}"
+          echo "Info: Add the specified version ${{ inputs.version }} to cmd"
         fi
         
         # Add check flag if true
         if [ "${{ inputs.check }}" == "true" ]; then
+          echo "Info: Add --check to cmd"
           CMD="$CMD --check"
         fi
 
         # Add force-latest flag if true
         if [ "${{ inputs.force-latest }}" == "true" ]; then
+          echo "Info: Add --force-latest to cmd"
           CMD="$CMD --force-latest"
         fi
 
