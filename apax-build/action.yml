@@ -41,7 +41,7 @@ runs:
           done <<< "${{ inputs.apax-build-args }}"
           CMD="$CMD --variables APAX_BUILD_ARGS='$APAX_BUILD_ARGS'"
         else
-          echo "apax-build-arg was not set"
+          echo "Info: apax-build-arg was not set"
         fi
 
         # convert apax-build-targets to variables
@@ -54,7 +54,7 @@ runs:
           done <<< "${{ inputs.apax-build-targets }}"
           CMD="$CMD --variables APAX_BUILD_TARGETS=$APAX_BUILD_TARGETS"
         else
-          echo "apax-build-targets was not set"
+          echo "Info: apax-build-targets was not set"
         fi
 
         # convert predefined-preprocessor-symbols to variables
@@ -67,7 +67,7 @@ runs:
           done <<< "${{ inputs.defined-preprocessor-symbols }}"
           CMD="$CMD --variables PREDEFINED_PREPROCESSOR=$PREDEFINED_PREPROCESSOR"
         else
-          echo "defined-preprocessor-symbols was not set"
+          echo "Info: defined-preprocessor-symbols was not set"
         fi
 
         echo "Running command: $CMD"

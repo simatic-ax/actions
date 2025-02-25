@@ -32,7 +32,7 @@ runs:
 
         # --ignore-scripts Flag
         if [ "${{ inputs.ignore-scripts }}" == "true" ]; then
-          echo "add --ignore-scripts to cmd"
+          echo "Info: Aadd --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
         # --key Flag
@@ -40,7 +40,7 @@ runs:
           CMD="$CMD --key '${{ inputs.key }}'"
           # --keyVersion v2, nur wenn key vorhanden ist
           if [ "${{ inputs.key-version-v2 }}" == "true" ]; then
-            echo "add key-version-v2"
+            echo "Info: Add key-version-v2"
             CMD="$CMD --keyVersion v2"
           fi
         elif [[ "${{ inputs.key-version-v2 }}" == "true" ]]; then
