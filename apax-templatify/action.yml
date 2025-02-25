@@ -64,6 +64,7 @@ runs:
           done
           # Delete the item if it was not found in the array
           if [ "$found" = false ]; then
+            echo "Info: Delete $item, cause it was not found in array"
             rm -rf "$item"
           fi
         done
@@ -82,5 +83,6 @@ runs:
         for item in *; do
           if [ "$item" != "${original_name}-template" ]; then
             mv "$item" "${original_name}-template/template/"
+            echo "Info: $item was moved to ${original_name}-template/template/"
           fi
         done
