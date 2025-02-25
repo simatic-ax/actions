@@ -33,32 +33,41 @@ runs:
 
         # convert apax-build-args to variables
         if [ ! -z "${{ inputs.apax-build-args }}" ]; then
+          echo "run with apax-build-arg: ${{ inputs.apax-build-args }}"
           while IFS= read -r line; do
             if [ ! -z "$line" ]; then
               APAX_BUILD_ARGS="${APAX_BUILD_ARGS:+${APAX_BUILD_ARGS} }$line"
             fi
           done <<< "${{ inputs.apax-build-args }}"
           CMD="$CMD --variables APAX_BUILD_ARGS='$APAX_BUILD_ARGS'"
+        else
+          echo "apax-build-arg was not set"
         fi
 
         # convert apax-build-targets to variables
         if [ ! -z "${{ inputs.apax-build-targets }}" ]; then
+          echo "run with apax-build-arg: ${{ inputs.apax-build-targets }}"
           while IFS= read -r line; do
             if [ ! -z "$line" ]; then
               APAX_BUILD_TARGETS="${APAX_BUILD_TARGETS:+${APAX_BUILD_TARGETS},}$line"
             fi
           done <<< "${{ inputs.apax-build-targets }}"
           CMD="$CMD --variables APAX_BUILD_TARGETS=$APAX_BUILD_TARGETS"
+        else
+          echo "apax-build-targets was not set"
         fi
 
         # convert predefined-preprocessor-symbols to variables
         if [ ! -z "${{ inputs.defined-preprocessor-symbols }}" ]; then
+          echo "run with apax-build-arg: ${{ inputs.defined-preprocessor-symbols }}"
           while IFS= read -r line; do
             if [ ! -z "$line" ]; then
               PREDEFINED_PREPROCESSOR="${PREDEFINED_PREPROCESSOR:+${PREDEFINED_PREPROCESSOR},}$line"
             fi
           done <<< "${{ inputs.defined-preprocessor-symbols }}"
           CMD="$CMD --variables PREDEFINED_PREPROCESSOR=$PREDEFINED_PREPROCESSOR"
+        else
+          echo "defined-preprocessor-symbols was not set"
         fi
 
         echo "Running command: $CMD"
