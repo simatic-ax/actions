@@ -46,7 +46,7 @@ runs:
 
         # convert apax-build-targets to variables
         if [ ! -z "${{ inputs.apax-build-targets }}" ]; then
-          echo "run with apax-build-arg: ${{ inputs.apax-build-targets }}"
+          echo "Info: run with apax-build-arg: ${{ inputs.apax-build-targets }}"
           while IFS= read -r line; do
             if [ ! -z "$line" ]; then
               APAX_BUILD_TARGETS="${APAX_BUILD_TARGETS:+${APAX_BUILD_TARGETS},}$line"

@@ -45,8 +45,10 @@ runs:
 
         # add tag to command
         if [ -n "${{ inputs.tag }}" ]; then
+          echo "Info: Use for --tag the value ${{ inputs.tag }}"
           CMD="$CMD --tag '${{ inputs.tag }}'"
         else
+          echo "Info: Use for --tag the value latest"
           CMD="$CMD --tag 'latest'"
         fi
         
