@@ -83,9 +83,9 @@ jobs:
             SPECIFIC_VERSION="v${VERSION}"
             MAJOR_VERSION="v$(echo $VERSION | cut -d. -f1)"
 
-            echo "Processing release version: $VERSION"
-            echo "Creating specific version tag: $SPECIFIC_VERSION"
-            echo "Updating major version tag: $MAJOR_VERSION"
+            echo "Info: Processing release version: $VERSION"
+            echo "Info: Creating specific version tag: $SPECIFIC_VERSION"
+            echo "Info: Updating major version tag: $MAJOR_VERSION"
 
             # Configure git for the tag operation
             git config user.name "GitHub Actions"
@@ -101,7 +101,7 @@ jobs:
             git push origin $SPECIFIC_VERSION --force
 
             # Update major version tag
-            echo "Removing existing major version tag if it exists..."
+            echo "Info: Removing existing major version tag if it exists..."
             git push origin :refs/tags/$MAJOR_VERSION || true
 
             echo "Creating new major version tag..."
