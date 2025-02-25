@@ -1,0 +1,57 @@
+name: "Apax login"
+description: "Performs a login to the SIMATIC AX registry and optionally to additional registries"
+inputs:
+  apax-token:
+    description: "The token to authenticate with the SIMATIC AX registry"
+    required: true
+  registries:
+    description: "A newline-delimited string of registries with URL and token (format: url1,token1\nurl2,token2...)"
+    required: false
+  
+runs:
+  using: "composite"
+  steps:
+    # This step is always required, since the SIMATIC AX tooling requires a login to the SIMATIC AX registry
+    - name: Login to SIMATIC AX registry
+      shell: bash
+      env:
+        APAX_TOKEN: ${{ inputs.apax-token }}
+      run: |
+        if [ -z "$APAX_TOKEN" ]; then
+          echo "Error: APAX_TOKEN is empty"
+          exit 1
+        fi
+        apax login --password "$APAX_TOKEN"
+
+    - name: "Authenticate with additional registries"
+      shell: bash
+      run: |
+        # Remove any potential trailing newlines
+        trimmed_registries=$(echo "${{ inputs.registries }}" | sed '/^$/d' | tr -s '\n')
+        url_regex="https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[a-zA-Z0-9#?=&%+._-]*)?"
+
+        # Process every entry of the registries input
+        while IFS= read -r line; do
+          # Skip empty lines
+          if [[ -z "$line" ]]; then
+            continue
+          fi
+
+          IFS=',' read -ra DETAILS <<< "$line"
+          url="${DETAILS[0]}"
+          token="${DETAILS[1]}"
+
+          if [[ -n "$url" && -n "$token" ]]; then
+            if [[ "$url" =~ $url_regex ]]; then
+              echo "Found valid URL: $url"
+              echo "Running command: apax login --registry $url --password $token"
+              apax login --registry "$url" --password "$token"
+            else
+              echo "Invalid URL: $url"
+              exit 1
+            fi
+          else
+            echo "Error: Empty or incomplete registry entry"
+            exit 1
+          fi
+        done <<< "$trimmed_registries"

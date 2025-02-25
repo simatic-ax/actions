@@ -1,5 +1,3 @@
-.apax
-.apax/
-bin/
-obj/
+.secrets
+test-workflow.yml
 /.vs

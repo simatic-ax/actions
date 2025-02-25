@@ -1,0 +1,93 @@
+name: "Test source code"
+description: "Tests the source code based on the projects apax.yaml file"
+inputs:
+  ingore-scripts:
+    description: " Do not run pretest and posttest scripts"
+    required: false
+    default: "false"
+  playlist:
+    description: "Specifies the play list filepath"
+    required: false
+    default: ""
+  coverage:
+    description: "Specifies to get coverage"
+    required: false
+    default: "false"
+  loglevel:
+    description: "Specifies log level --> `info`(default), `debug` "
+    required: false
+    default: "Info"
+  path:
+    description: "The relative path to the project which is to be built"
+    required: false
+    default: "."
+  # currently not supported
+  # filter:
+  #   description: "Specifies the filter for the test cases"
+  #   required: false
+  #   default: "Runs specific tests with a filter"
+  # engine:
+  #   description: "Engine for running test(s) -> llvm, mc7p or plcsim"
+  #   required: false
+  #   default: "llvm"
+  # target-ip:
+  #   description: "Target IP address for the PLC. Required when target is `mc7p` or `plcsim`"
+  #   required: false
+  #   default: ""
+  # username:
+  #   description: " The legitimation user name to get access to the PLC. Required when target is `mc7p` or `plcsim` and a UMAC-PLC"
+  #   required: false
+  #   default: ""
+  # password: 
+  #   description: "The certificate file to get access to the PLC. Required when target is `mc7p` or `plcsim` and a PLC which requires a certificate"
+  #   required: false
+  #   default: ""
+  # certificate:
+  #   description: "The certificate file to get access to the PLC. Required when target is `mc7p` or `plcsim` and a PLC which requires a certificate"
+  #   required: false
+  #   default: ""
+runs:
+  using: "composite"
+  steps:
+    - name: Test source code
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # base command
+        CMD="apax test"
+        
+        # process inputs
+        
+        # --ignore-scripts Flag
+        if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+          echo "Info: Add --ignore-scripts to cmd"
+          CMD="$CMD --ignore-scripts"
+        fi
+        
+        # --playlist path
+        if [ -n "${{ inputs.playlist }}" ]; then
+          if [ -f "${{ inputs.playlist }}" ]; then
+            CMD="$CMD --playlist '${{ inputs.playlist }}'"
+            echo "Info: Add --playlist with parameters ${{ inputs.playlist }} to cmd"
+          else
+            echo "Error: The specified playlist path '${{ inputs.playlist }}' does not exist."
+            exit 1
+          fi
+        fi
+        
+        # --coverage Flag
+        if [ "${{ inputs.coverage }}" == "true" ]; then
+          echo "Info: Add --coverage to cmd"
+          CMD="$CMD --coverage"
+        fi
+        
+        # --loglevel
+        if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
+          echo "Info: Add --loglevel with parameter ${{ inputs.loglevel }} to cmd"
+          CMD="$CMD --loglevel ${{ inputs.loglevel }}"
+        fi
+
+        echo "Running command: $CMD"
+        eval $CMD

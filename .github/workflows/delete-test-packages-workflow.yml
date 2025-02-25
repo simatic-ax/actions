@@ -1,0 +1,27 @@
+# Automatically deletes previously uploaded test packages every day at midnight UTC
+name: Delete Package Versions
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # Läuft jeden Tag um Mitternacht UTC
+
+jobs:
+  delete_versions:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install PyGithub
+
+    - name: Delete package versions
+      env:
+        PACKAGE_DELETE_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+      run: python ./maintenance-scripts/delete_package_versions.py
