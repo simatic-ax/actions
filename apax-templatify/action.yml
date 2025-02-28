@@ -1,0 +1,88 @@
+name: "Templatify repository"
+description: "Creates a template based on the project. This template could be later on used as a template during an apax create, e.g. apax create @simatic-ax/template-my-project new-project-name"
+inputs:
+  version:
+    description: "The version of the template package itself"
+    required: true
+  path:
+    description: "The relative path to the folder to the project which is to be templatified"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Templatify
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+        
+        # check existence of templatify-meta-information.yml
+        if [ ! -f "templatify-meta-information.yml" ]; then
+          echo "Error: templatify-meta-information.yml not found in the specified path."
+          exit 1
+        fi
+        
+        # We might be faced with strange control signs due to line endings, hence we need a 3rd-party tool to convert them.
+        # Otherwise it is not possible to properly extract content from the required files.
+        apt-get update
+        apt-get install dos2unix
+
+        # extract original name
+        dos2unix apax.yml
+        apax_file="apax.yml"
+        original_name=$(grep '^name:' "$apax_file" | awk -F ': ' '{print $2}' | tr -d '"')
+        original_name=${original_name#@simatic-ax/}
+
+        # set version to 0.0.1
+        sed -i 's/^version: .*/version: 0.0.1/' "$apax_file"
+        
+        # carve out unnecessary files and folders
+        dos2unix templatify-meta-information.yml
+
+        yml_content="templatify-meta-information.yml"
+        files_array=()
+        while IFS= read -r line || [ -n "$line" ]; do
+          # Überprüfen, ob die Zeile mit einem Bindestrich beginnt (Eintrag in der Liste)
+          if [[ $line =~ ^[[:space:]]*-[[:space:]]* ]]; then
+            # Entferne das Präfix mit dem Bindestrich und Leerzeichen
+            entry=$(echo $line | sed 's/^[[:space:]]*-[[:space:]]*//')
+            files_array+=("$entry")
+          fi
+        done < "$yml_content"
+
+        shopt -s dotglob
+        # Search the current directory for files and folders not matching the files_arrays content
+        for item in *; do
+          # Check if the item is in the array
+          found=false
+          for file in "${files_array[@]}"; do
+            if [ "$item" == "$file" ]; then
+              found=true
+              break
+            fi
+          done
+          # Delete the item if it was not found in the array
+          if [ "$found" = false ]; then
+            echo "Info: Delete $item, cause it was not found in array"
+            rm -rf "$item"
+          fi
+        done
+
+        mkdir "${original_name}-template"
+
+        # Create and fill the apax.yml file inside the newly created directory
+        cat <<EOL > "${original_name}-template/apax.yml"
+        name: "@simatic-ax/template-$original_name"
+        version: ${{ inputs.version }}
+        type: generic
+        EOL
+
+        mkdir "${original_name}-template/template"
+        # Move all files, except ${original_name}-template, to the 'template' subfolder
+        for item in *; do
+          if [ "$item" != "${original_name}-template" ]; then
+            mv "$item" "${original_name}-template/template/"
+            echo "Info: $item was moved to ${original_name}-template/template/"
+          fi
+        done

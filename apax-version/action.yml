@@ -1,0 +1,49 @@
+name: "Set version"
+description: "Sets the version property of the apax.yml to the provided version"
+inputs:
+  version:
+    description: "The version to set in the apax.yml"
+    required: true
+  path:
+    description: "The relative path to the project which is to be versioned"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Set version
+      shell: bash
+      run: |
+        # Function to validate extended SemVer format
+        validate_semver() {
+          local version=$1
+          # Regular expression for extended SemVer format
+          local semver_regex="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((rc|alpha|beta|dev|snapshot)[.-]?[0-9]*|[0-9a-f]{7,40}|([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)))?(\+([0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*))?$"
+
+          if ! [[ $version =~ $semver_regex ]]; then
+            echo "Error: Invalid version format '$version'"
+            echo "Version must follow SemVer format with optional extensions:"
+            echo "- Standard format: X.Y.Z"
+            echo "- Release candidates: X.Y.Z-rc.N"
+            echo "- Alpha/Beta: X.Y.Z-alpha.N or X.Y.Z-beta.N"
+            echo "- Development: X.Y.Z-dev.N"
+            echo "- Snapshots: X.Y.Z-snapshot.N"
+            echo "- Commit hashes: X.Y.Z-commithash"
+            echo "- Build metadata: X.Y.Z+build.123"
+            exit 1
+          fi
+          echo "The version $version is compliant to semantic versioning."
+        }
+
+        # Validate version format
+        validate_semver "${{ inputs.version }}"
+
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # built command
+        CMD="apax version ${{ inputs.version }}"
+
+        # execute command
+        echo "Running command: $CMD"
+        eval $CMD

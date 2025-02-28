@@ -1,163 +1,115 @@
-# SIMATIC AX specific GitHub Actions and Workflows
+# SIMATIC AX Actions
 
-In this you'll find some useful GitHub actions, which you can use in your own workflows.
+This repository contains a collection of GitHub Actions for automating various tasks related to SIMATIC AX projects. These actions are designed to streamline the development, testing, packaging, and deployment processes.
 
-- **setup-apax-runner**: Install apax in the ci pipeline on GitHub
-- **apax-build**: Execute the apax build command in the ci pipeline on GitHub
-- **test-apax**: Run the AxUnit tests in the ci pipeline on GitHub
-- [**apax-publish**](#workflow-apax-publish): Publish a package on the GitHub registry
+## Actions
 
-## Action setup-apax-runner
+Below is a list of the individual actions available in this repository:
 
-Install apax in your ci runner on GitHub to youse it in the current job.
+### [apax-login](apax-login/README.md)
+Performs a login to the SIMATIC AX registry and optionally to additional registries.
 
-**Usage**:
+Further details and information can be found in the [documentation](apax-login/README.md).
 
-```yml
-- name: "Setup the apax in the ci runner"
-  uses: simatic-ax/actions/setup-apax-runner
-  with:
-    APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
-```
+### [apax-install](apax-install/README.md)
+Installs the dependencies and devDependencies based on the project's `apax.yaml` file.
 
-**Parameter**:
+Further details and information can be found in the [documentation](apax-install/README.md).
 
-|||
-|-|-|
-|*APAX_TOKEN*| your token you usually use to login in the AX registry.|
-|||
+### [apax-build](apax-build/README.md)
+Builds the source code based on the project's `apax.yaml` file.
 
-> do not use your token in a readable text. Store it instead in a [GitHub secret](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces).
+Further details and information can be found in the [documentation](apax-build/README.md).
 
-## Action: apax-build
+### [apax-test](apax-test/README.md)
+Tests the source code based on the project's `apax.yaml` file.
 
-Install the dependencies according the apax.yml in your SIMATIC AX project. And compile the ST code of the src folder in your SIMATIC AX project.
+Further details and information can be found in the [documentation](apax-test/README.md).
 
-**Usage**:
+### [apax-version](apax-version/README.md)
+Sets the version property of the `apax.yaml` file to the provided version.
 
-```yml
-- name: "Compile the project (apax build)"
-  uses: simatic-ax/actions/apax-build
-  with:
-    APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
-```
+Further details and information can be found in the [documentation](apax-version/README.md).
 
-> Note: before you can use it, you've to install apax first. That can be done with the action `setup-apax-runner`
+### [apax-pack](apax-pack/README.md)
+Creates an Apax package based on the project's `apax.yaml` file.
 
-**Parameter**:
-||||
-|-|-|-|
-|*APAX_TOKEN*| your token you usually use to login in the AX registry.|required|
-|*GITHUB_TOKEN*| your token you usually use to login in the AX registry.|optional
-|||
+Further details and information can be found in the [documentation](apax-pack/README.md).
 
+### [apax-publish](apax-publish/README.md)
+Publishes an Apax package to one or multiple remote registries.
 
-> do not use your token in a readable text. Store it instead in a [GitHub secret](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces).
+Further details and information can be found in the [documentation](apax-publish/README.md).
 
-## Action: apax-test
+### [apax-templatify](apax-templatify/README.md)
+Creates a template based on the project. This template can later be used as a template during an `apax create`.
 
-This action executes the AXunit tests.
+Further details and information can be found in the [documentation](apax-templatify/README.md).
 
-**Usage**:
+### [apax-self-update](apax-self-update/README.md)
+Updates the Apax tool itself. Use this action with caution, as new major versions of Apax aren't guaranteed to work with every CI image.
 
-```yml
-- name: "Test apax artifact"
-  uses: ./actions/.github/actions/test-apax-package
-```
+Further details and information can be found in the [documentation](apax-self-update/README.md).
 
-> Note: before you can use it, you've to install apax first. That can be done with the action `apax-build`
+## Usage
 
-## Example
+Each action can be used within your GitHub workflows to automate specific tasks. Refer to the individual action's documentation for detailed usage instructions and examples.
 
-This example shows an GitHub workflow which demonstrates the usage of actions `setup-apax-runner`, `apax-build` and `apax-test`.
+### Example Workflow
 
-This workflow consists of 4 steps:
+```yaml
+name: Build and Test
 
-1. Checkout your code from the GitRepository
-1. Install apax in the ci linux image
-1. Install the dependencies and compile the ST code regarding the apax.yml
-1. Execute the unit tests.
+on: [push, pull_request]
 
-```yml
 jobs:
   build:
-    runs-on: ubuntu-24.04
-
+    runs-on: ubuntu-latest
+    # Mandatory, cause the referenced image contains an apax installation
+    container:
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
     steps:
-      - name: "Checkout code"
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: "Setup the apax in the ci runner"
-        uses: simatic-ax/actions/setup-apax-runner
-        with:
-          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
+    - name: Build project
+      uses: simatic-ax/actions/apax-build@v3
 
-      - name: "Compile the project (apax build)"
-        uses: simatic-ax/actions/apax-build
-        with:
-          APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
-
-      - name: "Test apax artifact"
-        uses: ./actions/.github/actions/test-apax-package
+    - name: Test project
+      uses: simatic-ax/actions/apax-test@v3
 ```
 
-## Workflow apax-publish
+## Workflows
 
-This workflow consists of the following steps:
-* Checkout the repository
-* Login to the registry
-* [optionally call `apax build`]
-* Pack and publish the library
+This repository also includes predefined workflows for development and release processes.
 
-### Usage example:
+### Development Workflow
 
-create a `*.yml` file in your `.github/workflows` in your repository with the following content
+The development workflow (`package-development-workflow.yml`) is triggered on pushes and pull requests to the `main` branch. It builds and tests the source code.
 
-```yml
-on:
-  push:
-    # Pattern matched against refs/tags
-    tags:        
-      - '*'
+Further details and information can be found in the [documentation](./docs/development-workflow.md).
 
-jobs:
-  release-apax-lib:
-    uses: simatic-ax/actions/.github/workflows/apax-publish.yml@stable
-    secrets:
-      APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
-      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
-      APAX_SIGNKEY: ${{ secrets.APAX_SIGNKEY }}
+### Release Workflow
 
-    with:
-      VERSION: ${{ github.ref_name }} # package version which will be created
-      RUN_BUILD: false # execute `apax build in the workflow` default true
+The release workflow (`package-release-workflow.yml`) is triggered when a release is published via the GitHub UI. It first calls the development workflow and then proceeds to version, package, and publish the source code.
 
-```
+Further details and information can be found in the [documentation](./docs/release-workflow.md).
 
-## Additional resources
+### Templatify Workflow
 
-- [GitHub Workflows](https://docs.github.com/en/actions/using-workflows)
-- [GitHub Actions](https://docs.github.com/de/actions)
-- [GitHub secrets](https://docs.github.com/en/codespaces/managing-codespaces-for-your-organization/managing-encrypted-secrets-for-your-repository-and-organization-for-github-codespaces)
-  
+The templatify workflow (`templatify-workflow.yml`) is triggered manually. This workflow aims to take the repository, create an apax compliant template package out of it and publish it to the GitHub Container registry.
 
-## Additional tools
+## Versioning
 
-**Markdownlint-cli**
+The versioning of the actions follows two main concepts:
 
-This workspace will be checked by the [markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli) (there is also documented ho to install the tool) tool in the CI workflow automatically.  
-To avoid, that the CI workflow fails because of the markdown linter, you can check all markdown files locally by running the markdownlint with:
+1. stable versions are to be referenced following the basic [SemVer](https://semver.org/) pattern, where a concrete version is used, e.g. @3.4.2
+2. rolling-forward major versions are to be referenced using only the major version, e.g. @v3
 
-```sh
-markdownlint **/*.md --fix
-```
+Depending on your requirements, you may either pick a stable version, which is guaranteed to not change, or the rolling-forward major version, in case you'd like to benefit from smaller updates w/o having to change your workflow.
 
-## Contribution
+## Disclaimer
 
-Thanks for your interest in contributing. Anybody is free to report bugs, unclear documentation, and other problems regarding this repository in the Issues section or, even better, is free to propose any changes to this repository using Merge Requests.
+All usages of actions-test are solely for the purpose of demonstration and testing the actions itself. You shall remove them in case you'd like to copy any of the examples in this repository.
 
-## License and Legal information
-
-Please read the [Legal information](LICENSE.md)
+Furthermore you need to take care of altering the uses-statements of the workflows steps to simatic-ax/actions/apax-<command-name>@vX.

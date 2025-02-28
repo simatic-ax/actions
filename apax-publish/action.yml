@@ -1,0 +1,75 @@
+name: "Publish apax package"
+description: "Publishes an apax package to one or multiple remote registries"
+inputs:
+  registries:
+    description: "A newline-delimited string of registries the package is to be published to"
+    required: true
+  tag:
+    description: "The tag to apply to the published package. Default is latest"
+    required: false
+    default: "latest"
+  path:
+    description: "The relative path to the folder where the apax package is located"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Pack source code
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # base command
+        CMD="apax publish"
+
+        # search for the .apax.tgz file
+        PACKAGE_FILES=$(find . -maxdepth 1 -name "*.apax.tgz")
+
+        # Count the found files
+        PACKAGE_COUNT=$(echo "$PACKAGE_FILES" | wc -l)
+
+        if [ "$PACKAGE_COUNT" -eq 0 ]; then
+          echo "Error: No .apax.tgz package found in the specified path."
+          exit 1
+        elif [ "$PACKAGE_COUNT" -gt 1 ]; then
+          echo "Error: Multiple .apax.tgz packages found in the specified path. Please ensure there is only one package."
+          exit 1
+        fi
+
+        PACKAGE_FILE=$(echo "$PACKAGE_FILES" | head -n 1)
+
+        # add package file to command
+        CMD="$CMD --package $PACKAGE_FILE"
+
+        # add tag to command
+        if [ -n "${{ inputs.tag }}" ]; then
+          echo "Info: Use for --tag the value ${{ inputs.tag }}"
+          CMD="$CMD --tag '${{ inputs.tag }}'"
+        else
+          echo "Info: Use for --tag the value latest"
+          CMD="$CMD --tag 'latest'"
+        fi
+        
+        # URL Regular Expression
+        trimmed_registries=$(echo "${{ inputs.registries }}" | sed '/^$/d' | tr -s '\n')
+        url_regex="https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[a-zA-Z0-9#?=&%+._-]*)?"
+        
+        # Process registries input
+        while IFS= read -r url; do
+          if [[ -n "$url" ]]; then
+            if [[ "$url" =~ $url_regex ]]; then
+              echo "Found valid URL: $url"
+              echo "Running command: $CMD --registry $url"
+              eval "$CMD --registry $url"
+            else
+              echo "Invalid URL: $url"
+              exit 1
+            fi
+          else
+            echo "Error: Empty registry entry"
+            exit 1
+          fi
+        done <<< "$trimmed_registries"
+ 
