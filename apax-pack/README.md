@@ -54,3 +54,6 @@ The action will fail under the following conditions:
 2. **Invalid Key Version Usage**: If the `key-version-v2` flag is set to `true` without the `key` parameter, the action will fail with an error message.
 
 Ensure that the `key` parameter is provided, the `key-version-v2` flag is used correctly to avoid these failures.
+
+---
+[Back to main page](../README.md)

@@ -55,3 +55,6 @@ The action will fail under the following conditions:
 2. **Invalid Build Arguments**: If any of the provided build arguments, targets, or preprocessor symbols are invalid or cause the build to fail, the action will fail with an error message.
 
 Ensure that the build arguments, targets, and preprocessor symbols are correctly specified to avoid these failures.
+
+---
+[Back to main page](../README.md)

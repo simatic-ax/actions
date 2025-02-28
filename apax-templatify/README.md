@@ -51,3 +51,6 @@ The action will fail under the following conditions:
 3. **Failed to Install `dos2unix`**: If the `dos2unix` tool fails to install, the action will fail with an error message.
 
 Ensure to provide the `templatify-meta-information.yml`inside your project to avoid these failures.
+
+---
+[Back to main page](../README.md)

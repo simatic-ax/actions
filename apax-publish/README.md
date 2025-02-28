@@ -54,3 +54,6 @@ The action will fail under the following conditions:
 3. **Invalid URL Format**: If any provided URL in the `registries` input does not match the expected URL format, the action will fail with an error message.
 
 Ensure that the `registries` input follows the correct format and that the `path` parameter points to a valid directory containing a single `.apax.tgz` package to avoid these failures.
+
+---
+[Back to main page](../README.md)

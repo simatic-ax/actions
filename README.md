@@ -6,47 +6,47 @@ This repository contains a collection of GitHub Actions for automating various t
 
 Below is a list of the individual actions available in this repository:
 
-### [apax-build](apax-build/action.yml)
-Builds the source code based on the project's `apax.yaml` file.
-
-Further details and information can be found in the [documentation](apax-build/README.md).
-
-### [apax-install](apax-install/action.yml)
-Installs the dependencies and devDependencies based on the project's `apax.yaml` file.
-
-Further details and information can be found in the [documentation](apax-install/README.md).
-
-### [apax-login](apax-login/action.yml)
+### [apax-login](apax-login/README.md)
 Performs a login to the SIMATIC AX registry and optionally to additional registries.
 
 Further details and information can be found in the [documentation](apax-login/README.md).
 
-### [apax-pack](apax-pack/action.yml)
-Creates an Apax package based on the project's `apax.yaml` file.
+### [apax-install](apax-install/README.md)
+Installs the dependencies and devDependencies based on the project's `apax.yaml` file.
 
-Further details and information can be found in the [documentation](apax-pack/README.md).
+Further details and information can be found in the [documentation](apax-install/README.md).
 
-### [apax-publish](apax-publish/action.yml)
-Publishes an Apax package to one or multiple remote registries.
+### [apax-build](apax-build/README.md)
+Builds the source code based on the project's `apax.yaml` file.
 
-Further details and information can be found in the [documentation](apax-publish/README.md).
+Further details and information can be found in the [documentation](apax-build/README.md).
 
-### [apax-templatify](apax-templatify/action.yml)
-Creates a template based on the project. This template can later be used as a template during an `apax create`.
-
-Further details and information can be found in the [documentation](apax-templatify/README.md).
-
-### [apax-test](apax-test/action.yml)
+### [apax-test](apax-test/README.md)
 Tests the source code based on the project's `apax.yaml` file.
 
 Further details and information can be found in the [documentation](apax-test/README.md).
 
-### [apax-version](apax-version/action.yml)
+### [apax-version](apax-version/README.md)
 Sets the version property of the `apax.yaml` file to the provided version.
 
 Further details and information can be found in the [documentation](apax-version/README.md).
 
-### [apax-self-update](apax-self-update/action.yml)
+### [apax-pack](apax-pack/README.md)
+Creates an Apax package based on the project's `apax.yaml` file.
+
+Further details and information can be found in the [documentation](apax-pack/README.md).
+
+### [apax-publish](apax-publish/README.md)
+Publishes an Apax package to one or multiple remote registries.
+
+Further details and information can be found in the [documentation](apax-publish/README.md).
+
+### [apax-templatify](apax-templatify/README.md)
+Creates a template based on the project. This template can later be used as a template during an `apax create`.
+
+Further details and information can be found in the [documentation](apax-templatify/README.md).
+
+### [apax-self-update](apax-self-update/README.md)
 Updates the Apax tool itself. Use this action with caution, as new major versions of Apax aren't guaranteed to work with every CI image.
 
 Further details and information can be found in the [documentation](apax-self-update/README.md).

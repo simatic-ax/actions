@@ -59,3 +59,6 @@ The action will fail under the following conditions:
 1. **Invalid `strict` Flag Usage**: If the `strict` flag is set to `true` without the `catalog` flag, the action will fail with an error message.
 
 Ensure that the `strict` flag is used in conjunction with the `catalog` to avoid these failures.
+
+---
+[Back to main page](../README.md)

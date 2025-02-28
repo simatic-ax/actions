@@ -49,3 +49,6 @@ The action will fail under the following conditions:
 1. **Invalid Version Format**: If the provided `version` does not comply with semantic versioning, the action will fail with an error message.
 
 Ensure that the `version` parameter follows the semantic versioning format to avoid these failures.
+
+---
+[Back to main page](../README.md)

@@ -63,3 +63,6 @@ The action will fail under the following conditions:
 
 
 Ensure that the `playlist` path exists and the `loglevel` is correctly specified to avoid these failures.
+
+---
+[Back to main page](../README.md)

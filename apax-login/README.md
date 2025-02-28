@@ -53,3 +53,6 @@ The action will fail under the following conditions:
 3. **Invalid Token**: If the provided `apax-token` is empty, the action will fail.
 
 Ensure that the `apax-token` is valid and that the `registries` input follows the correct format to avoid these failures.
+
+---
+[Back to main page](../README.md)
