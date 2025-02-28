@@ -70,8 +70,8 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_DATE: ${{ github.event.release.published_at }}
         run: |
-          chmod +x .github/scripts/update-changelog.sh
-          .github/scripts/update-changelog.sh
+          chmod +x .github/workflows/update-changelog.sh
+          .github/workflows/update-changelog.sh
 
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
