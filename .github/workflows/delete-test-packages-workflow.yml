@@ -23,5 +23,5 @@ jobs:
 
     - name: Delete package versions
       env:
-        PACKAGE_DELETE_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        PACKAGE_DELETE_TOKEN: ${{ secrets.DEPLOY_KEY }}
       run: python ./maintenance-scripts/delete_package_versions.py

@@ -16,7 +16,7 @@ on:
     secrets:
       APAX_TOKEN:
         required: true
-      DEPLOY_TOKEN:
+      DEPLOY_KEY:
         required: true
     inputs:
       ref:
@@ -45,7 +45,7 @@ jobs:
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
-            https://npm.pkg.github.com/,${{ secrets.DEPLOY_TOKEN }}
+            https://npm.pkg.github.com/,${{ secrets.DEPLOY_KEY }}
 
       - name: Install dependencies
         uses: ./apax-install # replace with simatic-ax/actions/apax-install@v3
