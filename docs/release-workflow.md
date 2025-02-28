@@ -24,7 +24,7 @@ The workflow is triggered when a release is published via the UI.
 
 The workflow requires the following secrets:
 - `APAX_TOKEN`: Token to authenticate with the SIMATIC AX registry.
-- `DEPLOY_TOKEN`: Token to authenticate with the GitHub container registry.
+- `DEPLOY_KEY`: Token to authenticate with the GitHub container registry.
 - `APAX_SIGNKEY`: Key to sign the package.
 
 ## Specialties
