@@ -70,6 +70,11 @@ jobs:
           coverage: true
           loglevel: debug
 
+      - name: Debug Event
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Is workflow call? ${{ github.event_name == 'workflow_call' }}"
+
       # Only upload build artifacts if the workflow is called by another workflow
       - name: Upload build artifacts
         if: ${{ github.event_name == 'workflow_call' }}
