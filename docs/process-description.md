@@ -71,12 +71,12 @@ This documentation describes the process for feature development and release man
 - [ ] Changes merged back to main
  
 ## Important Notes
-- Major version branches (e.g., `release/v1`) are long-lived
-- Specific version tags (e.g., v1.0.0) are created manually via UI
+- Major version branches (e.g., `release/vX`) are long-lived
+- Specific version tags (e.g., v3.4.2) are created manually via UI
 - Major version tags (e.g., v1) are managed automatically
-- When referencing in dependencies:
-  - Use `@v1.0.0` for exact version (stable)
-  - Use `@v1` for latest release in major version (auto-updating)
+- When referencing dependencies:
+  - Use `@vX.Y.Z` for exact version (stable)
+  - Use `@vX` for latest release in major version (auto-updating)
 - Always merge release changes back to main
  
 ## Graphical Representation

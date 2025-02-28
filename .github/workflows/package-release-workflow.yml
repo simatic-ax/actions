@@ -10,7 +10,6 @@ on:
 jobs:
   call-development:
     name: Build the package
-    if: ${{ true }}
     uses: ./.github/workflows/package-development-workflow.yml
     secrets:
       APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
@@ -20,9 +19,6 @@ jobs:
   release:
     name: Release the package
     needs: call-development
-    # Only run the workflow if the release is a tag and the target_commitish is a release branch
-    # Matching the correct branch is being done using naming conventions
-    if: ${{ true }}
     runs-on: ubuntu-24.04
     container:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
@@ -68,49 +64,54 @@ jobs:
           tag: latest
           path: actions-test # remove later, for test purposes only
 
+      - name: Update Changelog
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_DATE: ${{ github.event.release.published_at }}
+        run: |
+          chmod +x .github/scripts/update-changelog.sh
+          .github/scripts/update-changelog.sh
+
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add CHANGELOG.md
+          git commit -m "docs: update changelog for ${{ github.event.release.tag_name }}"
+          git push   
+      
       # This step manages the version tags after a successful release
       # Input: Release tag (e.g., 1.2.3) from the GitHub release UI
       # Output: - Replaces UI tag with v-prefixed tag (v1.2.3)
       #         - Updates or creates the major version tag (v1)
       - name: Update version tags
         run: |
-          # Get version from release event (e.g., 1.2.3)
+          # Extract version number (e.g., 1.2.3)
           VERSION=${{ github.event.release.tag_name }}
 
-          # Validate semantic versioning format (X.Y.Z)
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Define tag names
-            SPECIFIC_VERSION="v${VERSION}"
+            # Create both tag versions
             MAJOR_VERSION="v$(echo $VERSION | cut -d. -f1)"
+            FULL_VERSION="v$VERSION"
 
-            echo "Info: Processing release version: $VERSION"
-            echo "Info: Creating specific version tag: $SPECIFIC_VERSION"
-            echo "Info: Updating major version tag: $MAJOR_VERSION"
+            echo "Processing release version: $VERSION"
+            echo "Updating tags: $MAJOR_VERSION and $FULL_VERSION"
 
-            # Configure git for the tag operation
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
 
-            # Remove original UI tag
-            echo "Removing original UI tag..."
-            git push origin :refs/tags/$VERSION
-
-            # Create specific version tag with v prefix
-            echo "Creating specific version tag..."
-            git tag -f $SPECIFIC_VERSION
-            git push origin $SPECIFIC_VERSION --force
-
-            # Update major version tag
-            echo "Info: Removing existing major version tag if it exists..."
+            # Handle major version tag
             git push origin :refs/tags/$MAJOR_VERSION || true
-
-            echo "Creating new major version tag..."
             git tag -f $MAJOR_VERSION
             git push origin $MAJOR_VERSION --force
 
-            echo "Tag management completed successfully"
+            # Handle full version tag
+            git push origin :refs/tags/$FULL_VERSION || true
+            git tag -f $FULL_VERSION
+            git push origin $FULL_VERSION --force
+
+            echo "✅ Tags updated successfully"
           else
-            echo "Error: Invalid version format: $VERSION"
+            echo "❌ Error: Invalid version format: $VERSION"
             echo "Expected format: X.Y.Z (e.g., 1.2.3)"
             exit 1
           fi

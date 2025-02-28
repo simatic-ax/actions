@@ -73,10 +73,10 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Build project
-      uses: simatic-ax/actions/apax-build@v1
+      uses: simatic-ax/actions/apax-build@v3
 
     - name: Test project
-      uses: simatic-ax/actions/apax-test@v1
+      uses: simatic-ax/actions/apax-test@v3
 ```
 
 ## Workflows
@@ -98,3 +98,18 @@ Further details and information can be found in the [documentation](./docs/relea
 ### Templatify Workflow
 
 The templatify workflow (`templatify-workflow.yml`) is triggered manually. This workflow aims to take the repository, create an apax compliant template package out of it and publish it to the GitHub Container registry.
+
+## Versioning
+
+The versioning of the actions follows two main concepts:
+
+1. stable versions are to be referenced following the basic [SemVer](https://semver.org/) pattern, where a concrete version is used, e.g. @3.4.2
+2. rolling-forward major versions are to be referenced using only the major version, e.g. @v3
+
+Depending on your requirements, you may either pick a stable version, which is guaranteed to not change, or the rolling-forward major version, in case you'd like to benefit from smaller updates w/o having to change your workflow.
+
+## Disclaimer
+
+All usages of actions-test are solely for the purpose of demonstration and testing the actions itself. You shall remove them in case you'd like to copy any of the examples in this repository.
+
+Furthermore you need to take care of altering the uses-statements of the workflows steps to simatic-ax/actions/apax-<command-name>@vX.

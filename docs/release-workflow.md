@@ -12,6 +12,10 @@ The release workflow (`package-release-workflow.yml`) is designed to automate th
 6. **Login to Required Registries**: Logs into the necessary registries using provided tokens.
 7. **Publish Apax Package**: Publishes the package to the specified registries.
 
+### Additional steps [optional]
+1. **Update Changelog**: Updates the repositorys CHANGELOG.md based on the input of the release.
+2. **Update version tags**: Tags the current release with a specific version, e.g. v3.4.2 and advances the current major version, e.g. v3, tag to the release content.
+
 ## Workflow Triggers
 
 The workflow is triggered when a release is published via the UI.
@@ -20,11 +24,10 @@ The workflow is triggered when a release is published via the UI.
 
 The workflow requires the following secrets:
 - `APAX_TOKEN`: Token to authenticate with the SIMATIC AX registry.
-- `DEPLOY_TOKEN`: Token to authenticate with additional registries.
+- `DEPLOY_TOKEN`: Token to authenticate with the GitHub container registry.
 - `APAX_SIGNKEY`: Key to sign the package.
 
 ## Specialties
 
-- **Conditional Execution**: The workflow only runs if the release is a tag and the `target_commitish` is a release branch.
 - **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2` image.
 - **Custom Actions**: The workflow uses custom actions (apax-version, apax-pack, apax-login, apax-publish) that are specific to the SIMATIC AX project.
