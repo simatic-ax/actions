@@ -26,7 +26,7 @@ The workflow is triggered on the following events:
 
 The workflow requires the following secrets:
 - `APAX_TOKEN`: Token to authenticate with the SIMATIC AX registry.
-- `DEPLOY_KEY`: Token to authenticate with the GitHub Container registry.
+- `GITHUB_TOKEN`: A temporary token, issued for CI pipelines only. Permissions are being set in the workflow itself.
 
 ## Inputs
 

@@ -7,15 +7,21 @@ on:
   release:
     types: [published]
 
+permissions:
+  contents: write    # Für Git-Operationen, Tags und Releases
+  packages: write    # Für Package-Publikation
+  actions: read      # Für Artifact-Download
+  pull-requests: write # Für PR-Erstellung und Management
+
 jobs:
   call-development:
     name: Build the package
     uses: ./.github/workflows/package-development-workflow.yml
     secrets:
       APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
-      DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
     with:
-      ref: ${{ github.event.release.target_commitish }}  # Use target branch/commit of release
+      ref: ${{ github.event.release.target_commitish }}
+
   release:
     name: Release the package
     needs: call-development
@@ -24,87 +30,127 @@ jobs:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.DEPLOY_KEY }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.target_commitish }}  # Use target branch/commit of release
+          ref: ${{ github.event.release.target_commitish }}
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
           path: actions-test/bin
-          
+
       - name: Version package
-        uses: ./apax-version # replace with simatic-ax/actions/apax-version@v3
+        uses: ./apax-version
         with:
           version: ${{ github.event.release.tag_name }}
-          path: actions-test # remove later, for test purposes only
-  
+          path: actions-test
+
       - name: Package source code
-        uses: ./apax-pack # replace with simatic-ax/actions/apax-pack@v3
+        uses: ./apax-pack
         with:
           key: ${{ secrets.APAX_SIGNKEY }}
-          path: actions-test # remove later, for test purposes only
-          
+          path: actions-test
+
       - name: Login to required registries
-        uses: ./apax-login # replace with simatic-ax/actions/apax-login@v3
+        uses: ./apax-login
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
-            https://npm.pkg.github.com/,${{ secrets.DEPLOY_KEY }}
-            
+            https://npm.pkg.github.com/,${{ secrets.GITHUB_TOKEN }}
+
       - name: Publish apax package
-        uses: ./apax-publish # replace with simatic-ax/actions/apax-publish@v3
+        uses: ./apax-publish
         with:
           registries: |
             https://npm.pkg.github.com
           tag: latest
-          path: actions-test # remove later, for test purposes only
+          path: actions-test
 
-      - name: Update Changelog
+      - name: Create Changelog Update PR
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_BODY: ${{ github.event.release.body }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_DATE: ${{ github.event.release.published_at }}
         run: |
+          # Create new branch for changelog update
+          git checkout -b changelog-update-${{ github.event.release.tag_name }}
+
+          # Update changelog
           chmod +x .github/workflows/update-changelog.sh
           .github/workflows/update-changelog.sh
 
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Commit and push changes
           git add CHANGELOG.md
           git commit -m "docs: update changelog for ${{ github.event.release.tag_name }}"
-          git push   
-      
-      # This step manages the version tags after a successful release
-      # Input: Release tag (e.g., 1.2.3) from the GitHub release UI
-      # Output: - Replaces UI tag with v-prefixed tag (v1.2.3)
-      #         - Updates or creates the major version tag (v1)
-      - name: Update version tags
+          git push origin changelog-update-${{ github.event.release.tag_name }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        id: cpr
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: changelog-update-${{ github.event.release.tag_name }}
+          title: "docs: update changelog for ${{ github.event.release.tag_name }}"
+          body: |
+            Automated changelog update for release ${{ github.event.release.tag_name }}
+
+            This PR was automatically created by the release workflow.
+          base: ${{ github.event.release.target_commitish }}
+          delete-branch: true
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
         run: |
-          # Extract version number (e.g., 1.2.3)
+          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wait for PR merge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        run: |
+          while true; do
+            PR_STATE=$(gh pr view "${{ steps.cpr.outputs.pull-request-number }}" --json state -q .state)
+            if [ "$PR_STATE" = "MERGED" ]; then
+              echo "PR was merged successfully"
+              break
+            elif [ "$PR_STATE" = "CLOSED" ]; then
+              echo "PR was closed without merging"
+              exit 1
+            fi
+            echo "Waiting for PR to be merged..."
+            sleep 10
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update version tags
+        if: ${{ success() }}  # Nur ausführen, wenn PR erfolgreich gemerged wurde
+        run: |
           VERSION=${{ github.event.release.tag_name }}
 
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            # Create both tag versions
             MAJOR_VERSION="v$(echo $VERSION | cut -d. -f1)"
             FULL_VERSION="v$VERSION"
 
             echo "Processing release version: $VERSION"
             echo "Updating tags: $MAJOR_VERSION and $FULL_VERSION"
 
-            git config user.name "GitHub Actions"
-            git config user.email "actions@github.com"
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-            # Handle major version tag
             git push origin :refs/tags/$MAJOR_VERSION || true
             git tag -f $MAJOR_VERSION
             git push origin $MAJOR_VERSION --force
 
-            # Handle full version tag
             git push origin :refs/tags/$FULL_VERSION || true
             git tag -f $FULL_VERSION
             git push origin $FULL_VERSION --force

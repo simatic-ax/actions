@@ -1,0 +1,13 @@
+{
+    "event": {
+      "release": {
+        "action": "published",
+        "release": {
+          "tag_name": "3.4.2",
+          "target_commitish": "main",
+          "published_at": "2024-02-28T18:51:20Z",
+          "body": "* feat(github-actions): Introduces GitHub actions to build a complete CI/ CD workflow by @theBadT in https://github.com/simatic-ax/actions/pull/44\n* fix(workflows): Fixes the handling of secrets inside the GitHub workflows by @theBadT in https://github.com/simatic-ax/actions/pull/46\n* fix(development-workflow): Fixes a malformed condition to allow uploading of artifacts during a workflow call by @theBadT in https://github.com/simatic-ax/actions/pull/48\n* refactor: Adds debug output of the event of the development workflow by @theBadT in https://github.com/simatic-ax/actions/pull/49\n* fix(development-workflow): Uploading artifacts now happens only in case of a release being run by @theBadT in https://github.com/simatic-ax/actions/pull/50\n* fix(release-workflow): Fixes a path issue that caused a script run to fail by @theBadT in https://github.com/simatic-ax/actions/pull/51"
+        }
+      }
+    }
+  }

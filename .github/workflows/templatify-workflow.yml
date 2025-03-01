@@ -4,6 +4,9 @@ name: Templatify workflow
 on:
   workflow_dispatch:
 
+permissions:
+  packages: read
+  
 jobs:
   templatify:
     name: Templatify
@@ -12,7 +15,7 @@ jobs:
       image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
       credentials:
         username: ${{ github.actor }}
-        password: ${{ secrets.DEPLOY_KEY }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     steps: 
       - name: Checkout Code
         uses: actions/checkout@v4

@@ -16,11 +16,14 @@ process_commit_line() {
   # Remove leading "* "
   line=${line#\* }
 
-  # Extract commit type and message
-  if [[ $line =~ ^([a-z]+)(\([^)]+\))?:[[:space:]](.+)$ ]]; then
-    local type=${BASH_REMATCH[1]}
-    local scope=${BASH_REMATCH[2]}
-    local message=${BASH_REMATCH[3]}
+  # Simplified regex
+  if [[ $line =~ ^([a-z]+)([^:]*):(.+)$ ]]; then
+    local type="${BASH_REMATCH[1]}"
+    local scope="${BASH_REMATCH[2]}"
+    local message="${BASH_REMATCH[3]}"
+
+    # Trim whitespace
+    message="${message#"${message%%[![:space:]]*}"}"
 
     # Remove @username references
     message=$(echo "$message" | sed 's/ @[a-zA-Z0-9-]*//g')
