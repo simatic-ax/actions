@@ -79,7 +79,7 @@ jobs:
           RELEASE_DATE: ${{ github.event.release.published_at }}
         run: |
           # Mark repository as safe
-          git config --global --add safe.directory "${{ github.workspace }}"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
           # Create new branch for changelog update
           git checkout -b changelog-update-${{ github.event.release.tag_name }}
