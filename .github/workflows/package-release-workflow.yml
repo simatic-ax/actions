@@ -41,35 +41,36 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifacts
-          path: actions-test/bin
+          path: actions-test/bin # only here for test purposes, remove later
 
       - name: Version package
-        uses: ./apax-version
+        uses: ./apax-version # change to simatic-ax/actions/apax-version@v3
         with:
           version: ${{ github.event.release.tag_name }}
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
 
       - name: Package source code
-        uses: ./apax-pack
+        uses: ./apax-pack # change to simatic-ax/actions/apax-pack@v3
         with:
           key: ${{ secrets.APAX_SIGNKEY }}
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
 
       - name: Login to required registries
-        uses: ./apax-login
+        uses: ./apax-login # change to simatic-ax/actions/apax-login@v3
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
             https://npm.pkg.github.com/,${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish apax package
-        uses: ./apax-publish
+        uses: ./apax-publish # change to simatic-ax/actions/apax-publish@v3
         with:
           registries: |
             https://npm.pkg.github.com
           tag: latest
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
 
+      # [Optional]: The following steps are not mandatory and are highly depending on your release workflow
       - name: Create Changelog Update PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -77,6 +78,9 @@ jobs:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_DATE: ${{ github.event.release.published_at }}
         run: |
+          # Mark repository as safe
+          git config --global --add safe.directory "${{ github.workspace }}"
+
           # Create new branch for changelog update
           git checkout -b changelog-update-${{ github.event.release.tag_name }}
 
@@ -139,7 +143,7 @@ jobs:
 
           if [[ $VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             MAJOR_VERSION="v$(echo $VERSION | cut -d. -f1)"
-            FULL_VERSION="v$VERSION"
+            FULL_VERSION="$VERSION"
 
             echo "Processing release version: $VERSION"
             echo "Updating tags: $MAJOR_VERSION and $FULL_VERSION"

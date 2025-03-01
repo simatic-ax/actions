@@ -42,21 +42,21 @@ jobs:
           ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
 
       - name: Login to required registries
-        uses: ./apax-login
+        uses: ./apax-login # change to simatic-ax/actions/apax-login@v3
         with:
           apax-token: ${{ secrets.APAX_TOKEN }}
           registries: |
             https://npm.pkg.github.com/,${{ secrets.GITHUB_TOKEN }}
 
       - name: Install dependencies
-        uses: ./apax-install
+        uses: ./apax-install # change to simatic-ax/actions/apax-install@v3
         with:
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
 
       - name: Build source code
-        uses: ./apax-build
+        uses: ./apax-build # change to simatic-ax/actions/apax-build@v3
         with:
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
           apax-build-targets: |
             llvm
             1500
@@ -65,9 +65,9 @@ jobs:
             --log Debug
 
       - name: Test source code
-        uses: ./apax-test
+        uses: ./apax-test # change to simatic-ax/actions/apax-test@v3
         with:
-          path: actions-test
+          path: actions-test # only here for test purposes, remove later
           coverage: true
           loglevel: debug
 
@@ -76,8 +76,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: |
-            actions-test/bin/1500
+          path: |                 # only here for test purposes, alter later
+            actions-test/bin/1500 
             actions-test/bin/llvm
           retention-days: 90
           if-no-files-found: error
