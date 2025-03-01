@@ -71,7 +71,7 @@ jobs:
           tag: latest
           path: actions-test # only here for test purposes, remove later
 
-      # # [Optional]: The following steps are not mandatory and are highly depending on your release workflow
+      # [Optional]: The following steps are not mandatory and are highly depending on your release workflow
       # - name: Update Changelog and Create PR
       #   env:
       #     GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}  # Hier das neue PAT
