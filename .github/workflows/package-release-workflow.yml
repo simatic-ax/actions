@@ -8,9 +8,9 @@ on:
     types: [published]
 
 permissions:
-  contents: write    # Für Git-Operationen, Tags und Releases
-  packages: write    # Für Package-Publikation
-  actions: read      # Für Artifact-Download
+  contents: write    # required for checkout
+  packages: write    # required for pulling the container
+  actions: write     # required for artifact downloading
   pull-requests: write # Für PR-Erstellung und Management
 
 jobs:
