@@ -16,24 +16,18 @@ process_commit_line() {
   # Remove leading "* "
   line=${line#\* }
 
-  # Simplified regex
-  if [[ $line =~ ^([a-z]+)([^:]*):(.+)$ ]]; then
-    local type="${BASH_REMATCH[1]}"
-    local scope="${BASH_REMATCH[2]}"
-    local message="${BASH_REMATCH[3]}"
+  if echo "$line" | grep -qE '^([a-z]+)([^:]*):(.+)$'; then
+    local type=$(echo "$line" | grep -oE '^[a-z]+')
+    local scope=$(echo "$line" | grep -oE '^[a-z]+([^:]*)')
+    scope=${scope#$type}
+    local message=$(echo "$line" | grep -oE ':(.+)$')
+    message=${message#:}
 
     # Trim whitespace
     message="${message#"${message%%[![:space:]]*}"}"
 
-    # Remove @username references
-    message=$(echo "$message" | sed 's/ @[a-zA-Z0-9-]*//g')
-
-    # Keep issue references, remove PR references
-    if [[ $message =~ (fixes|closes|resolves)[[:space:]]+#[0-9]+ ]]; then
-      :
-    else
-      message=$(echo "$message" | sed 's/ (#[0-9]\+)//g')
-    fi
+    # Remove everything after "by @"
+    message=$(echo "$message" | sed 's/ by @.*$//')
 
     # Add scope if present
     if [ ! -z "$scope" ]; then
