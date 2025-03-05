@@ -20,6 +20,7 @@ jobs:
     secrets:
       APAX_TOKEN: ${{ secrets.APAX_TOKEN }}
     with:
+      # checks out the branch that has been selected during the release process
       ref: ${{ github.event.release.target_commitish }}
 
   release:
