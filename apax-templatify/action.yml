@@ -112,11 +112,10 @@ runs:
         for item in *; do
           if [ "$item" != ${working_directory} ]; then
             if [ "$item" = "README.md" ]; then
-              cp "$item" "${working_directory}/template/"
-              echo "Info: $item was copied to ${working_directory}/template/"
-            else
-              mv "$item" "${working_directory}/template/"
-              echo "Info: $item was moved to ${working_directory}/template/"
+              cp "$item" "${working_directory}"
+              echo "Info: $item was copied to ${working_directory}"
             fi
+            mv "$item" "${working_directory}/template/"
+            echo "Info: $item was moved to ${working_directory}/template/"
           fi
         done
