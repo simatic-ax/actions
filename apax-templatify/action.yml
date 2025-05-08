@@ -12,6 +12,22 @@ inputs:
     description: "The relative path to the working directory where the template will be created"
     required: false
     default: "working-directory"
+  author:
+    description: "The author of the template package itself"
+    required: false
+    default: "Siemens AG"
+  description:
+    description: "The description for the template package itself"
+    required: false
+    default: "SIMATIC AX template for Application examples or Applications"
+  registry-scope:
+    description: "The scope of the registry where the template will be published"
+    required: false
+    default: "@simatic-ax"
+  registry-url:
+    description: "The URL of the registry where the template will be published"
+    required: false
+    default: "https://npm.pkg.github.com/"
 runs:
   using: "composite"
   steps:
@@ -78,9 +94,17 @@ runs:
 
         # Create and fill the apax.yml file inside the newly created directory
         cat <<EOL > "${working_directory}/apax.yml"
-        name: "@simatic-ax/template-$original_name"
+        name: '@simatic-ax/template-$original_name'
         version: ${{ inputs.version }}
         type: generic
+        author: ${{ inputs.author }}
+        description: ${{ inputs.author }}
+        registries:
+          '${{ inputs.registry-scope }}': '${{ inputs.registry-url }}'
+        keywords:
+          - 'template'
+        files:
+          - 'template'
         EOL
 
         mkdir "${working_directory}/template"
