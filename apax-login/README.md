@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

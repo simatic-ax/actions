@@ -35,6 +35,6 @@ The workflow accepts the following inputs:
 
 ## Specialties
 
-- **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2` image.
+- **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0` image.
 - **Custom Actions**: The workflow uses custom actions (apax-login, apax-install, apax-build, apax-test) that are specific to the SIMATIC AX project.
 - **Artifact Retention**: The build artifacts are uploaded and retained for 90 days.
