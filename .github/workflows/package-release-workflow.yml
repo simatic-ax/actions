@@ -28,7 +28,7 @@ jobs:
     needs: call-development
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -71,18 +71,6 @@ jobs:
             https://npm.pkg.github.com
           tag: latest
           path: actions-test # only here for test purposes, remove later
-
-      # [Optional]: The following steps are not mandatory and are highly depending on your release workflow
-      # - name: Update Changelog and Create PR
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.RELEASE_PAT }}  # Hier das neue PAT
-      #     RELEASE_BODY: ${{ github.event.release.body }}
-      #     RELEASE_TAG: ${{ github.event.release.tag_name }}
-      #     RELEASE_DATE: ${{ github.event.release.published_at }}
-      #     TARGET_BRANCH: ${{ github.event.release.target_commitish }}
-      #   run: |
-      #     chmod +x .github/workflows/update-changelog-pr.sh
-      #     .github/workflows/update-changelog-pr.sh
       
       - name: Update major version tag
         if: ${{ success() }}
