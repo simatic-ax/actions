@@ -14,6 +14,11 @@ The **Templatify Repository** action creates a template based on the project. Th
 ### Optional Parameters
 
 - **path**: The relative path to the folder of the project which is to be templatified. Default is `"."`.
+- **working-directory**: The relative path to the folder where the where resulting template project is located. Default is `"working-directory"`.
+- **author**: The author who published the package. Default is `"Siemens AG"`.
+- **description**: The description of the package. Default is `"SIMATIC AX template for Application examples or Applications"`.
+- **registry-scope**: The scope of the registry where the template will be published. Default is `"@simatic-ax"`.
+- **registry-url**: The scope of the registry where the template will be published. Default is `"https://npm.pkg.github.com/"`.
 
 ## Example Usage
 
@@ -32,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
