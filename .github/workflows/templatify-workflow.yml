@@ -29,7 +29,7 @@ jobs:
       - name: Pack the template
         uses: ./apax-pack # simatic-ax/actions/apax-pack@v3
         with:
-          path: actions-test/actions-test-template # remove later, only here for test purposes
+          path: actions-test/working-directory # remove later, only here for test purposes
           version: 1.0.0
       
       - name: Login to required registries
@@ -45,4 +45,4 @@ jobs:
           registries: |
             https://npm.pkg.github.com/
           tag: 1.0.0
-          path: actions-test/actions-test-template # remove later, only here for test purposes
+          path: actions-test/working-directory # remove later, only here for test purposes
