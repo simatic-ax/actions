@@ -35,7 +35,7 @@ runs:
         # extract original name
         dos2unix apax.yml
         apax_file="apax.yml"
-        original_name=$(grep '^name:' "$apax_file" | awk -F ': ' '{print $2}' | tr -d '"')
+        original_name=$(echo "$original_name" | sed -e "s/^['\"]//" -e "s/['\"]$//")
         original_name=${original_name#@simatic-ax/}
 
         # set version to 0.0.1
