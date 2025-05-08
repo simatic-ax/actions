@@ -8,6 +8,10 @@ inputs:
     description: "The relative path to the folder to the project which is to be templatified"
     required: false
     default: "."
+  working-directory:
+    description: "The relative path to the working directory where the template will be created"
+    required: false
+    default: "working-directory"
 runs:
   using: "composite"
   steps:
@@ -69,20 +73,21 @@ runs:
           fi
         done
 
-        mkdir "${original_name}-template"
+        working_directory=${{ inputs.working-directory }}
+        mkdir ${working_directory}
 
         # Create and fill the apax.yml file inside the newly created directory
-        cat <<EOL > "${original_name}-template/apax.yml"
+        cat <<EOL > "${working_directory}/apax.yml"
         name: "@simatic-ax/template-$original_name"
         version: ${{ inputs.version }}
         type: generic
         EOL
 
-        mkdir "${original_name}-template/template"
-        # Move all files, except ${original_name}-template, to the 'template' subfolder
+        mkdir "${working_directory}/template"
+        # Move all files, except working-directory, to the 'template' subfolder
         for item in *; do
-          if [ "$item" != "${original_name}-template" ]; then
-            mv "$item" "${original_name}-template/template/"
-            echo "Info: $item was moved to ${original_name}-template/template/"
+          if [ "$item" != ${working_directory} ]; then
+            mv "$item" "${working_directory}/template/"
+            echo "Info: $item was moved to ${working_directory}/template/"
           fi
         done

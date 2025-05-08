@@ -9,6 +9,7 @@ The **Templatify Repository** action creates a template based on the project. Th
 ### Mandatory Parameters
 
 - **version**: The version to set in the `apax.yml` file.
+- **working-directory**: "The relative path to the working directory where the template will be created". Default is `"working-directory"`.
 
 ### Optional Parameters
 
