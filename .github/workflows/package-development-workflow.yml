@@ -69,6 +69,7 @@ jobs:
       - name: Version the package
         uses: simatic-ax/actions/apax-version@v3
         with:
+          path: actions-test # only here for test purposes, remove later
           version: ${{ steps.determine_version.outputs.version }}
 
       - name: Build source code
