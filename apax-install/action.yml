@@ -13,10 +13,6 @@ inputs:
     description: "Install all dependencies and devDependencies from your apax.yml and copy them into you project instead of linking to the global cache (be aware that this increase the memory needs of your project)"
     required: false
     default: "false"
-  verbose:
-    description: "Install all dependencies and devDependencies from your apax.yml, show additional output"
-    required: false
-    default: "false"
   catalog:
     description: "Installs dependencies according to catalog"
     required: false
@@ -60,11 +56,6 @@ runs:
         if [[ "${{ inputs.copy-local }}" == "true" ]]; then
           echo "Info: Add --copy-local to cmd"
           cmd+=" --copy-local"
-        fi
-
-        if [[ "${{ inputs.verbose }}" == "true" ]]; then
-          echo "Info: Add --verbose to cmd"
-          cmd+=" --verbose"
         fi
 
         if [[ "${{ inputs.catalog }}" != "false" ]]; then
