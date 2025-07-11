@@ -29,13 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
       - name: Update Apax
-        uses: simatic-ax/actions/apax-self-update@v3
+        uses: simatic-ax/actions/apax-self-update@v4
         with:
           check: "true"
           force-latest: "false"

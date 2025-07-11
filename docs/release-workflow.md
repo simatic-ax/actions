@@ -29,5 +29,5 @@ The workflow requires the following secrets:
 
 ## Specialties
 
-- **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0` image.
+- **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0` image.
 - **Custom Actions**: The workflow uses custom actions (apax-version, apax-pack, apax-login, apax-publish) that are specific to the SIMATIC AX project.
