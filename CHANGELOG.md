@@ -1,4 +1,10 @@
 # Changelog
+
+## [4.0.0] - Unreleased
+
+### Changed
+- Removed the keyVersion parameter from the apax-pack action
+
 ## [3.4.2] - 2025-03-01
 
 ### Added
