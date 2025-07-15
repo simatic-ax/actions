@@ -9,10 +9,9 @@ The **Install Dependencies** action installs the dependencies and devDependencie
 ### Optional Parameters
 
 - **immutable**: Install all dependencies and devDependencies from the `apax-lock.json` or throw an error if not present or not in sync with your `apax.yml`. Default is `"false"`.
-- **redownload**: Install all dependencies and devDependencies from your `apax.yml` but force a redownload of the packages to the global cache. Default is `"false"`.
-- **copy-local**: Install all dependencies and devDependencies from your `apax.yml` and copy them into your project instead of linking to the global cache (be aware that this increases the memory needs of your project). Default is `"false"`.
 - **catalog**: Installs dependencies according to the catalog. Default is `"false"`.
 - **strict**: Applies the exact package versions from the catalog. Default is `"false"`.
+- **verbose**: Shows additional output during the installation. Default is `"false"`.
 - **path**: The relative path to the project whose dependencies are to be installed. Default is `"."`.
 
 ### Not Yet Supported Parameters
@@ -45,8 +44,6 @@ jobs:
         uses: simatic-ax/actions/apax-install@v4
         with:
           immutable: "true"
-          redownload: "false"
-          copy-local: "false"
           catalog: "false"
           strict: "false"
 ```

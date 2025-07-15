@@ -2,7 +2,13 @@
 
 ## [4.0.0] - Unreleased
 
+### Added
+- apax-install
+    - Added the verbose parameter for detailed output during installation
 ### Changed
+- apax-install
+    - Removed the redownload parameter
+    - Removed the copy-local parameter
 - Removed the keyVersion parameter from the apax-pack action
 
 ## [3.4.2] - 2025-03-01
