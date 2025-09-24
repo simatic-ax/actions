@@ -14,9 +14,9 @@ targets:
 
 # Dependencies
 catalogs:
-  "@ax/simatic-ax": ^2504.0.0
+  "@ax/simatic-ax": ^2504.1.2
 devDependencies:
-  "@ax/sdk": ^2504.0.0
+  "@ax/sdk": 2504.1.2
 
 # Environment variables
 variables:
