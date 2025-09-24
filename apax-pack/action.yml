@@ -30,7 +30,7 @@ runs:
 
         # --ignore-scripts Flag
         if [ "${{ inputs.ignore-scripts }}" == "true" ]; then
-          echo "Info: Aadd --ignore-scripts to cmd"
+          echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
         
