@@ -11,7 +11,6 @@ The **Install Dependencies** action installs the dependencies and devDependencie
 - **immutable**: Install all dependencies and devDependencies from the `apax-lock.json` or throw an error if not present or not in sync with your `apax.yml`. Default is `"false"`.
 - **catalog**: Installs dependencies according to the catalog. Default is `"false"`.
 - **strict**: Applies the exact package versions from the catalog. Default is `"false"`.
-- **verbose**: Shows additional output during the installation. Default is `"false"`.
 - **path**: The relative path to the project whose dependencies are to be installed. Default is `"."`.
 
 ### Not Yet Supported Parameters

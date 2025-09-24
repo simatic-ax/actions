@@ -13,10 +13,6 @@ inputs:
     description: "Applies the exact package versions from the catalog"
     required: false
     default: "false"
-  verbose:
-    description: "Prints verbose output"
-    required: false
-    default: "false"
   path:
     description: "The relative path to the project whose dependencies are to be installed"
     required: false
