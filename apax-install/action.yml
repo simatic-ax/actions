@@ -54,6 +54,6 @@ runs:
           cmd+=" --verbose"
         fi
 
-        echo "Running command: $CMD"
+        echo "Running command: $cmd"
         eval "$cmd"
   
