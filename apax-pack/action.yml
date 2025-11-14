@@ -4,6 +4,10 @@ inputs:
   key:
     description: "Pack with a specific private key"
     required: true
+  key-version:
+    description: "Version of the key (e.g., v1, v2, v3)"
+    required: false
+    default: "v1"
   ignore-scripts:
     description: "Pack without executing prepack and postpack scripts"
     required: false
@@ -21,12 +25,22 @@ runs:
         # Change to the project directory
         cd ${{ inputs.path }}
 
+        # Validate key-version parameter
+        KEY_VERSION="${{ inputs.key-version }}"
+        if ! [[ "$KEY_VERSION" =~ ^v[0-9]+$ ]]; then
+          echo "Error: key-version must start with 'v' followed by an integer (e.g., v1, v2, v3)"
+          exit 1
+        fi
+
         # base command
         CMD="apax pack"
 
         # process inputs        
         # --key Flag
         CMD="$CMD --key '${{ inputs.key }}'"
+
+        # --keyVersion Flag
+        CMD="$CMD --keyVersion $KEY_VERSION"
 
         # --ignore-scripts Flag
         if [ "${{ inputs.ignore-scripts }}" == "true" ]; then

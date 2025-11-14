@@ -12,6 +12,7 @@ The **Create Apax Package** action creates an Apax package based on the project'
 
 ### Optional Parameters
 
+- **key-version**: Version of the key (e.g., v1, v2, v3). Must start with 'v' followed by an integer. Default is `"v1"`.
 - **ignore-scripts**: Pack without executing prepack and postpack scripts. Default is `"false"`.
 - **path**: The relative path to the project which is to be packed. Default is `"."`.
 
@@ -41,6 +42,7 @@ jobs:
         uses: ./apax-pack # replace with the correct path or repository
         with:
           key: ${{ secrets.APAX_SIGNKEY }}
+          key-version: "v2"
           ignore-scripts: "false"
 ```
 ---

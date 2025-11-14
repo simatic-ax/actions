@@ -7,7 +7,7 @@
     - Removed the copy-local parameter
     - Removed the verbose parameter for detailed output during installation
 - apax-pack
-    - Removed the keyVersion parameter from the apax-pack action
+    - Re-added the key-version parameter (optional, default: v1) with validation (format: v followed by integer)
 
 ## [3.4.2] - 2025-03-01
 
