@@ -1,6 +1,6 @@
 # Changelog
 
-## [4.0.0] - Unreleased
+## [4.0.0] - 2025-11-14
 ### Changed
 - apax-install
     - Removed the redownload parameter
