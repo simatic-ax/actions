@@ -5,18 +5,6 @@ inputs:
     description: "Install all dependencies and devDependencies from the apax-lock.json or throw if not there or not in sync with your apax.yml"
     required: false
     default: "false"
-  redownload:
-    description: "Install all dependencies and devDependencies from your apax.yml but force a redownload of the packages to the global cache"
-    required: false
-    default: "false"
-  copy-local:
-    description: "Install all dependencies and devDependencies from your apax.yml and copy them into you project instead of linking to the global cache (be aware that this increase the memory needs of your project)"
-    required: false
-    default: "false"
-  verbose:
-    description: "Install all dependencies and devDependencies from your apax.yml, show additional output"
-    required: false
-    default: "false"
   catalog:
     description: "Installs dependencies according to catalog"
     required: false
@@ -29,9 +17,6 @@ inputs:
     description: "The relative path to the project whose dependencies are to be installed"
     required: false
     default: "."
-  # currently not supported
-  #    installStrategy
-  #    
 
 runs:
   using: "composite"
@@ -52,21 +37,6 @@ runs:
           cmd+=" --immutable"
         fi
 
-        if [[ "${{ inputs.redownload }}" == "true" ]]; then
-          echo "Info: Add --redownload to cmd"
-          cmd+=" --redownload"
-        fi
-
-        if [[ "${{ inputs.copy-local }}" == "true" ]]; then
-          echo "Info: Add --copy-local to cmd"
-          cmd+=" --copy-local"
-        fi
-
-        if [[ "${{ inputs.verbose }}" == "true" ]]; then
-          echo "Info: Add --verbose to cmd"
-          cmd+=" --verbose"
-        fi
-
         if [[ "${{ inputs.catalog }}" != "false" ]]; then
           echo "Info: Add --catalog to cmd"
           cmd+=" --catalog ${{ inputs.catalog }}"
@@ -79,6 +49,11 @@ runs:
           exit 1
         fi
 
-        echo "Running command: $CMD"
+        if [[ "${{ inputs.verbose }}" == "true" ]]; then
+          echo "Info: Add --verbose to cmd"
+          cmd+=" --verbose"
+        fi
+
+        echo "Running command: $cmd"
         eval "$cmd"
   
