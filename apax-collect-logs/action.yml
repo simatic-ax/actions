@@ -1,0 +1,39 @@
+﻿name: "Collect logs"
+description: "collect the diagnost files"
+inputs:
+  log_source_dir:
+    description: "The directory where log files are searched"
+    required: true
+  log_dest_dir:
+    description: "The name of the directory where the log files should be temporarily stored. If it doesn't exist, it will be created. It should then be passed as an artifact."
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Collect diagnostic files
+      shell: bash
+      run: | 
+          echo "🔍 Check for log files in the folder ${{ inputs.log_source_dir }}"
+
+          if [ -d "${{ inputs.log_source_dir }}" ]; then
+            if find "${{ inputs.log_source_dir }}" -maxdepth 1 -type f -print -quit | grep -q .; then
+              echo "✅ log files found!"
+
+              if [ ! -d "${{ inputs.log_dest_dir }}" ]; then
+                echo "📂 Destination directory ${{ inputs.log_dest_dir }} does not exist yet. Creating it..."
+                mkdir -p "${{ inputs.log_dest_dir }}"
+              else
+                echo "📂 Destination directory ${{ inputs.log_dest_dir }} already exists."
+              fi
+
+              echo "📋 Copying all log files to ${{ inputs.log_dest_dir }}..."
+              cp "${{ inputs.log_source_dir }}"/* "${{ inputs.log_dest_dir }}"/
+              echo "🎉 All log files successfully copied."
+              echo "Contents of the destination directory:"
+              ls -l "${{ inputs.log_dest_dir }}"
+            else
+              echo "ℹ No log files found in ${{ inputs.log_source_dir }}."
+            fi
+          else
+            echo "ℹ The apax log directory ${{ inputs.log_source_dir }} does not exist. No logs to copy."
+          fi
