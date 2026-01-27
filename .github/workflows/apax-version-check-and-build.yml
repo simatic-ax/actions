@@ -114,19 +114,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker
+        run: |
+          # Docker is already available in ubuntu-22.04
+          docker --version
+          
+          # Enable experimental features for buildx
+          mkdir -p ~/.docker
+          echo '{"experimental": "enabled"}' > ~/.docker/config.json
 
       - name: Log in to source container registry
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Create Dockerfile
         run: |
@@ -152,40 +155,70 @@ jobs:
           LABEL org.opencontainers.image.source="https://github.com/${{ github.repository }}"
           LABEL org.opencontainers.image.description="Container with latest APAX version"
           LABEL org.opencontainers.image.version="${{ needs.check-apax-version.outputs.latest-version }}"
+          LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           
           WORKDIR /workspace
           
           CMD ["apax", "--help"]
           EOF
 
-      - name: Extract metadata
+      - name: Generate image metadata
         id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=${{ needs.check-apax-version.outputs.latest-version }}
-            type=raw,value=latest
-            type=raw,value={{date 'YYYYMMDD'}}
-          labels: |
-            apax.version=${{ needs.check-apax-version.outputs.latest-version }}
-            org.opencontainers.image.description=Container with latest APAX version
+        run: |
+          # Generate tags
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          DATE_TAG="$(date +%Y%m%d)"
+          
+          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}"
+          TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${DATE_TAG}"
+          
+          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
+          echo "version-tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+          echo "date-tag=${DATE_TAG}" >> $GITHUB_OUTPUT
+          
+          echo "Generated tags: ${TAGS}"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      - name: Build Docker image
+        run: |
+          # Build the image with all labels
+          docker build \
+            --label "apax.version=${{ needs.check-apax-version.outputs.latest-version }}" \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
+            --label "org.opencontainers.image.description=Container with latest APAX version" \
+            --label "org.opencontainers.image.version=${{ needs.check-apax-version.outputs.latest-version }}" \
+            --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
+            .
+
+      - name: Tag image with additional tags
+        run: |
+          # Tag with latest
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
+                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          
+          # Tag with date
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
+                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+
+      - name: Push Docker images
+        run: |
+          # Push version tag
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+          
+          # Push latest tag
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          
+          # Push date tag
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
 
       - name: Verify pushed image
         run: |
           echo "✅ Container build and push completed successfully"
           echo "Available tags:"
-          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n'
+          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
 
   notify:
     name: Notification
