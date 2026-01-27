@@ -70,12 +70,20 @@ jobs:
           if [ $EXIT_CODE -ne 0 ]; then
             # Error Code bedeutet neue Version verfügbar
             echo "new-version-available=true" >> $GITHUB_OUTPUT
-            # Versuche die verfügbare Version aus der Ausgabe zu extrahieren
-            LATEST_VERSION=$(echo "$UPDATE_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | tail -1)
+            
+            # Parse das spezifische Format "Found new version: X.Y.Z"
+            LATEST_VERSION=$(echo "$UPDATE_OUTPUT" | grep "Found new version:" | sed 's/.*Found new version: *\([0-9][0-9.]*[0-9]\).*/\1/')
+            
+            # Fallback: Versuche allgemeines Versionsmuster falls das spezifische Format nicht gefunden wird
             if [ -z "$LATEST_VERSION" ]; then
-              # Falls keine Version in der Ausgabe gefunden, verwende "latest"
+              LATEST_VERSION=$(echo "$UPDATE_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | tail -1)
+            fi
+            
+            # Als letzter Fallback verwende "latest"
+            if [ -z "$LATEST_VERSION" ]; then
               LATEST_VERSION="latest"
             fi
+            
             echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
             echo "✅ New APAX version available: $LATEST_VERSION"
           else
