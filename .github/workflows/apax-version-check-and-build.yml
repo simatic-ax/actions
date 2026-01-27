@@ -20,8 +20,8 @@ permissions:
   packages: write
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/apax-container
+  REGISTRY: containers.github.siemens.cloud
+  IMAGE_NAME: simatic-ax/ci-images/apax-container
 
 jobs:
   check-apax-version:
@@ -303,7 +303,7 @@ jobs:
       - name: Verify pushed image
         run: |
           echo "✅ Container build and push completed successfully"
-          echo "Available tags:"
+          echo "Available tags in Siemens Registry:"
           echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
           echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
