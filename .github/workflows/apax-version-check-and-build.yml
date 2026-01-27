@@ -1,0 +1,187 @@
+name: APAX Version Check and Container Build
+
+on:
+  schedule:
+    # Prüfe täglich um 6:00 UTC auf neue APAX Versionen
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Manueller Trigger für Tests
+    inputs:
+      force_build:
+        description: 'Force build container even if no new version'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}/apax-container
+
+jobs:
+  check-apax-version:
+    name: Check for new APAX version
+    runs-on: ubuntu-latest
+    outputs:
+      new-version-available: ${{ steps.version-check.outputs.new-version-available }}
+      current-version: ${{ steps.version-check.outputs.current-version }}
+      latest-version: ${{ steps.version-check.outputs.latest-version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup APAX
+        run: |
+          # Verwende das bestehende APAX CI-Image um die aktuelle Version zu prüfen
+          docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version > apax_version.txt
+          cat apax_version.txt
+
+      - name: Check current APAX version
+        id: current-version
+        run: |
+          CURRENT_VERSION=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+          echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          echo "Current APAX version: $CURRENT_VERSION"
+
+      - name: Check for updates
+        id: version-check
+        run: |
+          # Verwende apax self-update --check um nach Updates zu suchen
+          UPDATE_OUTPUT=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax self-update --check 2>&1 || true)
+          
+          # Parse die Ausgabe um zu sehen ob ein Update verfügbar ist
+          if echo "$UPDATE_OUTPUT" | grep -q "new version available\|update available"; then
+            echo "new-version-available=true" >> $GITHUB_OUTPUT
+            # Extrahiere die verfügbare Version aus der Ausgabe
+            LATEST_VERSION=$(echo "$UPDATE_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | tail -1)
+            echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
+            echo "New APAX version available: $LATEST_VERSION"
+          else
+            echo "new-version-available=false" >> $GITHUB_OUTPUT
+            CURRENT_VERSION=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+            echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "No new APAX version available"
+          fi
+
+      - name: Check last built version
+        id: last-built
+        run: |
+          # Prüfe die letzte gebaute Version aus dem Container Registry
+          LAST_BUILT_VERSION=""
+          
+          # Versuche die Tags vom Container Registry zu holen
+          if docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest > /dev/null 2>&1; then
+            # Hole die Labels vom Container um die Version zu ermitteln
+            LAST_BUILT_VERSION=$(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest --format='{{index .Config.Labels "apax.version"}}' 2>/dev/null || echo "")
+          fi
+          
+          echo "last-built-version=$LAST_BUILT_VERSION" >> $GITHUB_OUTPUT
+          echo "Last built version: $LAST_BUILT_VERSION"
+
+  build-and-push:
+    name: Build and push container
+    needs: check-apax-version
+    runs-on: ubuntu-latest
+    if: |
+      needs.check-apax-version.outputs.new-version-available == 'true' || 
+      github.event.inputs.force_build == 'true'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create Dockerfile
+        run: |
+          cat > Dockerfile << 'EOF'
+          # Verwende das bestehende APAX CI-Image als Basis
+          FROM containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 as builder
+          
+          # Update APAX zur neuesten Version
+          RUN apax self-update --force-latest
+          
+          # Verifiziere Installation
+          RUN apax --version
+          
+          # Runtime Stage - verwende das gleiche Basis-Image für Konsistenz
+          FROM containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1
+          
+          # Kopiere die aktualisierte APAX Installation vom Builder
+          COPY --from=builder /root/.apax /root/.apax
+          
+          # Labels für Metadaten
+          LABEL apax.version="${{ needs.check-apax-version.outputs.latest-version }}"
+          LABEL org.opencontainers.image.source="${{ github.repository }}"
+          LABEL org.opencontainers.image.description="Container mit der neuesten APAX Version"
+          LABEL org.opencontainers.image.version="${{ needs.check-apax-version.outputs.latest-version }}"
+          
+          # Setze Arbeitsverzeichnis
+          WORKDIR /workspace
+          
+          # Standardcommand
+          CMD ["apax", "--help"]
+          EOF
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            # Tag mit der spezifischen APAX Version
+            type=raw,value=${{ needs.check-apax-version.outputs.latest-version }}
+            # Latest Tag
+            type=raw,value=latest
+            # Datum Tag
+            type=schedule,pattern={{date 'YYYYMMDD'}}
+
+      - name: Build and push container
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  notify:
+    name: Notification
+    needs: [check-apax-version, build-and-push]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify on success
+        if: |
+          needs.check-apax-version.outputs.new-version-available == 'true' && 
+          needs.build-and-push.result == 'success'
+        run: |
+          echo "✅ Neuer APAX Container erfolgreich gebaut!"
+          echo "Neue Version: ${{ needs.check-apax-version.outputs.latest-version }}"
+          echo "Container: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
+
+      - name: Notify on failure
+        if: |
+          needs.check-apax-version.outputs.new-version-available == 'true' && 
+          needs.build-and-push.result == 'failure'
+        run: |
+          echo "❌ Fehler beim Bauen des APAX Containers!"
+          echo "Version: ${{ needs.check-apax-version.outputs.latest-version }}"
+          exit 1
+
+      - name: No update available
+        if: needs.check-apax-version.outputs.new-version-available == 'false'
+        run: |
+          echo "ℹ️ Keine neue APAX Version verfügbar"
+          echo "Aktuelle Version: ${{ needs.check-apax-version.outputs.current-version }}"
