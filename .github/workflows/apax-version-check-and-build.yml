@@ -92,15 +92,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker
+        run: |
+          # Docker ist bereits in ubuntu-latest verfügbar
+          docker --version
+          # Setup buildx wenn nicht vorhanden
+          docker buildx version || docker buildx install
 
       - name: Log in to Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
       - name: Create Dockerfile
         run: |
@@ -133,28 +134,59 @@ jobs:
           CMD ["apax", "--help"]
           EOF
 
-      - name: Extract metadata
+      - name: Generate metadata
         id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          tags: |
-            # Tag mit der spezifischen APAX Version
-            type=raw,value=${{ needs.check-apax-version.outputs.latest-version }}
-            # Latest Tag
-            type=raw,value=latest
-            # Datum Tag
-            type=schedule,pattern={{date 'YYYYMMDD'}}
+        run: |
+          # Generiere Tags
+          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
+          TAGS="$TAGS,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          TAGS="$TAGS,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(date +%Y%m%d)"
+          
+          echo "tags=$TAGS" >> $GITHUB_OUTPUT
+          
+          # Generiere Labels
+          LABELS="apax.version=${{ needs.check-apax-version.outputs.latest-version }}"
+          LABELS="$LABELS,org.opencontainers.image.source=${{ github.repository }}"
+          LABELS="$LABELS,org.opencontainers.image.description=Container mit der neuesten APAX Version"
+          LABELS="$LABELS,org.opencontainers.image.version=${{ needs.check-apax-version.outputs.latest-version }}"
+          LABELS="$LABELS,org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+          
+          echo "labels=$LABELS" >> $GITHUB_OUTPUT
+          
+          echo "Generated tags: $TAGS"
+          echo "Generated labels: $LABELS"
 
       - name: Build and push container
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+        run: |
+          # Build Container mit Labels
+          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.meta.outputs.tags }}"
+          IFS=',' read -ra LABEL_ARRAY <<< "${{ steps.meta.outputs.labels }}"
+          
+          # Erstelle Label-Argumente für Docker Build
+          LABEL_ARGS=""
+          for label in "${LABEL_ARRAY[@]}"; do
+            LABEL_ARGS="$LABEL_ARGS --label $label"
+          done
+          
+          # Build des Containers mit dem ersten Tag
+          PRIMARY_TAG="${TAG_ARRAY[0]}"
+          echo "Building container with primary tag: $PRIMARY_TAG"
+          
+          docker build $LABEL_ARGS -t "$PRIMARY_TAG" .
+          
+          # Tag mit allen anderen Tags
+          for tag in "${TAG_ARRAY[@]:1}"; do
+            echo "Tagging with: $tag"
+            docker tag "$PRIMARY_TAG" "$tag"
+          done
+          
+          # Push aller Tags
+          for tag in "${TAG_ARRAY[@]}"; do
+            echo "Pushing: $tag"
+            docker push "$tag"
+          done
+          
+          echo "✅ Container build and push completed successfully"
 
   notify:
     name: Notification
