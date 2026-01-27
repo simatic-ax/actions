@@ -256,6 +256,23 @@ jobs:
           echo "Updated Dockerfile:"
           cat ./Dockerfile
 
+      - name: Generate image metadata
+        id: meta
+        run: |
+          echo "🏷️ Generating image metadata..."
+          
+          # Generate version tag using the latest APAX version
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          echo "version-tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+          
+          # Generate date tag for additional tagging
+          DATE_TAG="$(date +'%Y%m%d')"
+          echo "date-tag=${DATE_TAG}" >> $GITHUB_OUTPUT
+          
+          echo "Generated tags:"
+          echo "- Version tag: ${VERSION_TAG}"
+          echo "- Date tag: ${DATE_TAG}"
+
       - name: Copy additional build context
         run: |
           echo "📋 Copying build context from dockerfiles/apax-ci-image..."
