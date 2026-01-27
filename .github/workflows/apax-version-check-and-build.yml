@@ -219,117 +219,68 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      - name: Create Dockerfile
+      - name: Use existing Dockerfile
         run: |
-          cat > Dockerfile << 'EOF'
-          # Start from a clean Ubuntu base image
-          FROM ubuntu:22.04
+          echo "📄 Using existing Dockerfile from dockerfiles/apax-ci-image..."
           
-          # Avoid interactive prompts during package installation
-          ENV DEBIAN_FRONTEND=noninteractive
+          # Copy the existing Dockerfile to the current directory
+          if [ -f "dockerfiles/apax-ci-image/Dockerfile" ]; then
+            cp dockerfiles/apax-ci-image/Dockerfile ./Dockerfile
+            echo "✅ Successfully copied existing Dockerfile"
+            echo "Dockerfile content:"
+            cat ./Dockerfile
+          else
+            echo "❌ Dockerfile not found at dockerfiles/apax-ci-image/Dockerfile"
+            ls -la dockerfiles/ || echo "dockerfiles directory not found"
+            ls -la dockerfiles/apax-ci-image/ || echo "apax-ci-image directory not found"
+            exit 1
+          fi
+
+      - name: Update Dockerfile with dynamic labels
+        run: |
+          echo "🏷️ Adding dynamic labels to Dockerfile..."
           
-          # Install system dependencies
-          RUN apt-get update && apt-get install -y \
-              curl \
-              wget \
-              git \
-              unzip \
-              ca-certificates \
-              gnupg \
-              lsb-release \
-              build-essential \
-              python3 \
-              python3-pip \
-              nodejs \
-              npm \
-              && rm -rf /var/lib/apt/lists/*
+          # Add labels at the end of the Dockerfile
+          cat >> Dockerfile << EOF
           
-          # Create user for APAX
-          RUN useradd -m -s /bin/bash apax
-          
-          # Install APAX CLI
-          RUN curl -fsSL https://get.apax.dev/install.sh | bash
-          
-          # Add APAX to system PATH
-          ENV PATH="/root/.apax/bin:${PATH}"
-          
-          # Set up workspace directory
-          WORKDIR /workspace
-          RUN chown apax:apax /workspace
-          
-          # Verify APAX installation
-          RUN apax --version
-          
-          # Labels for metadata
+          # Dynamic labels added by workflow
           LABEL apax.version="${{ needs.check-apax-version.outputs.latest-version }}"
           LABEL org.opencontainers.image.source="https://github.com/${{ github.repository }}"
-          LABEL org.opencontainers.image.description="Fresh container with latest APAX version"
+          LABEL org.opencontainers.image.description="APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}"
           LABEL org.opencontainers.image.version="${{ needs.check-apax-version.outputs.latest-version }}"
           LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          
-          # Default command
-          CMD ["apax", "--help"]
+          LABEL build.workflow="${{ github.workflow }}"
+          LABEL build.run-id="${{ github.run_id }}"
           EOF
+          
+          echo "Updated Dockerfile:"
+          cat ./Dockerfile
 
-      - name: Alternative Dockerfile (simple approach)
-        if: failure()
+      - name: Copy additional build context
         run: |
-          echo "Creating simple Dockerfile..."
-          cat > Dockerfile << 'EOF'
-          FROM node:18-ubuntu
+          echo "📋 Copying build context from dockerfiles/apax-ci-image..."
           
-          # Install system dependencies
-          RUN apt-get update && apt-get install -y \
-              curl \
-              wget \
-              git \
-              && rm -rf /var/lib/apt/lists/*
-          
-          # Install APAX globally via npm (alternative approach)
-          RUN npm install -g @simatic-ax/apax || \
-              curl -fsSL https://get.apax.dev/install.sh | bash
-          
-          # Set up PATH
-          ENV PATH="/root/.apax/bin:${PATH}"
-          
-          WORKDIR /workspace
-          
-          # Verify installation
-          RUN apax --version || echo "APAX installation may have failed"
-          
-          LABEL org.opencontainers.image.description="Simple APAX container"
-          
-          CMD ["apax", "--help"]
-          EOF
-
-      - name: Generate image metadata
-        id: meta
-        run: |
-          # Generate tags
-          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
-          DATE_TAG="$(date +%Y%m%d)"
-          
-          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}"
-          TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          TAGS="${TAGS},${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${DATE_TAG}"
-          
-          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
-          echo "version-tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
-          echo "date-tag=${DATE_TAG}" >> $GITHUB_OUTPUT
-          
-          echo "Generated tags: ${TAGS}"
+          # Copy any additional files that might be needed for the build
+          if [ -d "dockerfiles/apax-ci-image" ]; then
+            # Copy all files except Dockerfile (we already copied it)
+            find dockerfiles/apax-ci-image -type f ! -name Dockerfile -exec cp {} ./ \;
+            echo "✅ Copied additional build context files"
+            ls -la
+          fi
 
       - name: Build Docker image
         run: |
-          echo "🔨 Building fresh Docker image with APAX..."
+          echo "🔨 Building Docker image using existing Dockerfile..."
           
-          # Build the new image
+          # Build the image using the existing Dockerfile
           docker build \
             --label "apax.version=${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
-            --label "org.opencontainers.image.description=Fresh container with latest APAX version" \
+            --label "org.opencontainers.image.description=APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "org.opencontainers.image.version=${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            --label "build.workflow=${{ github.workflow }}" \
+            --label "build.run-id=${{ github.run_id }}" \
             --progress=plain \
             --no-cache \
             -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
