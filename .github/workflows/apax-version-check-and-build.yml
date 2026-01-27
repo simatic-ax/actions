@@ -57,25 +57,19 @@ jobs:
         id: version-check
         run: |
           # Verwende apax self-update --check um nach Updates zu suchen
-          # Bei neuer Version gibt es eine Ausgabe, sonst ist die Ausgabe leer
+          # Prüfe spezifische Ausgabetexte für neue Version vs up-to-date
           NEW_APAX_VERSION=$(apax self-update --check)
           
           echo "APAX self-update --check output: '$NEW_APAX_VERSION'"
           
-          if [ "$NEW_APAX_VERSION" = "" ]; then
-            # Keine Ausgabe = keine neue Version
-            echo "new-version-available=false" >> $GITHUB_OUTPUT
-            CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
-            echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-            echo "ℹ️ No new APAX version available"
-          else
-            # Ausgabe vorhanden = neue Version verfügbar
+          if echo "$NEW_APAX_VERSION" | grep -q "Found new version:"; then
+            # "Found new version: X.Y.Z" = neue Version verfügbar
             echo "new-version-available=true" >> $GITHUB_OUTPUT
             
-            # Parse das spezifische Format "Found new version: X.Y.Z"
-            LATEST_VERSION=$(echo "$NEW_APAX_VERSION" | grep "Found new version:" | sed 's/.*Found new version: *\([0-9][0-9.]*[0-9]\).*/\1/')
+            # Parse die neue Version aus "Found new version: X.Y.Z"
+            LATEST_VERSION=$(echo "$NEW_APAX_VERSION" | sed -n 's/.*Found new version: *\([0-9][0-9.]*[0-9]\).*/\1/p')
             
-            # Fallback: Versuche allgemeines Versionsmuster falls das spezifische Format nicht gefunden wird
+            # Fallback: Versuche allgemeines Versionsmuster
             if [ -z "$LATEST_VERSION" ]; then
               LATEST_VERSION=$(echo "$NEW_APAX_VERSION" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | head -1)
             fi
@@ -87,6 +81,21 @@ jobs:
             
             echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
             echo "✅ New APAX version available: $LATEST_VERSION"
+            
+          elif echo "$NEW_APAX_VERSION" | grep -q "is already up-to-date"; then
+            # "Version X.Y.Z is already up-to-date." = keine neue Version
+            echo "new-version-available=false" >> $GITHUB_OUTPUT
+            CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+            echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "ℹ️ No new APAX version available - already up-to-date"
+            
+          else
+            # Unerwartete Ausgabe - als Fallback annehmen, dass keine neue Version verfügbar ist
+            echo "new-version-available=false" >> $GITHUB_OUTPUT
+            CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+            echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+            echo "⚠️ Unexpected output format - assuming no new version available"
+            echo "Output was: $NEW_APAX_VERSION"
           fi
 
       - name: Check last built version
