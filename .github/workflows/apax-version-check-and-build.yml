@@ -123,9 +123,97 @@ jobs:
           mkdir -p ~/.docker
           echo '{"experimental": "enabled"}' > ~/.docker/config.json
 
+      - name: Debug container registry access
+        run: |
+          echo "🔍 Debugging container registry access..."
+          echo "Registry URL: containers.github.siemens.cloud"
+          echo "Actor: ${{ github.actor }}"
+          echo "Repository: ${{ github.repository }}"
+          
+          # Test if registry is reachable
+          echo "Testing registry connectivity..."
+          curl -I https://containers.github.siemens.cloud/ || echo "Registry not reachable via HTTPS"
+          
+          # Test token format (without revealing it)
+          TOKEN_LENGTH=$(echo "${{ secrets.GITHUB_TOKEN }}" | wc -c)
+          echo "Token length: $TOKEN_LENGTH characters"
+          
+          # Test if token starts with expected format
+          if echo "${{ secrets.GITHUB_TOKEN }}" | grep -q "^gh[ps]_"; then
+            echo "✅ Token appears to have correct GitHub format"
+          else
+            echo "⚠️ Token does not appear to be a GitHub token"
+          fi
+
+      - name: Test registry authentication
+        continue-on-error: true
+        run: |
+          echo "🔐 Testing authentication to source registry..."
+          
+          # Try to authenticate and capture detailed error
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin 2>&1 | tee login_output.log
+          
+          LOGIN_EXIT_CODE=${PIPESTATUS[1]}
+          echo "Login exit code: $LOGIN_EXIT_CODE"
+          
+          if [ $LOGIN_EXIT_CODE -eq 0 ]; then
+            echo "✅ Authentication successful"
+          else
+            echo "❌ Authentication failed"
+            echo "Error details:"
+            cat login_output.log
+            
+            # Check common error patterns
+            if grep -q "unauthorized" login_output.log; then
+              echo "🔍 Issue: Unauthorized - likely token permission issue"
+            elif grep -q "not found\|404" login_output.log; then
+              echo "🔍 Issue: Registry URL might be incorrect"
+            elif grep -q "timeout\|connection" login_output.log; then
+              echo "🔍 Issue: Network connectivity problem"
+            fi
+          fi
+
+      - name: Try alternative authentication methods
+        if: failure()
+        continue-on-error: true
+        run: |
+          echo "🔄 Trying alternative authentication approaches..."
+          
+          # Try with different token variable if available
+          if [ -n "${{ secrets.SIEMENS_REGISTRY_TOKEN }}" ]; then
+            echo "Trying with SIEMENS_REGISTRY_TOKEN..."
+            echo "${{ secrets.SIEMENS_REGISTRY_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin
+          fi
+          
+          # Try with different username formats
+          echo "Trying with different username formats..."
+          
+          # Try lowercase actor
+          ACTOR_LOWER=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+          echo "Trying with lowercase actor: $ACTOR_LOWER"
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u "$ACTOR_LOWER" --password-stdin || true
+          
+          # Try with full email format if actor doesn't contain @
+          if [[ "${{ github.actor }}" != *"@"* ]]; then
+            echo "Trying with email format..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u "${{ github.actor }}@siemens.com" --password-stdin || true
+          fi
+
       - name: Log in to source container registry
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin
+          echo "🔐 Attempting final login to source registry..."
+          
+          # Use the working authentication method from tests above
+          if echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin; then
+            echo "✅ Successfully logged in to source registry"
+          else
+            echo "❌ Failed to login to source registry"
+            echo "Please check:"
+            echo "1. Registry URL: containers.github.siemens.cloud"
+            echo "2. Username: ${{ github.actor }}"
+            echo "3. Token permissions for packages:read"
+            exit 1
+          fi
 
       - name: Log in to GitHub Container Registry
         run: |
