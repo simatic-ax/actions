@@ -5,10 +5,9 @@ on:
     branches:
       - main
   schedule:
-    # Prüfe täglich um 6:00 UTC auf neue APAX Versionen
+    # Check daily at 6:00 UTC for new APAX versions
     - cron: '0 6 * * *'
   workflow_dispatch:
-    # Manueller Trigger für Tests
     inputs:
       force_build:
         description: 'Force build container even if no new version'
@@ -56,26 +55,33 @@ jobs:
       - name: Check for updates
         id: version-check
         run: |
-          # Verwende apax self-update --check um nach Updates zu suchen
-          # Prüfe spezifische Ausgabetexte für neue Version vs up-to-date
-          # Erfasse sowohl stdout als auch stderr
-          NEW_APAX_VERSION=$(apax self-update --check 2>&1)
+          set -e
           
-          echo "APAX self-update --check output: '$NEW_APAX_VERSION'"
+          echo "Checking for APAX updates..."
           
-          if echo "$NEW_APAX_VERSION" | grep -q "Found new version:"; then
-            # "Found new version: X.Y.Z" = neue Version verfügbar
+          # Use timeout to prevent hanging
+          timeout 60s apax self-update --check > apax_check.log 2>&1 || {
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -eq 124 ]; then
+              echo "⚠️ Timeout while checking for updates"
+            else
+              echo "⚠️ Error checking for updates (exit code: $EXIT_CODE)"
+            fi
+            cat apax_check.log
+          }
+          
+          NEW_APAX_OUTPUT=$(cat apax_check.log)
+          echo "APAX self-update --check output: '$NEW_APAX_OUTPUT'"
+          
+          if echo "$NEW_APAX_OUTPUT" | grep -q "Found new version:"; then
             echo "new-version-available=true" >> $GITHUB_OUTPUT
             
-            # Parse die neue Version aus "Found new version: X.Y.Z"
-            LATEST_VERSION=$(echo "$NEW_APAX_VERSION" | sed -n 's/.*Found new version: *\([0-9][0-9.]*[0-9]\).*/\1/p')
+            LATEST_VERSION=$(echo "$NEW_APAX_OUTPUT" | sed -n 's/.*Found new version: *\([0-9][0-9.]*[0-9]\).*/\1/p')
             
-            # Fallback: Versuche allgemeines Versionsmuster
             if [ -z "$LATEST_VERSION" ]; then
-              LATEST_VERSION=$(echo "$NEW_APAX_VERSION" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | head -1)
+              LATEST_VERSION=$(echo "$NEW_APAX_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | head -1)
             fi
             
-            # Als letzter Fallback verwende "latest"
             if [ -z "$LATEST_VERSION" ]; then
               LATEST_VERSION="latest"
             fi
@@ -83,36 +89,19 @@ jobs:
             echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
             echo "✅ New APAX version available: $LATEST_VERSION"
             
-          elif echo "$NEW_APAX_VERSION" | grep -q "is already up-to-date"; then
-            # "Version X.Y.Z is already up-to-date." = keine neue Version
+          elif echo "$NEW_APAX_OUTPUT" | grep -q "is already up-to-date\|up to date"; then
             echo "new-version-available=false" >> $GITHUB_OUTPUT
             CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
             echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
             echo "ℹ️ No new APAX version available - already up-to-date"
             
           else
-            # Unerwartete Ausgabe oder leere Ausgabe - als Fallback annehmen, dass keine neue Version verfügbar ist
             echo "new-version-available=false" >> $GITHUB_OUTPUT
             CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
             echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-            echo "⚠️ Unexpected or empty output - assuming no new version available"
-            echo "Output was: '$NEW_APAX_VERSION'"
+            echo "⚠️ Unexpected output - assuming no new version available"
+            echo "Output was: '$NEW_APAX_OUTPUT'"
           fi
-
-      - name: Check last built version
-        id: last-built
-        run: |
-          # Prüfe die letzte gebaute Version aus dem Container Registry
-          LAST_BUILT_VERSION=""
-          
-          # Versuche die Tags vom Container Registry zu holen
-          if docker manifest inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest > /dev/null 2>&1; then
-            # Hole die Labels vom Container um die Version zu ermitteln
-            LAST_BUILT_VERSION=$(docker inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest --format='{{index .Config.Labels "apax.version"}}' 2>/dev/null || echo "")
-          fi
-          
-          echo "last-built-version=$LAST_BUILT_VERSION" >> $GITHUB_OUTPUT
-          echo "Last built version: $LAST_BUILT_VERSION"
 
   build-and-push:
     name: Build and push container
@@ -125,101 +114,78 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Docker
-        run: |
-          # Docker ist bereits in ubuntu-latest verfügbar
-          docker --version
-          # Setup buildx wenn nicht vorhanden
-          docker buildx version || docker buildx install
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Log in to Container Registry
+      - name: Log in to source container registry
         run: |
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create Dockerfile
         run: |
           cat > Dockerfile << 'EOF'
-          # Verwende das bestehende APAX CI-Image als Basis
           FROM containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 as builder
           
-          # Update APAX zur neuesten Version
-          RUN apax self-update --force-latest
+          # Update APAX to latest version
+          RUN apax self-update --force-latest || apax self-update
           
-          # Verifiziere Installation
+          # Verify installation
           RUN apax --version
           
-          # Runtime Stage - verwende das gleiche Basis-Image für Konsistenz
           FROM containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1
           
-          # Kopiere die aktualisierte APAX Installation vom Builder
+          # Copy updated APAX installation
           COPY --from=builder /root/.apax /root/.apax
           
-          # Labels für Metadaten
+          # Update PATH if needed
+          ENV PATH="/root/.apax/bin:${PATH}"
+          
+          # Labels for metadata
           LABEL apax.version="${{ needs.check-apax-version.outputs.latest-version }}"
-          LABEL org.opencontainers.image.source="${{ github.repository }}"
-          LABEL org.opencontainers.image.description="Container mit der neuesten APAX Version"
+          LABEL org.opencontainers.image.source="https://github.com/${{ github.repository }}"
+          LABEL org.opencontainers.image.description="Container with latest APAX version"
           LABEL org.opencontainers.image.version="${{ needs.check-apax-version.outputs.latest-version }}"
           
-          # Setze Arbeitsverzeichnis
           WORKDIR /workspace
           
-          # Standardcommand
           CMD ["apax", "--help"]
           EOF
 
-      - name: Generate metadata
+      - name: Extract metadata
         id: meta
-        run: |
-          # Generiere Tags
-          TAGS="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
-          TAGS="$TAGS,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          TAGS="$TAGS,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(date +%Y%m%d)"
-          
-          echo "tags=$TAGS" >> $GITHUB_OUTPUT
-          
-          # Generiere Labels
-          LABELS="apax.version=${{ needs.check-apax-version.outputs.latest-version }}"
-          LABELS="$LABELS,org.opencontainers.image.source=${{ github.repository }}"
-          LABELS="$LABELS,org.opencontainers.image.description=Container mit der neuesten APAX Version"
-          LABELS="$LABELS,org.opencontainers.image.version=${{ needs.check-apax-version.outputs.latest-version }}"
-          LABELS="$LABELS,org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          
-          echo "labels=$LABELS" >> $GITHUB_OUTPUT
-          
-          echo "Generated tags: $TAGS"
-          echo "Generated labels: $LABELS"
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ needs.check-apax-version.outputs.latest-version }}
+            type=raw,value=latest
+            type=raw,value={{date 'YYYYMMDD'}}
+          labels: |
+            apax.version=${{ needs.check-apax-version.outputs.latest-version }}
+            org.opencontainers.image.description=Container with latest APAX version
 
-      - name: Build and push container
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify pushed image
         run: |
-          # Build Container mit Labels
-          IFS=',' read -ra TAG_ARRAY <<< "${{ steps.meta.outputs.tags }}"
-          IFS=',' read -ra LABEL_ARRAY <<< "${{ steps.meta.outputs.labels }}"
-          
-          # Erstelle Label-Argumente für Docker Build
-          LABEL_ARGS=""
-          for label in "${LABEL_ARRAY[@]}"; do
-            LABEL_ARGS="$LABEL_ARGS --label $label"
-          done
-          
-          # Build des Containers mit dem ersten Tag
-          PRIMARY_TAG="${TAG_ARRAY[0]}"
-          echo "Building container with primary tag: $PRIMARY_TAG"
-          
-          docker build $LABEL_ARGS -t "$PRIMARY_TAG" .
-          
-          # Tag mit allen anderen Tags
-          for tag in "${TAG_ARRAY[@]:1}"; do
-            echo "Tagging with: $tag"
-            docker tag "$PRIMARY_TAG" "$tag"
-          done
-          
-          # Push aller Tags
-          for tag in "${TAG_ARRAY[@]}"; do
-            echo "Pushing: $tag"
-            docker push "$tag"
-          done
-          
           echo "✅ Container build and push completed successfully"
+          echo "Available tags:"
+          echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n'
 
   notify:
     name: Notification
@@ -232,8 +198,8 @@ jobs:
           needs.check-apax-version.outputs.new-version-available == 'true' && 
           needs.build-and-push.result == 'success'
         run: |
-          echo "✅ Neuer APAX Container erfolgreich gebaut!"
-          echo "Neue Version: ${{ needs.check-apax-version.outputs.latest-version }}"
+          echo "✅ New APAX container successfully built!"
+          echo "New version: ${{ needs.check-apax-version.outputs.latest-version }}"
           echo "Container: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
 
       - name: Notify on failure
@@ -241,12 +207,12 @@ jobs:
           needs.check-apax-version.outputs.new-version-available == 'true' && 
           needs.build-and-push.result == 'failure'
         run: |
-          echo "❌ Fehler beim Bauen des APAX Containers!"
+          echo "❌ Error building APAX container!"
           echo "Version: ${{ needs.check-apax-version.outputs.latest-version }}"
           exit 1
 
       - name: No update available
         if: needs.check-apax-version.outputs.new-version-available == 'false'
         run: |
-          echo "ℹ️ Keine neue APAX Version verfügbar"
-          echo "Aktuelle Version: ${{ needs.check-apax-version.outputs.current-version }}"
+          echo "ℹ️ No new APAX version available"
+          echo "Current version: ${{ needs.check-apax-version.outputs.current-version }}"
