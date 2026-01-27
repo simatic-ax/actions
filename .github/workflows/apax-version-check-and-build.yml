@@ -58,7 +58,8 @@ jobs:
         run: |
           # Verwende apax self-update --check um nach Updates zu suchen
           # Prüfe spezifische Ausgabetexte für neue Version vs up-to-date
-          NEW_APAX_VERSION=$(apax self-update --check)
+          # Erfasse sowohl stdout als auch stderr
+          NEW_APAX_VERSION=$(apax self-update --check 2>&1)
           
           echo "APAX self-update --check output: '$NEW_APAX_VERSION'"
           
@@ -90,12 +91,12 @@ jobs:
             echo "ℹ️ No new APAX version available - already up-to-date"
             
           else
-            # Unerwartete Ausgabe - als Fallback annehmen, dass keine neue Version verfügbar ist
+            # Unerwartete Ausgabe oder leere Ausgabe - als Fallback annehmen, dass keine neue Version verfügbar ist
             echo "new-version-available=false" >> $GITHUB_OUTPUT
             CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
             echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-            echo "⚠️ Unexpected output format - assuming no new version available"
-            echo "Output was: $NEW_APAX_VERSION"
+            echo "⚠️ Unexpected or empty output - assuming no new version available"
+            echo "Output was: '$NEW_APAX_VERSION'"
           fi
 
       - name: Check last built version
