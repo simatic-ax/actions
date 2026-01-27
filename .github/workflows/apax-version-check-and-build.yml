@@ -1,6 +1,9 @@
 name: APAX Version Check and Container Build
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Prüfe täglich um 6:00 UTC auf neue APAX Versionen
     - cron: '0 6 * * *'
@@ -24,7 +27,12 @@ env:
 jobs:
   check-apax-version:
     name: Check for new APAX version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
+    container:
+      image: containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       new-version-available: ${{ steps.version-check.outputs.new-version-available }}
       current-version: ${{ steps.version-check.outputs.current-version }}
@@ -33,16 +41,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup APAX
-        run: |
-          # Verwende das bestehende APAX CI-Image um die aktuelle Version zu prüfen
-          docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version > apax_version.txt
-          cat apax_version.txt
+      - name: Login to required registries
+        uses: simatic-ax/actions/apax-login@v3
+        with:
+          apax-token: ${{ secrets.APAX_TOKEN }}
 
       - name: Check current APAX version
         id: current-version
         run: |
-          CURRENT_VERSION=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+          CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
           echo "current-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
           echo "Current APAX version: $CURRENT_VERSION"
 
@@ -50,20 +57,33 @@ jobs:
         id: version-check
         run: |
           # Verwende apax self-update --check um nach Updates zu suchen
-          UPDATE_OUTPUT=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax self-update --check 2>&1 || true)
+          # Ein Error Code bedeutet, dass eine neue Version verfügbar ist
+          set +e  # Deaktiviere exit on error temporär
+          UPDATE_OUTPUT=$(apax self-update --check 2>&1)
+          EXIT_CODE=$?
+          set -e  # Reaktiviere exit on error
           
-          # Parse die Ausgabe um zu sehen ob ein Update verfügbar ist
-          if echo "$UPDATE_OUTPUT" | grep -q "new version available\|update available"; then
+          echo "APAX self-update --check output:"
+          echo "$UPDATE_OUTPUT"
+          echo "Exit code: $EXIT_CODE"
+          
+          if [ $EXIT_CODE -ne 0 ]; then
+            # Error Code bedeutet neue Version verfügbar
             echo "new-version-available=true" >> $GITHUB_OUTPUT
-            # Extrahiere die verfügbare Version aus der Ausgabe
+            # Versuche die verfügbare Version aus der Ausgabe zu extrahieren
             LATEST_VERSION=$(echo "$UPDATE_OUTPUT" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*' | tail -1)
+            if [ -z "$LATEST_VERSION" ]; then
+              # Falls keine Version in der Ausgabe gefunden, verwende "latest"
+              LATEST_VERSION="latest"
+            fi
             echo "latest-version=$LATEST_VERSION" >> $GITHUB_OUTPUT
-            echo "New APAX version available: $LATEST_VERSION"
+            echo "✅ New APAX version available: $LATEST_VERSION"
           else
+            # Exit Code 0 bedeutet keine neue Version
             echo "new-version-available=false" >> $GITHUB_OUTPUT
-            CURRENT_VERSION=$(docker run --rm containers.github.siemens.cloud/simatic-ax/ci-images/apax-ci-image:4.1.1 apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
+            CURRENT_VERSION=$(apax --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+[^[:space:]]*')
             echo "latest-version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
-            echo "No new APAX version available"
+            echo "ℹ️ No new APAX version available"
           fi
 
       - name: Check last built version
@@ -84,7 +104,7 @@ jobs:
   build-and-push:
     name: Build and push container
     needs: check-apax-version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: |
       needs.check-apax-version.outputs.new-version-available == 'true' || 
       github.event.inputs.force_build == 'true'
