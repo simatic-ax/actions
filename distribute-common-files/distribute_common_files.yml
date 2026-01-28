@@ -3,11 +3,17 @@ name: Distribute common files
 on:
   workflow_dispatch: {} #to enable manual triggering of the action
   inputs:
-    repo_name:
+    file_name:
       description: |
-        You can specify name of the repository where workflows should be pushed manually. As long as repository is not ignored by workflow settings.
-        If you do not specify exact repository name, the workflow will try to replicate all missing changes to all repositories.
+        like "files/libraries/workflows/release-library.yml" more spilted with "," (maybe - eigentlich erstmal nur eine file)
       required: true
+      type: string
+    target_path:
+      description: |
+        like ".github/workflows"
+      required: true
+      type: string
+
 jobs:
   deploy_common_file:
       runs-on: ubuntu-latest
@@ -18,8 +24,8 @@ jobs:
           uses: derberg/manage-files-in-multiple-repositories@v2
           with:
             github_token: ${{ secrets.DEPLOY_KEY }}
-            patterns_to_include: files/libraries/workflows/release-library.yml, files/libraries/workflows/lint-repo.yml, files/libraries/workflows/build-library.yml
-            destination: .github/workflows
+            patterns_to_include: ${{ github.event.inputs.file_name }}
+            destination:  ${{ github.event.inputs.target_path }}
             topics_to_include: library
             exclude_private: false
             exclude_forked: true
