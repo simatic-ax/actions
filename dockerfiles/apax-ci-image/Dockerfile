@@ -1,5 +1,6 @@
 FROM mcr.microsoft.com/dotnet/runtime:8.0.20
 ARG APAX_TOKEN=
+ARG APAX_VERSION=
 
 # Definiere Metadaten als ENV
 ENV SIMATIC_AX_TITLE="SIMATIC AX Runner Image" \
@@ -70,7 +71,7 @@ RUN set -ex \
     fi \
     && curl -f -H "Authorization: bearer $APAX_TOKEN" \
         https://api.simatic-ax.siemens.io/apax/login?format=npmrc > .npmrc \
-    && npm add "@ax/apax-signed@4.1.1" \
+    && npm add "@ax/apax-signed@$APAX_VERSION" \
     && npm install \
     && cd node_modules/@ax/apax-signed \
     && { echo "-----BEGIN PUBLIC KEY-----"; \

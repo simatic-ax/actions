@@ -173,32 +173,6 @@ jobs:
             fi
           fi
 
-      - name: Try alternative authentication methods
-        if: failure()
-        continue-on-error: true
-        run: |
-          echo "🔄 Trying alternative authentication approaches..."
-          
-          # Try with different token variable if available
-          if [ -n "${{ secrets.SIEMENS_REGISTRY_TOKEN }}" ]; then
-            echo "Trying with SIEMENS_REGISTRY_TOKEN..."
-            echo "${{ secrets.SIEMENS_REGISTRY_TOKEN }}" | docker login containers.github.siemens.cloud -u ${{ github.actor }} --password-stdin
-          fi
-          
-          # Try with different username formats
-          echo "Trying with different username formats..."
-          
-          # Try lowercase actor
-          ACTOR_LOWER=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
-          echo "Trying with lowercase actor: $ACTOR_LOWER"
-          echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u "$ACTOR_LOWER" --password-stdin || true
-          
-          # Try with full email format if actor doesn't contain @
-          if [[ "${{ github.actor }}" != *"@"* ]]; then
-            echo "Trying with email format..."
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login containers.github.siemens.cloud -u "${{ github.actor }}@siemens.com" --password-stdin || true
-          fi
-
       - name: Log in to source container registry
         run: |
           echo "🔐 Attempting final login to source registry..."
@@ -236,26 +210,6 @@ jobs:
             exit 1
           fi
 
-      - name: Update Dockerfile with dynamic labels
-        run: |
-          echo "🏷️ Adding dynamic labels to Dockerfile..."
-          
-          # Add labels at the end of the Dockerfile
-          cat >> Dockerfile << EOF
-          
-          # Dynamic labels added by workflow
-          LABEL apax.version="${{ needs.check-apax-version.outputs.latest-version }}"
-          LABEL org.opencontainers.image.source="https://github.com/${{ github.repository }}"
-          LABEL org.opencontainers.image.description="APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}"
-          LABEL org.opencontainers.image.version="${{ needs.check-apax-version.outputs.latest-version }}"
-          LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          LABEL build.workflow="${{ github.workflow }}"
-          LABEL build.run-id="${{ github.run_id }}"
-          EOF
-          
-          echo "Updated Dockerfile:"
-          cat ./Dockerfile
-
       - name: Generate image metadata
         id: meta
         run: |
@@ -292,6 +246,7 @@ jobs:
           # Build the image using the existing Dockerfile
           docker build \
             --build-arg APAX_TOKEN="${{ secrets.APAX_TOKEN }}" \
+            --build-arg APAX_VERSION="${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "apax.version=${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             --label "org.opencontainers.image.description=APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}" \
@@ -327,24 +282,24 @@ jobs:
           docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
                      "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
 
-      - name: Push Docker images
-        run: |
-          # Push version tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+      # - name: Push Docker images
+      #   run: |
+      #     # Push version tag
+      #     docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
           
-          # Push latest tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+      #     # Push latest tag
+      #     docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           
-          # Push date tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+      #     # Push date tag
+      #     docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
 
-      - name: Verify pushed image
-        run: |
-          echo "✅ Container build and push completed successfully"
-          echo "Available tags in Siemens Registry:"
-          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
-          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+      # - name: Verify pushed image
+      #   run: |
+      #     echo "✅ Container build and push completed successfully"
+      #     echo "Available tags in Siemens Registry:"
+      #     echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+      #     echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+      #     echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
 
   notify:
     name: Notification
