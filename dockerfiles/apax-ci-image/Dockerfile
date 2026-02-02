@@ -1,6 +1,6 @@
 FROM mcr.microsoft.com/dotnet/runtime:8.0.20
-ARG APAX_TOKEN=
-ARG APAX_VERSION=
+ARG APAX_TOKEN
+ARG APAX_VERSION=4.1.1
 
 # Definiere Metadaten als ENV
 ENV SIMATIC_AX_TITLE="SIMATIC AX Runner Image" \
@@ -23,7 +23,7 @@ LABEL org.opencontainers.image.title="${SIMATIC_AX_TITLE}" \
       org.opencontainers.image.source="${SIMATIC_AX_SOURCE}"
 
 # Copy apax public key for later verification
-COPY dockerfiles/apax-ci-image/apax-public-key.txt /tmp/apax-public-key.txt
+COPY apax-public-key.txt /tmp/apax-public-key.txt
 
 # Step 1: Install basic system dependencies and prepare package sources
 # We combine all repository preparations and basic tool installations to reduce layers
@@ -85,6 +85,6 @@ RUN set -ex \
     && rm -rf /tmp/apax-dep /tmp/apax-public-key.txt
 
 # Kopiere das Entrypoint-Skript in den Container
-COPY dockerfiles/apax-ci-image/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
