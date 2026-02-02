@@ -21,7 +21,7 @@ permissions:
 
 env:
   REGISTRY: containers.github.siemens.cloud
-  IMAGE_NAME: simatic-ax/ci-images/apax-ci-image
+  IMAGE_NAME: simatic-ax/ci-images
 
 jobs:
   check-apax-version:
@@ -249,7 +249,7 @@ jobs:
             --label "build.run-id=${{ github.run_id }}" \
             --progress=plain \
             --no-cache \
-            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
+            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${VERSION_TAG}" \
             dockerfiles/apax-ci-image/ || {
               echo "❌ Build failed, this might be expected if APAX update requires authentication"
               echo "The build process tried to update APAX but authentication might be missing"
@@ -264,7 +264,7 @@ jobs:
           VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
           
           # Test if APAX is working in the new image
-          docker run --rm "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" apax --version || {
+          docker run --rm "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${VERSION_TAG}" apax --version || {
             echo "⚠️ APAX test failed, but continuing with deployment"
           }
 
@@ -284,13 +284,13 @@ jobs:
       - name: Push Docker images
         run: |
           # Push version tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${{ needs.check-apax-version.outputs.latest-version }}"
           
           # Push latest tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-latest"
           
           # Push date tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(date +'%Y%m%d')"
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-$(date +'%Y%m%d')"
 
       - name: Verify pushed image
         run: |
