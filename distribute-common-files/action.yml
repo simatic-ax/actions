@@ -27,8 +27,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
     - name: Replicating Global Workflow
       uses: derberg/manage-files-in-multiple-repositories@v2
       with:
