@@ -70,7 +70,7 @@ RUN set -ex \
     && npm install \
     && cd node_modules/@ax/apax-signed \
     && { echo "-----BEGIN PUBLIC KEY-----"; \
-        cat /tmp/apax-public-key.txt | tr -d '\r\n'; \
+        cat dockerfiles/apax-ci-image/apax-public-key.txt | tr -d '\r\n'; \
         echo ""; \
         echo "-----END PUBLIC KEY-----"; } > public.pem \
     && openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz \
