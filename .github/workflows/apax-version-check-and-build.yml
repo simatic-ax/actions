@@ -226,20 +226,30 @@ jobs:
         run: |
           echo "🔨 Building Docker image using existing Dockerfile..."
           
+          # Get version for tagging
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          echo "Building image with version tag: ${VERSION_TAG}"
+          
+          # Validate that we have a version
+          if [ -z "${VERSION_TAG}" ]; then
+            echo "❌ Error: Version tag is empty"
+            exit 1
+          fi
+          
           # Build the image using the existing Dockerfile in its original location
           docker build \
             --build-arg APAX_TOKEN="${{ secrets.APAX_TOKEN }}" \
-            --build-arg APAX_VERSION="${{ needs.check-apax-version.outputs.latest-version }}" \
-            --label "apax.version=${{ needs.check-apax-version.outputs.latest-version }}" \
+            --build-arg APAX_VERSION="${VERSION_TAG}" \
+            --label "apax.version=${VERSION_TAG}" \
             --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
-            --label "org.opencontainers.image.description=APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}" \
-            --label "org.opencontainers.image.version=${{ needs.check-apax-version.outputs.latest-version }}" \
+            --label "org.opencontainers.image.description=APAX CI Container with version ${VERSION_TAG}" \
+            --label "org.opencontainers.image.version=${VERSION_TAG}" \
             --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
             --label "build.workflow=${{ github.workflow }}" \
             --label "build.run-id=${{ github.run_id }}" \
             --progress=plain \
             --no-cache \
-            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
+            -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
             dockerfiles/apax-ci-image/ || {
               echo "❌ Build failed, this might be expected if APAX update requires authentication"
               echo "The build process tried to update APAX but authentication might be missing"
