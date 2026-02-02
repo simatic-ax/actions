@@ -5,11 +5,11 @@ on:
   workflow_dispatch:
     inputs:
       file_name:
-        description: Comma-separated list of file paths or directories to replicate.
+        description: Comma-separated list of file paths or directories to replicate. Like "files/libraries/workflows/release-library.yml"
         required: true
         type: string
       target_path:
-        description: Target path where files will be copied.
+        description: Target path where files will be copied. In the format ".github/workflows".
         required: true
         type: string
       repos_to_ignore:
@@ -17,7 +17,7 @@ on:
         required: false
         type: string
       topics_to_include:
-        description: Comma-separated list of topics to include repositories.
+        description: Comma-separated list of topics / tags to include repositories.
         required: false
         type: string
 
