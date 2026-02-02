@@ -30,7 +30,7 @@ runs:
     - name: Replicating Global Workflow
       uses: derberg/manage-files-in-multiple-repositories@v2
       with:
-        github_token: ${{ secrets.DEPLOY_KEY }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}
         patterns_to_include: ${{ inputs.file_name }}
         repos_to_ignore: ${{ inputs.repos_to_ignore }}
         destination: ${{ inputs.target_path }}
