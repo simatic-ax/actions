@@ -284,21 +284,21 @@ jobs:
       - name: Push Docker images
         run: |
           # Push version tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
           
           # Push latest tag
           docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           
           # Push date tag
-          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+          docker push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(date +'%Y%m%d')"
 
       - name: Verify pushed image
         run: |
           echo "✅ Container build and push completed successfully"
           echo "Available tags in Siemens Registry:"
-          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}"
+          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.check-apax-version.outputs.latest-version }}"
           echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+          echo "- ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$(date +'%Y%m%d')"
 
   notify:
     name: Notification
