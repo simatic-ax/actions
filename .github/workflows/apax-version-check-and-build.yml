@@ -274,12 +274,12 @@ jobs:
           DATE_TAG="$(date +'%Y%m%d')"
           
           # Tag with latest
-          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
-                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${VERSION_TAG}" \
+                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-latest"
           
           # Tag with date
-          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
-                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${DATE_TAG}"
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${VERSION_TAG}" \
+                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:apax-ci-image-${DATE_TAG}"
 
       - name: Push Docker images
         run: |
