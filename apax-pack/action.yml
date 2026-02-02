@@ -4,10 +4,10 @@ inputs:
   key:
     description: "Pack with a specific private key"
     required: true
-  key-version-v2:
-    description: "Pack with a specific private key but in version v2"
+  key-version:
+    description: "Version of the key (e.g., v1, v2, v3)"
     required: false
-    default: "false"
+    default: "v1"
   ignore-scripts:
     description: "Pack without executing prepack and postpack scripts"
     required: false
@@ -25,28 +25,28 @@ runs:
         # Change to the project directory
         cd ${{ inputs.path }}
 
-        # base command
-        CMD="apax pack"
-
-        # process inputs
-
-        # --ignore-scripts Flag
-        if [ "${{ inputs.ignore-scripts }}" == "true" ]; then
-          echo "Info: Aadd --ignore-scripts to cmd"
-          CMD="$CMD --ignore-scripts"
-        fi
-        # --key Flag
-        if [ -n "${{ inputs.key }}" ]; then
-          CMD="$CMD --key '${{ inputs.key }}'"
-          # --keyVersion v2, nur wenn key vorhanden ist
-          if [ "${{ inputs.key-version-v2 }}" == "true" ]; then
-            echo "Info: Add key-version-v2"
-            CMD="$CMD --keyVersion v2"
-          fi
-        elif [[ "${{ inputs.key-version-v2 }}" == "true" ]]; then
-          echo "Error: The --keyVersion flag can only be used with the --key flag."
+        # Validate key-version parameter
+        KEY_VERSION="${{ inputs.key-version }}"
+        if ! [[ "$KEY_VERSION" =~ ^v[0-9]+$ ]]; then
+          echo "Error: key-version must start with 'v' followed by an integer (e.g., v1, v2, v3)"
           exit 1
         fi
 
+        # base command
+        CMD="apax pack"
+
+        # process inputs        
+        # --key Flag
+        CMD="$CMD --key '${{ inputs.key }}'"
+
+        # --keyVersion Flag
+        CMD="$CMD --keyVersion $KEY_VERSION"
+
+        # --ignore-scripts Flag
+        if [ "${{ inputs.ignore-scripts }}" == "true" ]; then
+          echo "Info: Add --ignore-scripts to cmd"
+          CMD="$CMD --ignore-scripts"
+        fi
+        
         echo "Running command: $CMD"
         eval $CMD

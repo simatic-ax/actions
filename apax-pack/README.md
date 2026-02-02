@@ -12,7 +12,7 @@ The **Create Apax Package** action creates an Apax package based on the project'
 
 ### Optional Parameters
 
-- **key-version-v2**: Pack with a specific private key but in version v2. Default is `"false"`.
+- **key-version**: Version of the key (e.g., v1, v2, v3). Must start with 'v' followed by an integer. Default is `"v1"`.
 - **ignore-scripts**: Pack without executing prepack and postpack scripts. Default is `"false"`.
 - **path**: The relative path to the project which is to be packed. Default is `"."`.
 
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -42,18 +42,8 @@ jobs:
         uses: ./apax-pack # replace with the correct path or repository
         with:
           key: ${{ secrets.APAX_SIGNKEY }}
-          key-version-v2: "true"
+          key-version: "v2"
           ignore-scripts: "false"
 ```
-
-## Failure Scenarios
-
-The action will fail under the following conditions:
-
-1. **Missing Key**: If the `key` parameter is not provided, the action will fail with an error message.
-2. **Invalid Key Version Usage**: If the `key-version-v2` flag is set to `true` without the `key` parameter, the action will fail with an error message.
-
-Ensure that the `key` parameter is provided, the `key-version-v2` flag is used correctly to avoid these failures.
-
 ---
 [Back to main page](../README.md)
