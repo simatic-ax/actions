@@ -291,6 +291,7 @@ jobs:
           
           # Build the image using the existing Dockerfile
           docker build \
+            --build-arg APAX_TOKEN="${{ secrets.APAX_TOKEN }}" \
             --label "apax.version=${{ needs.check-apax-version.outputs.latest-version }}" \
             --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             --label "org.opencontainers.image.description=APAX CI Container with version ${{ needs.check-apax-version.outputs.latest-version }}" \

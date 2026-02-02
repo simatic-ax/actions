@@ -64,13 +64,17 @@ RUN set -ex \
     && mkdir apax-dep \
     && cd apax-dep \
     && npm init -y \
+    && if [ -z "$APAX_TOKEN" ]; then \
+        echo "Error: APAX_TOKEN is empty. Please provide a valid APAX_TOKEN build argument."; \
+        exit 1; \
+    fi \
     && curl -f -H "Authorization: bearer $APAX_TOKEN" \
         https://api.simatic-ax.siemens.io/apax/login?format=npmrc > .npmrc \
     && npm add "@ax/apax-signed@4.1.1" \
     && npm install \
     && cd node_modules/@ax/apax-signed \
     && { echo "-----BEGIN PUBLIC KEY-----"; \
-        cat dockerfiles/apax-ci-image/apax-public-key.txt | tr -d '\r\n'; \
+        cat /tmp/apax-public-key.txt | tr -d '\r\n'; \
         echo ""; \
         echo "-----END PUBLIC KEY-----"; } > public.pem \
     && openssl dgst -sha256 -verify public.pem -signature ax-apax.sig ax-apax-*.tgz \
