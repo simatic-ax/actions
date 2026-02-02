@@ -103,12 +103,41 @@ jobs:
             echo "Output was: '$NEW_APAX_OUTPUT'"
           fi
 
-  build-and-push:
-    name: Build and push container
+  check-existing-image:
+    name: Check if image already exists
     needs: check-apax-version
     runs-on: ubuntu-22.04
+    if: needs.check-apax-version.outputs.new-version-available == 'true'
+    outputs:
+      image-exists: ${{ steps.check-image.outputs.exists }}
+    steps:
+      - name: Log in to container registry
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Check if image exists
+        id: check-image
+        run: |
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          IMAGE_URL="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}"
+          
+          echo "🔍 Checking if image exists: ${IMAGE_URL}"
+          
+          # Try to pull the image manifest to check if it exists
+          if docker manifest inspect "${IMAGE_URL}" >/dev/null 2>&1; then
+            echo "✅ Image already exists: ${IMAGE_URL}"
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Image does not exist: ${IMAGE_URL}"
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+  build-and-push:
+    name: Build and push container
+    needs: [check-apax-version, check-existing-image]
+    runs-on: ubuntu-22.04
     if: |
-      needs.check-apax-version.outputs.new-version-available == 'true' || 
+      (needs.check-apax-version.outputs.new-version-available == 'true' && needs.check-existing-image.outputs.image-exists == 'false') || 
       github.event.inputs.force_build == 'true'
     steps:
       - name: Checkout repository
@@ -303,7 +332,7 @@ jobs:
 
   notify:
     name: Notification
-    needs: [check-apax-version, build-and-push]
+    needs: [check-apax-version, check-existing-image, build-and-push]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -330,3 +359,11 @@ jobs:
         run: |
           echo "ℹ️ No new APAX version available"
           echo "Current version: ${{ needs.check-apax-version.outputs.current-version }}"
+
+      - name: Image already exists
+        if: |
+          needs.check-apax-version.outputs.new-version-available == 'true' && 
+          needs.check-existing-image.outputs.image-exists == 'true'
+        run: |
+          echo "ℹ️ Container image already exists for APAX version ${{ needs.check-apax-version.outputs.latest-version }}"
+          echo "Skipping build as image is already available"
