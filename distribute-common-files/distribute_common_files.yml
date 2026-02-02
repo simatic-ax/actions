@@ -1,18 +1,32 @@
 name: Distribute common files
+# Job to update files in all repros. Based on https://github.com/derberg/manage-files-in-multiple-repositories 
 
 on:
   workflow_dispatch: {} #to enable manual triggering of the action
   inputs:
     file_name:
       description: |
-        like "files/libraries/workflows/release-library.yml" more spilted with "," (maybe - eigentlich erstmal nur eine file)
+        Comma-separated list of file paths or directories that should be handled by this action and copied or updated or removed in other repositories. Now this option is self aware not only of creation and modification but also deletion of file that match the pattern. This option cannot be used at the same time with "patterns_to_remove", these fields are mutually exclusive. In the format .github/workflows. Internally it is handled by standard JavaScript includes function. 
+        Like "files/libraries/workflows/release-library.yml" spilted with "," by more files.
       required: true
       type: string
     target_path:
       description: |
-        like ".github/workflows"
+        Name of the directory where all files matching "file_name" will be copied. 
+        In the format .github/workflows.
       required: true
       type: string
+    repos_to_ignore:
+      description: |
+        Comma-separated list of repositories that should not get updates from this action. Action already ignores the repo in which the action is triggered so you do not need to add it explicitly. In the format repo1,repo2.  
+      required: false
+      type: string
+    topics_to_include:
+      description: |
+        Comma-separated list of topics that should get updates from this action. Repos that do not contain one of the specified topics will get appended to the repos_to_ignore list. In the format topic1,topic2.
+      required: false
+      type: string
+
 
 jobs:
   deploy_common_file:
@@ -25,10 +39,11 @@ jobs:
           with:
             github_token: ${{ secrets.DEPLOY_KEY }}
             patterns_to_include: ${{ github.event.inputs.file_name }}
+            repos_to_ignore: ${{ github.event.inputs.repos_to_ignore }}
             destination:  ${{ github.event.inputs.target_path }}
-            topics_to_include: library
+            topics_to_include: ${{ github.event.inputs.topics_to_include }}
             exclude_private: false
             exclude_forked: true
             committer_username: simatic-ax-bot
-            commit_message: "ci: distribute workflows for libraries"
+            commit_message: "chore: update the file ${{ github.event.inputs.file_name }} at ${{ github.event.inputs.target_path }} from deploy common filein action repro"
   
