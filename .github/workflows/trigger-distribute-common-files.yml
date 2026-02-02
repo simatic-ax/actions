@@ -31,6 +31,8 @@ jobs:
   run-distribute-common-files:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
       - name: Run Distribute Common Files Action
         uses: ./distribute-common-files
         with:
