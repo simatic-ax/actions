@@ -222,57 +222,11 @@ jobs:
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
 
-      - name: Use existing Dockerfile
-        run: |
-          echo "📄 Using existing Dockerfile from dockerfiles/apax-ci-image..."
-          
-          # Copy the existing Dockerfile to the current directory
-          if [ -f "dockerfiles/apax-ci-image/Dockerfile" ]; then
-            cp dockerfiles/apax-ci-image/Dockerfile ./Dockerfile
-            echo "✅ Successfully copied existing Dockerfile"
-            echo "Dockerfile content:"
-            cat ./Dockerfile
-          else
-            echo "❌ Dockerfile not found at dockerfiles/apax-ci-image/Dockerfile"
-            ls -la dockerfiles/ || echo "dockerfiles directory not found"
-            ls -la dockerfiles/apax-ci-image/ || echo "apax-ci-image directory not found"
-            exit 1
-          fi
-
-      - name: Generate image metadata
-        id: meta
-        run: |
-          echo "🏷️ Generating image metadata..."
-          
-          # Generate version tag using the latest APAX version
-          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
-          echo "version-tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
-          
-          # Generate date tag for additional tagging
-          DATE_TAG="$(date +'%Y%m%d')"
-          echo "date-tag=${DATE_TAG}" >> $GITHUB_OUTPUT
-          
-          echo "Generated tags:"
-          echo "- Version tag: ${VERSION_TAG}"
-          echo "- Date tag: ${DATE_TAG}"
-
-      - name: Copy additional build context
-        run: |
-          echo "📋 Copying build context from dockerfiles/apax-ci-image..."
-          
-          # Copy any additional files that might be needed for the build
-          if [ -d "dockerfiles/apax-ci-image" ]; then
-            # Copy all files except Dockerfile (we already copied it)
-            find dockerfiles/apax-ci-image -type f ! -name Dockerfile -exec cp {} ./ \;
-            echo "✅ Copied additional build context files"
-            ls -la
-          fi
-
       - name: Build Docker image
         run: |
           echo "🔨 Building Docker image using existing Dockerfile..."
           
-          # Build the image using the existing Dockerfile
+          # Build the image using the existing Dockerfile in its original location
           docker build \
             --build-arg APAX_TOKEN="${{ secrets.APAX_TOKEN }}" \
             --build-arg APAX_VERSION="${{ needs.check-apax-version.outputs.latest-version }}" \
@@ -286,7 +240,7 @@ jobs:
             --progress=plain \
             --no-cache \
             -t "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
-            . || {
+            dockerfiles/apax-ci-image/ || {
               echo "❌ Build failed, this might be expected if APAX update requires authentication"
               echo "The build process tried to update APAX but authentication might be missing"
               exit 1
@@ -296,20 +250,26 @@ jobs:
         run: |
           echo "🧪 Testing the newly built image..."
           
+          # Generate version tag for testing
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          
           # Test if APAX is working in the new image
-          docker run --rm "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" apax --version || {
+          docker run --rm "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" apax --version || {
             echo "⚠️ APAX test failed, but continuing with deployment"
           }
 
       - name: Tag image with additional tags
         run: |
+          VERSION_TAG="${{ needs.check-apax-version.outputs.latest-version }}"
+          DATE_TAG="$(date +'%Y%m%d')"
+          
           # Tag with latest
-          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
                      "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           
           # Tag with date
-          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version-tag }}" \
-                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.date-tag }}"
+          docker tag "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION_TAG}" \
+                     "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${DATE_TAG}"
 
       # - name: Push Docker images
       #   run: |
