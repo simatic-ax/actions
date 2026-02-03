@@ -36,6 +36,7 @@ jobs:
       - name: Run Distribute Common Files Action
         uses: ./distribute-common-files
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           file_name: ${{ inputs.file_name }}
           target_path: ${{ inputs.target_path }}
           repos_to_ignore: ${{ inputs.repos_to_ignore }}
