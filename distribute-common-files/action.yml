@@ -1,0 +1,42 @@
+name: Distribute Common Files
+description: Action to replicate and update common files in multiple repositories.
+# Job to update files in all repros. Based on https://github.com/derberg/manage-files-in-multiple-repositories 
+
+inputs:
+  file_name:
+    description: |
+      Comma-separated list of file paths or directories that should be handled by this action and copied or updated or removed in other repositories. Now this option is self aware not only of creation and modification but also deletion of file that match the pattern. This option cannot be used at the same time with "patterns_to_remove", these fields are mutually exclusive. In the format .github/workflows. Internally it is handled by standard JavaScript includes function. 
+      Like "files/libraries/workflows/release-library.yml" spilted with "," by more files.
+    required: true
+  target_path:
+    description: |
+      Name of the directory where all files matching "file_name" will be copied. 
+      For example .github/workflows.
+    required: true
+  repos_to_ignore:
+    description: |
+      Comma-separated list of repositories that should not get updates from this action. 
+      For example repo1,repo2.
+    required: false
+  topics_to_include:
+    description: |
+      Comma-separated list of topics to identify repositories to update. 
+      For example topic1,topic2.
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Replicating Global Workflow
+      uses: derberg/manage-files-in-multiple-repositories@v2
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        patterns_to_include: ${{ inputs.file_name }}
+        repos_to_ignore: ${{ inputs.repos_to_ignore }}
+        destination: ${{ inputs.target_path }}
+        topics_to_include: ${{ inputs.topics_to_include }}
+        exclude_private: false
+        exclude_forked: true
+        committer_username: simatic-ax-bot
+        commit_message: "chore: update the file ${{ inputs.file_name }} at ${{ inputs.target_path }} from deploy common file in action repro"
+  
