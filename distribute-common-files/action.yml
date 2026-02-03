@@ -23,16 +23,18 @@ inputs:
       Comma-separated list of topics to identify repositories to update. 
       For example topic1,topic2.
     required: false
+  github_token:
+   description: |
+      Token to use GitHub API. It must have "repo" and "workflow" scopes so it can push to repo and edit workflows. 
+   required: true
 
 runs:
   using: composite
   steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
     - name: Replicating Global Workflow
       uses: derberg/manage-files-in-multiple-repositories@v2
       with:
-        github_token: ${{ secrets.DEPLOY_KEY }}
+        github_token: ${{ inputs.github_token }}
         patterns_to_include: ${{ inputs.file_name }}
         repos_to_ignore: ${{ inputs.repos_to_ignore }}
         destination: ${{ inputs.target_path }}
