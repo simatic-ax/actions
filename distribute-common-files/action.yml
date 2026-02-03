@@ -2,7 +2,6 @@ name: Distribute Common Files
 description: Action to replicate and update common files in multiple repositories.
 # Job to update files in all repros. Based on https://github.com/derberg/manage-files-in-multiple-repositories 
 
-
 inputs:
   file_name:
     description: |
