@@ -46,5 +46,5 @@ runs:
         exclude_private: false
         exclude_forked: true
         committer_username: simatic-ax-bot
-        commit_message: ${{ inputs.commit_message }}
+        commit_message: ${{ inputs.commit_title }}
   

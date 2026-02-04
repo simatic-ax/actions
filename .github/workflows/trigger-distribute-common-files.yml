@@ -26,9 +26,9 @@ on:
           Comma-separated list of topics that should get updates from this action. Repos that do not contain one of the specified topics will get appended to the repos_to_ignore list. In the format topic1,topic2.
         required: false
         type: string
-      commit_message:
+      commit_title:
         description: |
-          'The commit message, which creates the pull request in all repositories. Also, be sure to observe conventional commit compliance! Like "chore: ..."'
+          'The commit message / title, which creates the pull request in all repositories. Also, be sure to observe conventional commit compliance! Like "chore: ..."'
         required: true
         type: string
 
@@ -46,4 +46,4 @@ jobs:
           target_path: ${{ inputs.target_path }}
           repos_to_ignore: ${{ inputs.repos_to_ignore }}
           topics_to_include: ${{ inputs.topics_to_include }}
-          commit_message: ${{ inputs.commit_message }}
+          commit_title: ${{ inputs.commit_title }}
