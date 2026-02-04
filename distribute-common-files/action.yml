@@ -27,6 +27,10 @@ inputs:
    description: |
       Token to use GitHub API. It must have "repo" and "workflow" scopes so it can push to repo and edit workflows. 
    required: true
+  commit_message:
+   description: |
+      The commit message, which creates the pull request in all repositories. Also, be sure to observe conventional commit compliance! 
+   required: true
 
 runs:
   using: composite
@@ -42,5 +46,5 @@ runs:
         exclude_private: false
         exclude_forked: true
         committer_username: simatic-ax-bot
-        commit_message: "chore: update the file ${{ inputs.file_name }} at ${{ inputs.target_path }} from deploy common file in action repro"
+        commit_message: ${{ inputs.commit_title }}
   
