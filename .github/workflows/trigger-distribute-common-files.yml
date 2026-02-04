@@ -47,3 +47,4 @@ jobs:
           repos_to_ignore: ${{ inputs.repos_to_ignore }}
           topics_to_include: ${{ inputs.topics_to_include }}
           commit_title: ${{ inputs.commit_title }}
+          committer_username: ${{ github.actor }}
