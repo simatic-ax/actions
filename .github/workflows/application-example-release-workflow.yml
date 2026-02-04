@@ -4,7 +4,8 @@ name: Application example release workflow
 
 # Start the workflow as soon as a release has been published via the UI
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: read    # required for checkout
