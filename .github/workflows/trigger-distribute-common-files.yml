@@ -1,0 +1,50 @@
+name: Manual Trigger of Distribute Common Files
+# For more information check distribute-common-files
+
+on:
+  workflow_dispatch: 
+    inputs:
+      file_name:
+        description: |
+          Comma-separated list of file paths or directories that should be handled by this action and copied or updated or removed in other repositories. Now this option is self aware not only of creation and modification but also deletion of file that match the pattern. This option cannot be used at the same time with "patterns_to_remove", these fields are mutually exclusive. In the format .github/workflows. Internally it is handled by standard JavaScript includes function. 
+          Like "files/libraries/workflows/release-library.yml" spilted with "," by more files.
+        required: true
+        type: string
+      target_path:
+        description: |
+          Name of the directory where all files matching "file_name" will be copied. 
+          In the format .github/workflows.
+        required: true
+        type: string
+      repos_to_ignore:
+        description: |
+          Comma-separated list of repositories that should not get updates from this action. Action already ignores the repo in which the action is triggered so you do not need to add it explicitly. In the format repo1,repo2.  
+        required: false
+        type: string
+      topics_to_include:
+        description: |
+          Comma-separated list of topics that should get updates from this action. Repos that do not contain one of the specified topics will get appended to the repos_to_ignore list. In the format topic1,topic2.
+        required: false
+        type: string
+      commit_title:
+        description: |
+          'The commit message / title, which creates the pull request in all repositories. Also, be sure to observe conventional commit compliance! Like "chore: ..."'
+        required: true
+        type: string
+
+jobs:
+  run-distribute-common-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Run Distribute Common Files Action
+        uses: ./distribute-common-files
+        with:
+          github_token: ${{ secrets.DISTRIBUTE_COMMON_FILES_TOKEN }}
+          file_name: ${{ inputs.file_name }}
+          target_path: ${{ inputs.target_path }}
+          repos_to_ignore: ${{ inputs.repos_to_ignore }}
+          topics_to_include: ${{ inputs.topics_to_include }}
+          commit_title: ${{ inputs.commit_title }}
+          committer_username: ${{ github.actor }}
