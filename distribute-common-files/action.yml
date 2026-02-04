@@ -31,6 +31,10 @@ inputs:
    description: |
       The commit message, which creates the pull request in all repositories. Also, be sure to observe conventional commit compliance! 
    required: true
+  committer_username:
+   description: |
+      The GitHub username of the user who is making the changes.
+   required: true
 
 runs:
   using: composite
@@ -45,6 +49,6 @@ runs:
         topics_to_include: ${{ inputs.topics_to_include }}
         exclude_private: false
         exclude_forked: true
-        committer_username: simatic-ax-bot
+        committer_username: ${{ inputs.committer_username }}
         commit_message: ${{ inputs.commit_title }}
   
