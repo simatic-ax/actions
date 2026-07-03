@@ -5,6 +5,8 @@
 - The workflow trigger for the application example release workflow has been changed from `workflow_dispatch` to `release (published)`
 - The version of the referenced action `upload-artifact` has been bumped from v4 to v6
 - The version of the referenced action `download-artifact` has been bumped from v4 to v7
+- apax-install
+    - Added the optional `trace` parameter to enable trace logging (`--log trace`) during dependency installation
 
 ## [4.0.0] - 2025-11-14
 ### Changed

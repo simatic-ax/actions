@@ -17,6 +17,10 @@ inputs:
     description: "The relative path to the project whose dependencies are to be installed"
     required: false
     default: "."
+  trace:
+    description: "Enables trace logging for debugging purposes"
+    required: false
+    default: "false"
 
 runs:
   using: "composite"
@@ -47,6 +51,11 @@ runs:
         elif [[ "${{ inputs.strict }}" == "true" ]]; then
           echo "Error: The --strict flag can only be used with the --catalog flag."
           exit 1
+        fi
+
+        if [[ "${{ inputs.trace }}" == "true" ]]; then
+          echo "Info: Add --log trace to cmd"
+          cmd+=" --log trace"
         fi
 
         echo "Running command: $cmd"

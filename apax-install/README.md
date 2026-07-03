@@ -12,6 +12,7 @@ The **Install Dependencies** action installs the dependencies and devDependencie
 - **catalog**: Installs dependencies according to the catalog. Default is `"false"`.
 - **strict**: Applies the exact package versions from the catalog. Default is `"false"`.
 - **path**: The relative path to the project whose dependencies are to be installed. Default is `"."`.
+- **trace**: Enables trace logging by adding `--log trace` to `apax install`. Default is `"false"`.
 
 ### Not Yet Supported Parameters
 
@@ -45,6 +46,7 @@ jobs:
           immutable: "true"
           catalog: "false"
           strict: "false"
+          trace: "false"
 ```
 ## Failure Scenarios
 
