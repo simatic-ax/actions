@@ -49,11 +49,6 @@ runs:
           exit 1
         fi
 
-        if [[ "${{ inputs.verbose }}" == "true" ]]; then
-          echo "Info: Add --verbose to cmd"
-          cmd+=" --verbose"
-        fi
-
         echo "Running command: $cmd"
         eval "$cmd"
   
