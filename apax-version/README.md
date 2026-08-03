@@ -12,6 +12,7 @@ The **Set Version** action sets the version property of the `apax.yml` file to t
 
 ### Optional Parameters
 
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 - **path**: The relative path to the project which is to be versioned. Default is `"."`. Meaning the current directory wherein the action is being executed
 
 ## Example Usage
@@ -31,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

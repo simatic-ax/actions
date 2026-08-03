@@ -10,6 +10,10 @@ inputs:
   predefined-preprocessor-symbols:
     description: "A newline-delimited string of preprocessor symbols to define"
     required: false
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
   path:
     description: "The relative path to the project which is to be built"
     required: false
@@ -68,6 +72,17 @@ runs:
           CMD="$CMD --variables PREDEFINED_PREPROCESSOR=$PREDEFINED_PREPROCESSOR"
         else
           echo "Info: defined-preprocessor-symbols was not set"
+        fi
+
+        # --log <level>
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          CMD="$CMD --log $LOG_LEVEL"
         fi
 
         echo "Running command: $CMD"

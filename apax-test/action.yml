@@ -1,8 +1,12 @@
 name: "Test source code"
 description: "Tests the source code based on the projects apax.yaml file"
 inputs:
+  ignore-scripts:
+    description: "Do not run pretest and posttest scripts"
+    required: false
+    default: "false"
   ingore-scripts:
-    description: " Do not run pretest and posttest scripts"
+    description: "DEPRECATED (typo). Use 'ignore-scripts' instead. Kept for backward compatibility and will be removed in a future major version."
     required: false
     default: "false"
   playlist:
@@ -13,10 +17,14 @@ inputs:
     description: "Specifies to get coverage"
     required: false
     default: "false"
-  loglevel:
-    description: "Specifies log level --> `info`(default), `debug` "
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
     required: false
-    default: "Info"
+    default: ""
+  loglevel:
+    description: "DEPRECATED. Use 'log-level' instead. Kept for backward compatibility and will be removed in a future major version."
+    required: false
+    default: ""
   path:
     description: "The relative path to the project which is to be built"
     required: false
@@ -57,15 +65,18 @@ runs:
 
         # base command
         CMD="apax test"
-        
+
         # process inputs
-        
-        # --ignore-scripts Flag
-        if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+
+        # --ignore-scripts Flag (accepts both the correct name and the deprecated typo alias)
+        if [ "${{ inputs.ignore-scripts }}" == "true" ] || [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+          if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+            echo "Warning: The input 'ingore-scripts' is deprecated (typo). Use 'ignore-scripts' instead."
+          fi
           echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
-        
+
         # --playlist path
         if [ -n "${{ inputs.playlist }}" ]; then
           if [ -f "${{ inputs.playlist }}" ]; then
@@ -76,17 +87,29 @@ runs:
             exit 1
           fi
         fi
-        
+
         # --coverage Flag
         if [ "${{ inputs.coverage }}" == "true" ]; then
           echo "Info: Add --coverage to cmd"
           CMD="$CMD --coverage"
         fi
-        
-        # --loglevel
-        if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
-          echo "Info: Add --loglevel with parameter ${{ inputs.loglevel }} to cmd"
-          CMD="$CMD --loglevel ${{ inputs.loglevel }}"
+
+        # --log <level> (log-level is the current input; loglevel is kept as a deprecated alias)
+        LOG_LEVEL="${{ inputs.log-level }}"
+        LEGACY_LOG_LEVEL="${{ inputs.loglevel }}"
+        if [ -z "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
+          echo "Warning: The input 'loglevel' is deprecated. Use 'log-level' instead."
+          LOG_LEVEL="$LEGACY_LOG_LEVEL"
+        fi
+        # normalize to lowercase for backward compatibility with previous default value 'Info'
+        LOG_LEVEL="$(echo "$LOG_LEVEL" | tr '[:upper:]' '[:lower:]')"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          CMD="$CMD --log $LOG_LEVEL"
         fi
 
         echo "Running command: $CMD"

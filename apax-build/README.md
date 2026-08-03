@@ -11,6 +11,7 @@ The **Build Source Code** action builds the source code based on the project's `
 - **apax-build-args**: A newline-delimited string of arguments to pass to the `apax build` command. The default will be taken from the `apax.yml`.
 - **apax-build-targets**: A newline-delimited string of targets to pass to the `apax build` command. The default will be taken from the `apax.yml`.
 - **predefined-preprocessor-symbols**: A newline-delimited string of preprocessor symbols to define. The symbols are passed to the `apax build` command. The default will be taken from the `apax.yml`.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 
 ## Example Usage
 
@@ -29,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

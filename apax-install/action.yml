@@ -13,6 +13,10 @@ inputs:
     description: "Applies the exact package versions from the catalog"
     required: false
     default: "false"
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
   path:
     description: "The relative path to the project whose dependencies are to be installed"
     required: false
@@ -49,9 +53,14 @@ runs:
           exit 1
         fi
 
-        if [[ "${{ inputs.verbose }}" == "true" ]]; then
-          echo "Info: Add --verbose to cmd"
-          cmd+=" --verbose"
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [[ -n "$LOG_LEVEL" ]]; then
+          if [[ "$LOG_LEVEL" != "trace" && "$LOG_LEVEL" != "debug" && "$LOG_LEVEL" != "info" ]]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          cmd+=" --log $LOG_LEVEL"
         fi
 
         echo "Running command: $cmd"

@@ -11,6 +11,7 @@ The **Update Apax** action updates the Apax tool itself. Use this action with ca
 - **version**: The version of Apax to update to. If not specified, the latest version within the current major version will be installed.
 - **check**: Check whether an update is available, but do not install it. Default is `"false"`.
 - **force-latest**: Force update to the latest version. Be aware that this could be a major version update which might include breaking changes. Default is `"false"`.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 
 ## Example Usage
 
@@ -29,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
