@@ -4,6 +4,13 @@
 
 The **Build Source Code** action builds the source code based on the project's `apax.yaml` file. This action is useful for automating the build process in your CI/CD pipelines.
 
+## Prerequisites
+
+`apax build` is a **contributed command**, i.e. it is provided by an apax package (typically `@ax/sdk` and related packages) rather than by apax core. This action therefore requires:
+
+- `apax install` has already been executed in the project (e.g. via the `apax-install` action) so that the packages contributing the `build` command are available.
+- The project's `apax.yml` declares the dependencies that provide the `build` command.
+
 ## Inputs
 
 ### Optional Parameters
@@ -11,7 +18,7 @@ The **Build Source Code** action builds the source code based on the project's `
 - **apax-build-args**: A newline-delimited string of arguments to pass to the `apax build` command. The default will be taken from the `apax.yml`.
 - **apax-build-targets**: A newline-delimited string of targets to pass to the `apax build` command. The default will be taken from the `apax.yml`.
 - **predefined-preprocessor-symbols**: A newline-delimited string of preprocessor symbols to define. The symbols are passed to the `apax build` command. The default will be taken from the `apax.yml`.
-- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
+- **verbose**: If `true`, adds `--verbose` to the command for more detailed build output. Default: `false`. Note: `apax build` is a contributed command and does not support the apax core `--log` option.
 
 ## Example Usage
 
@@ -40,13 +47,13 @@ jobs:
         with:
           apax-build-args: |
             --debug
-            --log Debug
           apax-build-targets: |
             llvm
             1500
           predefined-preprocessor-symbols: |
             SYMBOL1
             SYMBOL2
+          verbose: "true"
 ```
 
 ## Failure Scenarios

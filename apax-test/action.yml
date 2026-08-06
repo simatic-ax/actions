@@ -18,7 +18,7 @@ inputs:
     required: false
     default: "false"
   log-level:
-    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    description: "Log level for the 'apax test' command. Allowed values: info, debug. Note: 'apax test' is a contributed command (from @ax/axunit) and does not support the 'trace' level that apax core commands accept. Mapped to '--loglevel'."
     required: false
     default: ""
   loglevel:
@@ -69,10 +69,18 @@ runs:
         # process inputs
 
         # --ignore-scripts Flag (accepts both the correct name and the deprecated typo alias)
-        if [ "${{ inputs.ignore-scripts }}" == "true" ] || [ "${{ inputs.ingore-scripts }}" == "true" ]; then
-          if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
-            echo "Warning: The input 'ingore-scripts' is deprecated (typo). Use 'ignore-scripts' instead."
-          fi
+        # Note: both inputs default to "false", so we only treat "true" as an explicit user intent.
+        IGNORE_SCRIPTS="${{ inputs.ignore-scripts }}"
+        LEGACY_IGNORE_SCRIPTS="${{ inputs.ingore-scripts }}"
+        if [ "$IGNORE_SCRIPTS" == "true" ] && [ "$LEGACY_IGNORE_SCRIPTS" == "true" ]; then
+          echo "Error: The inputs 'ignore-scripts' and 'ingore-scripts' are mutually exclusive. 'ingore-scripts' is deprecated (typo); please use only 'ignore-scripts'."
+          exit 1
+        fi
+        if [ "$LEGACY_IGNORE_SCRIPTS" == "true" ]; then
+          echo "Warning: The input 'ingore-scripts' is deprecated (typo). Use 'ignore-scripts' instead."
+          IGNORE_SCRIPTS="true"
+        fi
+        if [ "$IGNORE_SCRIPTS" == "true" ]; then
           echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
@@ -94,9 +102,17 @@ runs:
           CMD="$CMD --coverage"
         fi
 
-        # --log <level> (log-level is the current input; loglevel is kept as a deprecated alias)
+        # --loglevel <level>
+        # Note: 'apax test' is a contributed command from @ax/axunit. It exposes its own
+        # '-l/--loglevel' option (values: info, debug) and does NOT support the apax core
+        # '--log' option nor the 'trace' level.
+        # log-level is the current input; loglevel is kept as a deprecated alias.
         LOG_LEVEL="${{ inputs.log-level }}"
         LEGACY_LOG_LEVEL="${{ inputs.loglevel }}"
+        if [ -n "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
+          echo "Error: The inputs 'log-level' and 'loglevel' are mutually exclusive. 'loglevel' is deprecated; please use only 'log-level'."
+          exit 1
+        fi
         if [ -z "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
           echo "Warning: The input 'loglevel' is deprecated. Use 'log-level' instead."
           LOG_LEVEL="$LEGACY_LOG_LEVEL"
@@ -104,12 +120,16 @@ runs:
         # normalize to lowercase for backward compatibility with previous default value 'Info'
         LOG_LEVEL="$(echo "$LOG_LEVEL" | tr '[:upper:]' '[:lower:]')"
         if [ -n "$LOG_LEVEL" ]; then
-          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
-            echo "Error: log-level must be one of: trace, debug, info"
+          if [ "$LOG_LEVEL" == "trace" ]; then
+            echo "Error: log-level 'trace' is not supported by 'apax test' (contributed command). Allowed values: info, debug."
             exit 1
           fi
-          echo "Info: Add --log $LOG_LEVEL to cmd"
-          CMD="$CMD --log $LOG_LEVEL"
+          if [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: info, debug"
+            exit 1
+          fi
+          echo "Info: Add --loglevel $LOG_LEVEL to cmd"
+          CMD="$CMD --loglevel $LOG_LEVEL"
         fi
 
         echo "Running command: $CMD"

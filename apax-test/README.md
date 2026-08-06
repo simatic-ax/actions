@@ -4,6 +4,13 @@
 
 The **Test Source Code** action tests the source code based on the project's `apax.yaml` file. This action is useful for automating the testing process in your CI/CD pipelines.
 
+## Prerequisites
+
+`apax test` is a **contributed command**, i.e. it is provided by an apax package (typically `@ax/axunit`) rather than by apax core. This action therefore requires:
+
+- `apax install` has already been executed in the project (e.g. via the `apax-install` action) so that the packages contributing the `test` command are available.
+- The project's `apax.yml` declares the dependencies that provide the `test` command.
+
 ## Inputs
 
 ### Optional Parameters
@@ -11,7 +18,7 @@ The **Test Source Code** action tests the source code based on the project's `ap
 - **ignore-scripts**: Do not run pretest and posttest scripts. Default is `"false"`.
 - **playlist**: Specifies the playlist filepath. Default is `""`.
 - **coverage**: Specifies to get coverage. Default is `"false"`.
-- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
+- **log-level**: Log level for the `apax test` command. Allowed values: `info`, `debug`. Default is empty (test-command default: `info`). Mapped to `--loglevel`. Note: `apax test` is a contributed command (from `@ax/axunit`) and does **not** support the `trace` level that apax core commands accept.
 - **path**: The relative path to the project which is to be tested. Default is `"."`.
 
 ### Deprecated Parameters
@@ -64,7 +71,8 @@ jobs:
 The action will fail under the following conditions:
 
 1. **Invalid Playlist Path**: If the specified playlist path does not exist, the action will fail with an error message.
-2. **Invalid Log Level**: If the specified log level is not one of `trace`, `debug`, `info`, the action will fail with an error message.
+2. **Invalid Log Level**: If the specified log level is not one of `info`, `debug`, the action will fail with an error message. `trace` is explicitly rejected because `apax test` does not support it.
+3. **Mutually Exclusive Inputs**: If both `log-level` and the deprecated `loglevel` (or both `ignore-scripts` and the deprecated `ingore-scripts`) are set, the action will fail.
 
 
 Ensure that the `playlist` path exists and the `log-level` is correctly specified to avoid these failures.
