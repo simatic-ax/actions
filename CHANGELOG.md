@@ -24,6 +24,11 @@
 - `apax-install/README.md`: removed the obsolete "Not Yet Supported Parameters" entry for `installStrategy`, which no longer exists in apax 4.x.
 - `apax-build`: removed the previously added `log-level` input; `apax build` is a contributed command and does not accept `--log`. Replaced with `verbose` (see Added).
 - `apax-build/README.md`: removed `--log Debug` from the example `apax-build-args`, which would have failed at runtime because `apax build` does not accept `--log`.
+- `apax-build/README.md`: fixed "Failure Scenarios" numbering (was starting at `2.`).
+- `apax-version/README.md`: fixed typo `simatic-ax/ations/apax-version@v4` -> `simatic-ax/actions/apax-version@v4` in the example workflow.
+- `apax-self-update/README.md`: fixed title heading level (was `###`, now `#`).
+- `apax-templatify/README.md`: removed duplicate `working-directory` entry (was listed under both Mandatory and Optional Parameters) and corrected the `registry-url` description.
+- `apax-test/README.md`: added missing `@v4` version tag to the example `uses: simatic-ax/actions/apax-test` step.
 
 ## [4.0.0] - 2025-11-14
 ### Changed

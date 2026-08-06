@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Test Source Code
-        uses: simatic-ax/actions/apax-test 
+        uses: simatic-ax/actions/apax-test@v4
         with:
           ignore-scripts: "true"
           playlist: "path/to/playlist"

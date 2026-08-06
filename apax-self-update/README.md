@@ -1,4 +1,4 @@
-### Update Apax Action
+# Update Apax Action
 
 ## Overview
 

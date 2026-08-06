@@ -38,7 +38,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set Version
-        uses: simatic-ax/ations/apax-version@v4
+        uses: simatic-ax/actions/apax-version@v4
         with:
           version: "1.2.3"
 ```
