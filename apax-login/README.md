@@ -13,6 +13,7 @@ The **Apax Login** action performs a login to the SIMATIC AX registry and option
 ### Optional Parameters
 
 - **registries**: A newline-delimited string of registries with URL and token (format: `url1,token1\nurl2,token2...`). Default is an empty string.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 
 ## Example Usage
 
@@ -31,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

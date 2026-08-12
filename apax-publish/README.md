@@ -12,7 +12,8 @@ The **Publish Apax Package** action publishes an Apax package to one or multiple
 
 ### Optional Parameters
 
-- **tag**: The tag to apply to the published package. Default is `"latest"`.
+- **tag**: The tag to apply to the published package. Must follow apax tag naming rules: lowercase only, must not start with a digit or the letter `v`, and must not be a valid semantic version. Default is `"latest"`.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 - **path**: The relative path to the folder where the Apax package is located. Default is `"."`.
 
 ## Example Usage
@@ -32,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -51,7 +52,8 @@ The action will fail under the following conditions:
 
 1. **No Package Found**: If no `.apax.tgz` package is found in the specified path, the action will fail with an error message.
 2. **Multiple Packages Found**: If multiple `.apax.tgz` packages are found in the specified path, the action will fail with an error message.
-3. **Invalid URL Format**: If any provided URL in the `registries` input does not match the expected URL format, the action will fail with an error message.
+3. **Invalid Tag**: If the provided `tag` contains uppercase characters, starts with a digit or `v`, or is a valid semantic version, the action will fail with an error message.
+4. **Invalid URL Format**: If any provided URL in the `registries` input does not match the expected URL format, the action will fail with an error message.
 
 Ensure that the `registries` input follows the correct format and that the `path` parameter points to a valid directory containing a single `.apax.tgz` package to avoid these failures.
 

@@ -11,11 +11,8 @@ The **Install Dependencies** action installs the dependencies and devDependencie
 - **immutable**: Install all dependencies and devDependencies from the `apax-lock.json` or throw an error if not present or not in sync with your `apax.yml`. Default is `"false"`.
 - **catalog**: Installs dependencies according to the catalog. Default is `"false"`.
 - **strict**: Applies the exact package versions from the catalog. Default is `"false"`.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 - **path**: The relative path to the project whose dependencies are to be installed. Default is `"."`.
-
-### Not Yet Supported Parameters
-
-- **installStrategy**: Currently not supported.
 
 ## Example Usage
 
@@ -34,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

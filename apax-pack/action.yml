@@ -12,6 +12,10 @@ inputs:
     description: "Pack without executing prepack and postpack scripts"
     required: false
     default: "false"
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
   path:
     description: "The relative path to the project which is to be packed"
     required: false
@@ -47,6 +51,17 @@ runs:
           echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
-        
+
+        # --log <level>
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          CMD="$CMD --log $LOG_LEVEL"
+        fi
+
         echo "Running command: $CMD"
         eval $CMD

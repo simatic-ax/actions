@@ -5,9 +5,13 @@ inputs:
     description: "A newline-delimited string of registries the package is to be published to"
     required: true
   tag:
-    description: "The tag to apply to the published package. Default is latest"
+    description: "The tag to apply to the published package. Must be lowercase, must not start with a digit or 'v', and must not be a valid semantic version. Default is latest"
     required: false
     default: "latest"
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
   path:
     description: "The relative path to the folder where the apax package is located"
     required: false
@@ -43,15 +47,40 @@ runs:
         # add package file to command
         CMD="$CMD --package $PACKAGE_FILE"
 
-        # add tag to command
-        if [ -n "${{ inputs.tag }}" ]; then
-          echo "Info: Use for --tag the value ${{ inputs.tag }}"
-          CMD="$CMD --tag '${{ inputs.tag }}'"
-        else
-          echo "Info: Use for --tag the value latest"
-          CMD="$CMD --tag 'latest'"
+        # resolve tag (default: latest) and validate against apax 4.3 tag rules:
+        # - lowercase only
+        # - must not start with a digit or the letter 'v'
+        # - must not be a valid semantic version
+        TAG_VALUE="${{ inputs.tag }}"
+        if [ -z "$TAG_VALUE" ]; then
+          TAG_VALUE="latest"
         fi
-        
+        if [[ "$TAG_VALUE" =~ [A-Z] ]]; then
+          echo "Error: tag '$TAG_VALUE' must be lowercase."
+          exit 1
+        fi
+        if [[ "$TAG_VALUE" =~ ^[0-9v] ]]; then
+          echo "Error: tag '$TAG_VALUE' must not start with a digit or the letter 'v'."
+          exit 1
+        fi
+        if [[ "$TAG_VALUE" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9a-zA-Z.-]+)?(\+[0-9a-zA-Z.-]+)?$ ]]; then
+          echo "Error: tag '$TAG_VALUE' must not be a valid semantic version."
+          exit 1
+        fi
+        echo "Info: Use for --tag the value $TAG_VALUE"
+        CMD="$CMD --tag '$TAG_VALUE'"
+
+        # --log <level>
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          CMD="$CMD --log $LOG_LEVEL"
+        fi
+
         # URL Regular Expression
         trimmed_registries=$(echo "${{ inputs.registries }}" | sed '/^$/d' | tr -s '\n')
         url_regex="https?:\/\/(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(/[a-zA-Z0-9#?=&%+._-]*)?"

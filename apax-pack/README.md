@@ -14,6 +14,7 @@ The **Create Apax Package** action creates an Apax package based on the project'
 
 - **key-version**: Version of the key (e.g., v1, v2, v3). Must start with 'v' followed by an integer. Default is `"v1"`.
 - **ignore-scripts**: Pack without executing prepack and postpack scripts. Default is `"false"`.
+- **log-level**: Log level for the apax command. Allowed values: `trace`, `debug`, `info`. Default is empty (apax default: `info`).
 - **path**: The relative path to the project which is to be packed. Default is `"."`.
 
 ## Example Usage
@@ -33,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4

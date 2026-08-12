@@ -10,6 +10,10 @@ inputs:
   predefined-preprocessor-symbols:
     description: "A newline-delimited string of preprocessor symbols to define"
     required: false
+  verbose:
+    description: "Show verbose build output (apax build --verbose). Note: 'apax build' is a contributed command and does not support the apax core '--log' option."
+    required: false
+    default: "false"
   path:
     description: "The relative path to the project which is to be built"
     required: false
@@ -68,6 +72,12 @@ runs:
           CMD="$CMD --variables PREDEFINED_PREPROCESSOR=$PREDEFINED_PREPROCESSOR"
         else
           echo "Info: defined-preprocessor-symbols was not set"
+        fi
+
+        # --verbose (apax build is a contributed command and does not support --log)
+        if [ "${{ inputs.verbose }}" == "true" ]; then
+          echo "Info: Add --verbose to cmd"
+          CMD="$CMD --verbose"
         fi
 
         echo "Running command: $CMD"

@@ -51,6 +51,11 @@ Updates the Apax tool itself. Use this action with caution, as new major version
 
 Further details and information can be found in the [documentation](apax-self-update/README.md).
 
+### [apax-doctor](apax-doctor/README.md)
+Runs `apax doctor` to perform diagnostic checks on the current apax setup (authentication, registry connectivity, project state, ...). Useful as a preflight step in CI workflows.
+
+Further details and information can be found in the [documentation](apax-doctor/README.md).
+
 ## Usage
 
 Each action can be used within your GitHub workflows to automate specific tasks. Refer to the individual action's documentation for detailed usage instructions and examples.
@@ -67,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
