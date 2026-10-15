@@ -1,5 +1,6 @@
 .apax
 .env
 bin
+out
 obj
 testresult

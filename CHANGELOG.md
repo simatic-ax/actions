@@ -1,6 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+### Added
+- apax-make
+    - New action that runs the `apax make` command, the successor of `apax build`
+    - Updated the `actions-test` test project to use `make.yml` with the `@ax-as/s7-sdk` and `@ax-as/s7-catalog` packages, to validate the new action (temporary using a 2610 release candidate - change later)
+
 ### Changed
 - The workflow trigger for the application example release workflow has been changed from `workflow_dispatch` to `release (published)`
 - The version of the referenced action `upload-artifact` has been bumped from v4 to v6
