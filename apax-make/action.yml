@@ -1,0 +1,65 @@
+name: "Make source code"
+description: "Builds the source code based on the project's make.yml file using the apax make command"
+inputs:
+  apax-make-target:
+    description: "The ax make target to run. Allowed values are: Build, Validate, PreBuild, Clean, Rebuild. The default value is: Build."
+    required: false
+    default: "Build"
+  apax-make-log-level:
+    description: "Configure the log level. Allowed values are: none, critical, error, warn, info, debug, trace. The default value is: info."
+    required: false
+    default: "Info"
+  apax-make-properties:
+    description: "A newline-delimited string of properties to pass to the apax make command, each in the format KEY:VALUE. Use MakeConfigName:<Name> to select a configuration block defined in make.yml."
+    required: false
+  apax-make-project-folder:
+    description: "Optional path to overwrite the default project folder"
+    required: false
+  path:
+    description: "The relative path to the project which is to be built"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Make source code
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # base command
+        CMD="apax make"
+
+        # --target
+        if [ -n "${{ inputs.apax-make-target }}" ]; then
+          echo "Info: Add --target with parameter ${{ inputs.apax-make-target }} to cmd"
+          CMD="$CMD --target ${{ inputs.apax-make-target }}"
+        fi
+
+        # --log
+        if [ -n "${{ inputs.apax-make-log-level }}" ]; then
+          echo "Info: Add --log with parameter ${{ inputs.apax-make-log-level }} to cmd"
+          CMD="$CMD --log ${{ inputs.apax-make-log-level }}"
+        fi
+
+        # --property (can be specified multiple times)
+        if [ -n "${{ inputs.apax-make-properties }}" ]; then
+          echo "Info: Add properties: ${{ inputs.apax-make-properties }}"
+          while IFS= read -r line; do
+            if [ ! -z "$line" ]; then
+              CMD="$CMD --property '$line'"
+            fi
+          done <<< "${{ inputs.apax-make-properties }}"
+        else
+          echo "Info: apax-make-properties was not set"
+        fi
+
+        # --projectFolder
+        if [ -n "${{ inputs.apax-make-project-folder }}" ]; then
+          echo "Info: Add --projectFolder with parameter ${{ inputs.apax-make-project-folder }} to cmd"
+          CMD="$CMD --projectFolder '${{ inputs.apax-make-project-folder }}'"
+        fi
+
+        echo "Running command: $CMD"
+        eval $CMD
