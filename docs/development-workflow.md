@@ -11,7 +11,7 @@ The development workflow (`package-development-workflow.yml`) is designed to aut
 1. **Checkout Code**: Checks out the repository code based on the specified reference.
 2. **Login to Required Registries**: Logs into the necessary registries using provided tokens.
 3. **Install Dependencies**: Installs the project's dependencies as defined in the `apax.yaml` file.
-4. **Build Source Code**: Builds the source code with specified targets and arguments.
+4. **Build Source Code**: Builds the source code using the `apax make` command.
 5. **Test Source Code**: Runs tests on the source code with coverage and debug logging enabled.
 6. **Upload Build Artifacts**: Uploads the build artifacts for later use.
 
@@ -36,5 +36,5 @@ The workflow accepts the following inputs:
 ## Specialties
 
 - **Containerized Environment**: The workflow runs in a containerized environment using the `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0` image.
-- **Custom Actions**: The workflow uses custom actions (apax-login, apax-install, apax-build, apax-test) that are specific to the SIMATIC AX project.
+- **Custom Actions**: The workflow uses custom actions (apax-login, apax-install, apax-make, apax-test) that are specific to the SIMATIC AX project.
 - **Artifact Retention**: The build artifacts are uploaded and retained for 90 days.
