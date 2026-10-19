@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.0] - 2026-10-19
+### Changed
+- Bumped the reference CI image from `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0` to `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0` in all workflows, action READMEs, main README and documentation. The action interfaces are unchanged; all used apax commands and options are compatible with apax 4.4.0.
+- `actions-test`: updated catalog `@ax/simatic-ax` to `^2510.21.0` and `@ax/sdk` to `2510.21.0`.
+
+### Fixed
+- `apax-build/README.md`: documented logging for the contributed `apax build` command (`verbose` for the build tool, `--log <level>` in `apax-build-args` for the compiler `stc`) and restored `--log Debug` in the example. The 4.3.0 statement that `--log` in `apax-build-args` fails was wrong: the arguments are forwarded to `stc`, which supports `--log`.
+
 ## [4.3.0] - 2026-08-06
 ### Added
 - New `apax-doctor` action wrapping `apax doctor` for CI preflight checks (authentication, registry connectivity, environment, project state, ...). Available since apax 4.2.

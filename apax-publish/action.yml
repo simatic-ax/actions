@@ -47,7 +47,7 @@ runs:
         # add package file to command
         CMD="$CMD --package $PACKAGE_FILE"
 
-        # resolve tag (default: latest) and validate against apax 4.3 tag rules:
+        # resolve tag (default: latest) and validate against apax tag rules (since 4.3):
         # - lowercase only
         # - must not start with a digit or the letter 'v'
         # - must not be a valid semantic version

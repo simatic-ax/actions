@@ -26,6 +26,10 @@ The **Test Source Code** action tests the source code based on the project's `ap
 - **ingore-scripts**: Deprecated (typo). Use `ignore-scripts` instead.
 - **loglevel**: Deprecated. Use `log-level` instead.
 
+### Logging
+
+`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. The `log-level` input is forwarded as `apax test --loglevel <level>`.
+
 ### Not Yet Supported Parameters
 
 - **filter**: Specifies the filter for the test cases.
@@ -52,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
