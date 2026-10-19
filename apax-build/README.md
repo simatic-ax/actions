@@ -20,6 +20,13 @@ The **Build Source Code** action builds the source code based on the project's `
 - **predefined-preprocessor-symbols**: A newline-delimited string of preprocessor symbols to define. The symbols are passed to the `apax build` command. The default will be taken from the `apax.yml`.
 - **verbose**: If `true`, adds `--verbose` to the command for more detailed build output. Default: `false`. Note: `apax build` is a contributed command and does not support the apax core `--log` option.
 
+### Logging
+
+`apax build` is a contributed command, so logging is controlled by the underlying tools instead of the apax core `--log` option:
+
+- **Build tool**: set `verbose: "true"` (forwarded as `apax build --verbose`).
+- **Compiler (`stc`)**: add `--log <level>` to `apax-build-args` (allowed values e.g. `Trace`, `Debug`, `Information`). The arguments are forwarded to the compiler via `APAX_BUILD_ARGS`.
+
 ## Example Usage
 
 Below is an example of how to use the **Build Source Code** action inside a GitHub workflow:
@@ -37,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     # Mandatory, cause the referenced image contains an apax installation
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -47,6 +54,7 @@ jobs:
         with:
           apax-build-args: |
             --debug
+            --log Debug
           apax-build-targets: |
             llvm
             1500
