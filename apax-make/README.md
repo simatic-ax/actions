@@ -10,7 +10,9 @@ The **Make Source Code** action runs the `apax make` command, which is the succe
 
 ### Optional Parameters
 
-- **apax-make-target**: The ax make target to run. Default is `"Build"`. Available targets:
+The inputs follow the options of the `apax make` command line. Inputs that are not set are not passed, so the CLI defaults apply.
+
+- **target** (`--target`): The AX Make target to run. CLI default is `Build`. Available targets:
 
   | Target | Description |
   | --- | --- |
@@ -20,10 +22,10 @@ The **Make Source Code** action runs the `apax make` command, which is the succe
   | `Clean` | Removes output artifacts from the project. |
   | `Rebuild` | Cleans the project and then builds it again. |
 
-- **apax-make-log-level**: Configure the log level. Allowed values are `none`, `critical`, `error`, `warn`, `info`, `debug`, `trace`. Default is `"Info"`.
-- **apax-make-properties**: A newline-delimited string of properties to pass to the `apax make` command, each in the format `KEY:VALUE`. Use `MakeConfigName:<Name>` to select a configuration block defined in `make.yml`.
-- **apax-make-project-folder**: Optional path to overwrite the default project folder.
-- **path**: The relative path to the project which is utilizing make. Default is `"."`.
+- **log** (`--log`): The verbosity of the build output. Allowed values are `none`, `critical`, `error`, `warn`, `info`, `debug`, `trace`. CLI default is `info`.
+- **property** (`--property`): A newline-delimited list of properties, each in the format `KEY:VALUE`. Each line is passed as a separate `--property`. Use `MakeConfigName:<Name>` to select a configuration block defined in `make.yml`, where `<Name>` is the `Name` of the block.
+- **project-folder** (`--projectFolder`): The project folder passed to the CLI, relative to `path`. CLI default is the current directory.
+- **path**: The relative path the action changes into before running `apax make`. Default is `"."`.
 
 ## Example Usage
 
@@ -50,11 +52,10 @@ jobs:
       - name: Make Source Code
         uses: simatic-ax/actions/apax-make@v4
         with:
-          apax-make-target: "Build"
-          apax-make-log-level: "debug"
-          apax-make-properties: |
+          target: "Build"
+          log: "debug"
+          property: |
             MakeConfigName:my_plc_compilation
-            OutputDirectory:out/release
 ```
 
 ## Failure Scenarios

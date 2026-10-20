@@ -1,22 +1,20 @@
 name: "Make source code"
 description: "Builds the source code based on the project's make.yml file using the apax make command"
 inputs:
-  apax-make-target:
-    description: "The ax make target to run. Allowed values are: Build, Validate, PreBuild, Clean, Rebuild. The default value is: Build."
+  target:
+    description: "The AX Make target to run (--target). Allowed values: Build, Validate, PreBuild, Clean, Rebuild. If not set, the CLI default (Build) is used."
     required: false
-    default: "Build"
-  apax-make-log-level:
-    description: "Configure the log level. Allowed values are: none, critical, error, warn, info, debug, trace. The default value is: info."
+  log:
+    description: "The log level of the build output (--log). Allowed values: none, critical, error, warn, info, debug, trace. If not set, the CLI default (info) is used."
     required: false
-    default: "Info"
-  apax-make-properties:
-    description: "A newline-delimited string of properties to pass to the apax make command, each in the format KEY:VALUE. Use MakeConfigName:<Name> to select a configuration block defined in make.yml."
+  property:
+    description: "Newline-delimited list of properties (--property), each in the format KEY:VALUE. Use MakeConfigName:<Name> to select a configuration block defined in make.yml."
     required: false
-  apax-make-project-folder:
-    description: "Optional path to overwrite the default project folder"
+  project-folder:
+    description: "The project folder passed to the CLI (--projectFolder), relative to path. If not set, the CLI uses the current directory."
     required: false
   path:
-    description: "The relative path to the project which is to be built"
+    description: "The relative path to change into before running apax make"
     required: false
     default: "."
 runs:
@@ -24,42 +22,37 @@ runs:
   steps:
     - name: Make source code
       shell: bash
+      env:
+        INPUT_TARGET: ${{ inputs.target }}
+        INPUT_LOG: ${{ inputs.log }}
+        INPUT_PROPERTY: ${{ inputs.property }}
+        INPUT_PROJECT_FOLDER: ${{ inputs.project-folder }}
+        INPUT_PATH: ${{ inputs.path }}
       run: |
-        # Change to the project directory
-        cd ${{ inputs.path }}
+        cd "$INPUT_PATH"
 
-        # base command
-        CMD="apax make"
+        CMD=(apax make)
 
-        # --target
-        if [ -n "${{ inputs.apax-make-target }}" ]; then
-          echo "Info: Add --target with parameter ${{ inputs.apax-make-target }} to cmd"
-          CMD="$CMD --target ${{ inputs.apax-make-target }}"
+        if [ -n "$INPUT_TARGET" ]; then
+          CMD+=(--target "$INPUT_TARGET")
         fi
 
-        # --log
-        if [ -n "${{ inputs.apax-make-log-level }}" ]; then
-          echo "Info: Add --log with parameter ${{ inputs.apax-make-log-level }} to cmd"
-          CMD="$CMD --log ${{ inputs.apax-make-log-level }}"
+        if [ -n "$INPUT_LOG" ]; then
+          CMD+=(--log "$INPUT_LOG")
         fi
 
-        # --property (can be specified multiple times)
-        if [ -n "${{ inputs.apax-make-properties }}" ]; then
-          echo "Info: Add properties: ${{ inputs.apax-make-properties }}"
+        if [ -n "$INPUT_PROPERTY" ]; then
           while IFS= read -r line; do
-            if [ ! -z "$line" ]; then
-              CMD="$CMD --property '$line'"
+            line="${line%$'\r'}"
+            if [ -n "$line" ]; then
+              CMD+=(--property "$line")
             fi
-          done <<< "${{ inputs.apax-make-properties }}"
-        else
-          echo "Info: apax-make-properties was not set"
+          done <<< "$INPUT_PROPERTY"
         fi
 
-        # --projectFolder
-        if [ -n "${{ inputs.apax-make-project-folder }}" ]; then
-          echo "Info: Add --projectFolder with parameter ${{ inputs.apax-make-project-folder }} to cmd"
-          CMD="$CMD --projectFolder '${{ inputs.apax-make-project-folder }}'"
+        if [ -n "$INPUT_PROJECT_FOLDER" ]; then
+          CMD+=(--projectFolder "$INPUT_PROJECT_FOLDER")
         fi
 
-        echo "Running command: $CMD"
-        eval $CMD
+        echo "Running command: ${CMD[*]}"
+        "${CMD[@]}"
