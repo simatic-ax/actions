@@ -83,10 +83,10 @@ runs:
           CMD="$CMD --coverage"
         fi
         
-        # --loglevel
+        # --log-level
         if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
-          echo "Info: Add --loglevel with parameter ${{ inputs.loglevel }} to cmd"
-          CMD="$CMD --loglevel ${{ inputs.loglevel }}"
+          echo "Info: Add --log-level with parameter ${{ inputs.loglevel }} to cmd"
+          CMD="$CMD --log-level ${{ inputs.loglevel }}"
         fi
 
         echo "Running command: $CMD"
