@@ -8,7 +8,8 @@
 
 ### Changed
 - apax-test
-    - The `log-level` input is now forwarded as `--log-level` instead of `--loglevel`, following the [Breaking] CLI rename in `@ax-as/axunit` 10.0.126. Projects still using an older AxUnit (e.g. `@ax/sdk` 2510) must not set `log-level`/`loglevel`.
+    - The `log-level` input is now forwarded as `--log-level` instead of `--loglevel`, following the [Breaking] CLI rename in `@ax-as/axunit` 10.0.126.
+    - The deprecated `loglevel` input is forwarded as `--loglevel` again, so projects using an older AxUnit (e.g. `@ax/sdk` 2510) keep a working option. Use `log-level` with `@ax-as/axunit` 10.0.126 or later.
 
 ## [4.4.0] - 2026-10-19
 ### Changed

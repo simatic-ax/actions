@@ -22,7 +22,7 @@ inputs:
     required: false
     default: ""
   loglevel:
-    description: "DEPRECATED. Use 'log-level' instead. Kept for backward compatibility and will be removed in a future major version."
+    description: "DEPRECATED. Only for AxUnit versions before 10.0.126 (e.g. @ax/sdk 2510). Allowed values: info, debug. Mapped to '--loglevel'. Use 'log-level' with @ax-as/axunit >= 10.0.126. Will be removed in a future major version."
     required: false
     default: ""
   path:
@@ -102,20 +102,20 @@ runs:
           CMD="$CMD --coverage"
         fi
 
-        # --log-level <level>
-        # Note: 'apax test' is a contributed command from @ax-as/axunit. It exposes its own
-        # '-l/--log-level' option (values: info, debug; named '--loglevel' before axunit 10.0.126)
-        # and does NOT support the apax core '--log' option nor the 'trace' level.
-        # log-level is the current input; loglevel is kept as a deprecated alias.
+        # Log level: 'apax test' is a contributed command from AxUnit and does NOT support the
+        # apax core '--log' option nor the 'trace' level.
+        # AxUnit 10.0.126 renamed '--loglevel' to '--log-level', so each input keeps its own option.
         LOG_LEVEL="${{ inputs.log-level }}"
         LEGACY_LOG_LEVEL="${{ inputs.loglevel }}"
+        LOG_OPTION="--log-level"
         if [ -n "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
-          echo "Error: The inputs 'log-level' and 'loglevel' are mutually exclusive. 'loglevel' is deprecated; please use only 'log-level'."
+          echo "Error: The inputs 'log-level' and 'loglevel' are mutually exclusive. Use 'log-level' with @ax-as/axunit >= 10.0.126, 'loglevel' only with older AxUnit versions."
           exit 1
         fi
         if [ -z "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
-          echo "Warning: The input 'loglevel' is deprecated. Use 'log-level' instead."
+          echo "Warning: The input 'loglevel' is deprecated and maps to '--loglevel', which only exists in AxUnit versions before 10.0.126 (e.g. @ax/sdk 2510). Use 'log-level' with @ax-as/axunit >= 10.0.126."
           LOG_LEVEL="$LEGACY_LOG_LEVEL"
+          LOG_OPTION="--loglevel"
         fi
         # normalize to lowercase for backward compatibility with previous default value 'Info'
         LOG_LEVEL="$(echo "$LOG_LEVEL" | tr '[:upper:]' '[:lower:]')"
@@ -128,8 +128,8 @@ runs:
             echo "Error: log-level must be one of: info, debug"
             exit 1
           fi
-          echo "Info: Add --log-level $LOG_LEVEL to cmd"
-          CMD="$CMD --log-level $LOG_LEVEL"
+          echo "Info: Add $LOG_OPTION $LOG_LEVEL to cmd"
+          CMD="$CMD $LOG_OPTION $LOG_LEVEL"
         fi
 
         echo "Running command: $CMD"

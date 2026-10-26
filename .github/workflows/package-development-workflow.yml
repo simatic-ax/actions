@@ -82,7 +82,7 @@ jobs:
         with:
           path: actions-test # only here for test purposes, remove later
           coverage: true
-          loglevel: debug
+          log-level: debug
 
       - name: Check links
         uses: gaurav-nelson/github-action-markdown-link-check@v1

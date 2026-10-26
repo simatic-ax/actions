@@ -24,11 +24,16 @@ The **Test Source Code** action tests the source code based on the project's `ap
 ### Deprecated Parameters
 
 - **ingore-scripts**: Deprecated (typo). Use `ignore-scripts` instead.
-- **loglevel**: Deprecated. Use `log-level` instead.
+- **loglevel**: Deprecated. Only for AxUnit versions before 10.0.126 (e.g. `@ax/sdk` 2510). Mapped to `--loglevel`. Use `log-level` with `@ax-as/axunit` 10.0.126 or later.
 
 ### Logging
 
-`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. The `log-level` input is forwarded as `apax test --log-level <level>`. This option requires `@ax-as/axunit` 10.0.126 or later; older AxUnit versions (e.g. `@ax/axunitst` from `@ax/sdk` 2510) name it `--loglevel` and will reject the call.
+`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. AxUnit 10.0.126 renamed the option `--loglevel` to `--log-level`. Choose the input that matches your AxUnit version:
+
+| Input | Forwarded as | AxUnit version |
+| --- | --- | --- |
+| `log-level` | `--log-level <level>` | `@ax-as/axunit` 10.0.126 or later (e.g. `@ax-as/s7-sdk` 2610) |
+| `loglevel` (deprecated) | `--loglevel <level>` | before 10.0.126 (e.g. `@ax/axunitst` from `@ax/sdk` 2510) |
 
 ### Not Yet Supported Parameters
 
