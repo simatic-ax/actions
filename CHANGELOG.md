@@ -13,6 +13,7 @@
     - Note for users of `log-level` with an older AxUnit (e.g. `@ax/sdk` 2510): this AxUnit does not know `--log-level`; switch to the `loglevel` input or update AxUnit.
 - Development workflow
     - Uses `apax-make` instead of `apax-build` and sets `log-level: debug` for `apax-test`.
+    - Uploads the build output from `actions-test/out` (output folder of `apax make`) instead of `actions-test/bin/1500` and `actions-test/bin/llvm`; the release workflow downloads it to the same folder.
 
 ## [4.4.0] - 2026-10-19
 ### Changed

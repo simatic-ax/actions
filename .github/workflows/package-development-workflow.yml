@@ -96,8 +96,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
-          path: |                 # only here for test purposes, alter later
-            actions-test/bin/1500 
-            actions-test/bin/llvm
+          path: actions-test/out # only here for test purposes, alter later
           retention-days: 90
           if-no-files-found: error
