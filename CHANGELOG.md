@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [4.4.1] - 2026-10-26
 ### Added
 - apax-make
     - New action that runs the `apax make` command, the successor of `apax build`
@@ -10,16 +10,20 @@
 - apax-test
     - The `log-level` input is now forwarded as `--log-level` instead of `--loglevel`, following the [Breaking] CLI rename in `@ax-as/axunit` 10.0.126.
     - The deprecated `loglevel` input is forwarded as `--loglevel` again, so projects using an older AxUnit (e.g. `@ax/sdk` 2510) keep a working option. Use `log-level` with `@ax-as/axunit` 10.0.126 or later.
+    - Note for users of `log-level` with an older AxUnit (e.g. `@ax/sdk` 2510): this AxUnit does not know `--log-level`; switch to the `loglevel` input or update AxUnit.
+- Development workflow
+    - Uses `apax-make` instead of `apax-build` and sets `log-level: debug` for `apax-test`.
 
 ## [4.4.0] - 2026-10-19
 ### Changed
 - Bumped the reference CI image from `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0` to `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0` in all workflows, action READMEs, main README and documentation. The action interfaces are unchanged; all used apax commands and options are compatible with apax 4.4.0.
 - `actions-test`: updated catalog `@ax/simatic-ax` to `^2510.21.0` and `@ax/sdk` to `2510.21.0`.
+- `apax-test/README.md`: added a "Logging" section.
 
 ### Fixed
 - `apax-build/README.md`: documented logging for the contributed `apax build` command (`verbose` for the build tool, `--log <level>` in `apax-build-args` for the compiler `stc`) and restored `--log Debug` in the example. The 4.3.0 statement that `--log` in `apax-build-args` fails was wrong: the arguments are forwarded to `stc`, which supports `--log`.
 
-## [4.3.0] - 2026-08-06
+## [4.3.0] - 2026-08-12
 ### Added
 - New `apax-doctor` action wrapping `apax doctor` for CI preflight checks (authentication, registry connectivity, environment, project state, ...). Available since apax 4.2.
 - New optional `log-level` input on core-command actions `apax-install`, `apax-login`, `apax-pack`, `apax-publish`, `apax-self-update`, `apax-doctor` and `apax-version`. Accepts `trace`, `debug` or `info` and is forwarded as `--log <level>` to the apax CLI (apax core commands each expose this option).
@@ -56,7 +60,31 @@
     - Removed the copy-local parameter
     - Removed the verbose parameter for detailed output during installation
 - apax-pack
-    - Re-added the key-version parameter (optional, default: v1) with validation (format: v followed by integer)
+    - [Breaking] Replaced the `key-version-v2` input with `key-version` (optional, default: v1) with validation (format: v followed by integer)
+    - `--key` and `--keyVersion` are now always passed to `apax pack`
+- Development workflow
+    - New required input `version` and a new `apax-version` step; the release workflow passes the release tag name
+- Bumped the reference CI image from `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0` to `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0` and the action references in the workflows from `@v3` to `@v4`
+- CODEOWNERS now point to the team `@simatic-ax/toa-teamofaxion`
+
+## [3.5.0] - 2025-05-09
+### Added
+- New `application-example-release-workflow` to release a template based on the current repository
+- apax-templatify
+    - New inputs `working-directory`, `author`, `description`, `registry-scope` and `registry-url`
+- Development workflow
+    - Checks the links in modified Markdown files
+
+### Changed
+- apax-templatify
+    - The package name is read more robustly from `apax.yml`
+- Development workflow
+    - Runs on pushes to `main` only and on pull requests against any branch
+- `actions-test`: uses the catalog `@ax/simatic-ax` and `@ax/sdk` `^2504.0.0`; removed `installStrategy` and `apaxVersion`
+- Bumped the reference CI image from `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.4.2` to `ghcr.io/simatic-ax/ci-images/apax-ci-image:3.5.0`
+
+### Removed
+- `repo-maintenance-workflow` and `templatify-workflow`
 
 ## [3.4.2] - 2025-03-01
 
@@ -67,7 +95,6 @@
 - Adds debug output of the event of the development workflow
 - The workflows now make use of dedicated permissions. 
 - The automatic changelog update has been changed.
-- The update of the changelog including the PR creation is now done inside a script
 - The update of the changelog including the PR creation is now done inside a script
 - Re-tagging during release only happens for the major version tag
 
