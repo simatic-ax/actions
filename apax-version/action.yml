@@ -4,6 +4,10 @@ inputs:
   version:
     description: "The version to set in the apax.yml"
     required: true
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
   path:
     description: "The relative path to the project which is to be versioned"
     required: false
@@ -43,6 +47,17 @@ runs:
 
         # built command
         CMD="apax version ${{ inputs.version }}"
+
+        # --log <level>
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          echo "Info: Add --log $LOG_LEVEL to cmd"
+          CMD="$CMD --log $LOG_LEVEL"
+        fi
 
         # execute command
         echo "Running command: $CMD"

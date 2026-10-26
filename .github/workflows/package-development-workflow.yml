@@ -30,7 +30,7 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -73,22 +73,16 @@ jobs:
           version: ${{ steps.determine_version.outputs.version }}
 
       - name: Build source code
-        uses: ./apax-build # change to simatic-ax/actions/apax-build@v4
+        uses: ./apax-make # change to simatic-ax/actions/apax-make@v4
         with:
           path: actions-test # only here for test purposes, remove later
-          apax-build-targets: |
-            llvm
-            1500
-          apax-build-args: |
-            --debug
-            --log Debug
 
       - name: Test source code
         uses: ./apax-test # change to simatic-ax/actions/apax-test@v4
         with:
           path: actions-test # only here for test purposes, remove later
           coverage: true
-          loglevel: debug
+          log-level: debug
 
       - name: Check links
         uses: gaurav-nelson/github-action-markdown-link-check@v1

@@ -7,23 +7,18 @@ keywords:
 author: <Name>
 # Description will be displayed in the apax extension
 description: <Description for your library>
-# Targets to be compiled with 'apax build'
-targets:
-  - "1500"
-  - llvm
 
-# Dependencies
+# Catalog:
 catalogs:
-  "@ax/simatic-ax": ^2510.0.0
+  "@ax-as/s7-catalog": ^2610.0.0
+# Dependencies  
 devDependencies:
-  "@ax/sdk": 2510.0.0
+  "@ax-as/s7-sdk": ^2610.0.0
 
-# Environment variables
-variables:
-  APAX_BUILD_ARGS:
-    - "--debug" # Generate debug information for target "1500"
+# # Environment variables
+# variables:
 
 # Files, which will be shipped with the library
 files:
-  - bin
-  - "!bin/axunit-artifacts"
+  - out/my_s7_compilation/s7
+  - out/my_s7_compilation/llvm
