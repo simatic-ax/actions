@@ -21,6 +21,11 @@ Builds the source code based on the project's `apax.yaml` file.
 
 Further details and information can be found in the [documentation](apax-build/README.md).
 
+### [apax-make](apax-make/README.md)
+Builds the source code based on the project's `make.yaml` file using the `apax make` command, the successor of `apax build`.
+
+Further details and information can be found in the [documentation](apax-make/README.md).
+
 ### [apax-test](apax-test/README.md)
 Tests the source code based on the project's `apax.yaml` file.
 

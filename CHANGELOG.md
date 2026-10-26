@@ -1,5 +1,16 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- apax-make
+    - New action that runs the `apax make` command, the successor of `apax build`
+    - Updated the `actions-test` test project to use `make.yml` with the `@ax-as/s7-sdk` and `@ax-as/s7-catalog` packages (`^2610.0.0`), to validate the new action
+
+### Changed
+- apax-test
+    - The `log-level` input is now forwarded as `--log-level` instead of `--loglevel`, following the [Breaking] CLI rename in `@ax-as/axunit` 10.0.126.
+    - The deprecated `loglevel` input is forwarded as `--loglevel` again, so projects using an older AxUnit (e.g. `@ax/sdk` 2510) keep a working option. Use `log-level` with `@ax-as/axunit` 10.0.126 or later.
+
 ## [4.4.0] - 2026-10-19
 ### Changed
 - Bumped the reference CI image from `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.3.0` to `ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0` in all workflows, action READMEs, main README and documentation. The action interfaces are unchanged; all used apax commands and options are compatible with apax 4.4.0.

@@ -18,17 +18,22 @@ The **Test Source Code** action tests the source code based on the project's `ap
 - **ignore-scripts**: Do not run pretest and posttest scripts. Default is `"false"`.
 - **playlist**: Specifies the playlist filepath. Default is `""`.
 - **coverage**: Specifies to get coverage. Default is `"false"`.
-- **log-level**: Log level for the `apax test` command. Allowed values: `info`, `debug`. Default is empty (test-command default: `info`). Mapped to `--loglevel`. Note: `apax test` is a contributed command (from `@ax/axunit`) and does **not** support the `trace` level that apax core commands accept.
+- **log-level**: Log level for the `apax test` command. Allowed values: `info`, `debug`. Default is empty (test-command default: `info`). Mapped to `--log-level`. Note: `apax test` is a contributed command (from `@ax-as/axunit`) and does **not** support the `trace` level that apax core commands accept.
 - **path**: The relative path to the project which is to be tested. Default is `"."`.
 
 ### Deprecated Parameters
 
 - **ingore-scripts**: Deprecated (typo). Use `ignore-scripts` instead.
-- **loglevel**: Deprecated. Use `log-level` instead.
+- **loglevel**: Deprecated. Only for AxUnit versions before 10.0.126 (e.g. `@ax/sdk` 2510). Mapped to `--loglevel`. Use `log-level` with `@ax-as/axunit` 10.0.126 or later.
 
 ### Logging
 
-`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. The `log-level` input is forwarded as `apax test --loglevel <level>`.
+`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. AxUnit 10.0.126 renamed the option `--loglevel` to `--log-level`. Choose the input that matches your AxUnit version:
+
+| Input | Forwarded as | AxUnit version |
+| --- | --- | --- |
+| `log-level` | `--log-level <level>` | `@ax-as/axunit` 10.0.126 or later (e.g. `@ax-as/s7-sdk` 2610) |
+| `loglevel` (deprecated) | `--loglevel <level>` | before 10.0.126 (e.g. `@ax/axunitst` from `@ax/sdk` 2510) |
 
 ### Not Yet Supported Parameters
 

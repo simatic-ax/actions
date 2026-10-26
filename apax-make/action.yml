@@ -1,0 +1,58 @@
+name: "Make source code"
+description: "Builds the source code based on the project's make.yml file using the apax make command"
+inputs:
+  target:
+    description: "The AX Make target to run (--target). Allowed values: Build, Validate, PreBuild, Clean, Rebuild. If not set, the CLI default (Build) is used."
+    required: false
+  log:
+    description: "The log level of the build output (--log). Allowed values: none, critical, error, warn, info, debug, trace. If not set, the CLI default (info) is used."
+    required: false
+  property:
+    description: "Newline-delimited list of properties (--property), each in the format KEY:VALUE. Use MakeConfigName:<Name> to select a configuration block defined in make.yml."
+    required: false
+  project-folder:
+    description: "The project folder passed to the CLI (--projectFolder), relative to path. If not set, the CLI uses the current directory."
+    required: false
+  path:
+    description: "The relative path to change into before running apax make"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Make source code
+      shell: bash
+      env:
+        INPUT_TARGET: ${{ inputs.target }}
+        INPUT_LOG: ${{ inputs.log }}
+        INPUT_PROPERTY: ${{ inputs.property }}
+        INPUT_PROJECT_FOLDER: ${{ inputs.project-folder }}
+        INPUT_PATH: ${{ inputs.path }}
+      run: |
+        cd "$INPUT_PATH"
+
+        CMD=(apax make)
+
+        if [ -n "$INPUT_TARGET" ]; then
+          CMD+=(--target "$INPUT_TARGET")
+        fi
+
+        if [ -n "$INPUT_LOG" ]; then
+          CMD+=(--log "$INPUT_LOG")
+        fi
+
+        if [ -n "$INPUT_PROPERTY" ]; then
+          while IFS= read -r line; do
+            line="${line%$'\r'}"
+            if [ -n "$line" ]; then
+              CMD+=(--property "$line")
+            fi
+          done <<< "$INPUT_PROPERTY"
+        fi
+
+        if [ -n "$INPUT_PROJECT_FOLDER" ]; then
+          CMD+=(--projectFolder "$INPUT_PROJECT_FOLDER")
+        fi
+
+        echo "Running command: ${CMD[*]}"
+        "${CMD[@]}"
