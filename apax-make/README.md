@@ -55,7 +55,7 @@ jobs:
           target: "Build"
           log: "debug"
           property: |
-            MakeConfigName:my_plc_compilation
+            MakeConfigName:Debug
 ```
 
 ## Failure Scenarios
