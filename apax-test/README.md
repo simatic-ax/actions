@@ -18,7 +18,7 @@ The **Test Source Code** action tests the source code based on the project's `ap
 - **ignore-scripts**: Do not run pretest and posttest scripts. Default is `"false"`.
 - **playlist**: Specifies the playlist filepath. Default is `""`.
 - **coverage**: Specifies to get coverage. Default is `"false"`.
-- **log-level**: Log level for the `apax test` command. Allowed values: `info`, `debug`. Default is empty (test-command default: `info`). Mapped to `--loglevel`. Note: `apax test` is a contributed command (from `@ax/axunit`) and does **not** support the `trace` level that apax core commands accept.
+- **log-level**: Log level for the `apax test` command. Allowed values: `info`, `debug`. Default is empty (test-command default: `info`). Mapped to `--log-level`. Note: `apax test` is a contributed command (from `@ax-as/axunit`) and does **not** support the `trace` level that apax core commands accept.
 - **path**: The relative path to the project which is to be tested. Default is `"."`.
 
 ### Deprecated Parameters
@@ -28,7 +28,7 @@ The **Test Source Code** action tests the source code based on the project's `ap
 
 ### Logging
 
-`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. The `log-level` input is forwarded as `apax test --loglevel <level>`.
+`apax test` is a contributed command, so logging is controlled by the underlying test tool (AxUnit) instead of the apax core `--log` option. The `log-level` input is forwarded as `apax test --log-level <level>`. This option requires `@ax-as/axunit` 10.0.126 or later; older AxUnit versions (e.g. `@ax/axunitst` from `@ax/sdk` 2510) name it `--loglevel` and will reject the call.
 
 ### Not Yet Supported Parameters
 
