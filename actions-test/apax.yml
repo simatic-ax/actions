@@ -20,5 +20,5 @@ devDependencies:
 
 # Files, which will be shipped with the library
 files:
-  - out/my_s7_compilation/s7
-  - out/my_s7_compilation/llvm
+  - out/Debug/s7
+  - out/Debug/llvm

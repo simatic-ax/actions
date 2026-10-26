@@ -1,5 +1,5 @@
 MakeConfiguration:
-  - Name: my_s7_compilation
+  - Name: Debug
     Type: lib
     Targets:
       - s7
