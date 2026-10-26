@@ -29,7 +29,7 @@ jobs:
     needs: call-development
     runs-on: ubuntu-24.04
     container:
-      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.0.0
+      image: ghcr.io/simatic-ax/ci-images/apax-ci-image:4.4.0
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
@@ -44,7 +44,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: build-artifacts
-          path: actions-test/bin # only here for test purposes, remove later
+          path: actions-test/out # only here for test purposes, remove later
 
       - name: Version package
         uses: ./apax-version # change to simatic-ax/actions/apax-version@v4

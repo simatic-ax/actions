@@ -1,8 +1,12 @@
 name: "Test source code"
 description: "Tests the source code based on the projects apax.yaml file"
 inputs:
+  ignore-scripts:
+    description: "Do not run pretest and posttest scripts"
+    required: false
+    default: "false"
   ingore-scripts:
-    description: " Do not run pretest and posttest scripts"
+    description: "DEPRECATED (typo). Use 'ignore-scripts' instead. Kept for backward compatibility and will be removed in a future major version."
     required: false
     default: "false"
   playlist:
@@ -13,10 +17,14 @@ inputs:
     description: "Specifies to get coverage"
     required: false
     default: "false"
-  loglevel:
-    description: "Specifies log level --> `info`(default), `debug` "
+  log-level:
+    description: "Log level for the 'apax test' command. Allowed values: info, debug. Note: 'apax test' is a contributed command (from @ax-as/axunit) and does not support the 'trace' level that apax core commands accept. Mapped to '--log-level' (requires @ax-as/axunit >= 10.0.126)."
     required: false
-    default: "Info"
+    default: ""
+  loglevel:
+    description: "DEPRECATED. Only for AxUnit versions before 10.0.126 (e.g. @ax/sdk 2510). Allowed values: info, debug. Mapped to '--loglevel'. Use 'log-level' with @ax-as/axunit >= 10.0.126. Will be removed in a future major version."
+    required: false
+    default: ""
   path:
     description: "The relative path to the project which is to be built"
     required: false
@@ -57,15 +65,26 @@ runs:
 
         # base command
         CMD="apax test"
-        
+
         # process inputs
-        
-        # --ignore-scripts Flag
-        if [ "${{ inputs.ingore-scripts }}" == "true" ]; then
+
+        # --ignore-scripts Flag (accepts both the correct name and the deprecated typo alias)
+        # Note: both inputs default to "false", so we only treat "true" as an explicit user intent.
+        IGNORE_SCRIPTS="${{ inputs.ignore-scripts }}"
+        LEGACY_IGNORE_SCRIPTS="${{ inputs.ingore-scripts }}"
+        if [ "$IGNORE_SCRIPTS" == "true" ] && [ "$LEGACY_IGNORE_SCRIPTS" == "true" ]; then
+          echo "Error: The inputs 'ignore-scripts' and 'ingore-scripts' are mutually exclusive. 'ingore-scripts' is deprecated (typo); please use only 'ignore-scripts'."
+          exit 1
+        fi
+        if [ "$LEGACY_IGNORE_SCRIPTS" == "true" ]; then
+          echo "Warning: The input 'ingore-scripts' is deprecated (typo). Use 'ignore-scripts' instead."
+          IGNORE_SCRIPTS="true"
+        fi
+        if [ "$IGNORE_SCRIPTS" == "true" ]; then
           echo "Info: Add --ignore-scripts to cmd"
           CMD="$CMD --ignore-scripts"
         fi
-        
+
         # --playlist path
         if [ -n "${{ inputs.playlist }}" ]; then
           if [ -f "${{ inputs.playlist }}" ]; then
@@ -76,17 +95,41 @@ runs:
             exit 1
           fi
         fi
-        
+
         # --coverage Flag
         if [ "${{ inputs.coverage }}" == "true" ]; then
           echo "Info: Add --coverage to cmd"
           CMD="$CMD --coverage"
         fi
-        
-        # --loglevel
-        if [ "${{ inputs.loglevel }}" == "debug" ] || [ "${{ inputs.loglevel }}" == "info" ]; then
-          echo "Info: Add --loglevel with parameter ${{ inputs.loglevel }} to cmd"
-          CMD="$CMD --loglevel ${{ inputs.loglevel }}"
+
+        # Log level: 'apax test' is a contributed command from AxUnit and does NOT support the
+        # apax core '--log' option nor the 'trace' level.
+        # AxUnit 10.0.126 renamed '--loglevel' to '--log-level', so each input keeps its own option.
+        LOG_LEVEL="${{ inputs.log-level }}"
+        LEGACY_LOG_LEVEL="${{ inputs.loglevel }}"
+        LOG_OPTION="--log-level"
+        if [ -n "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
+          echo "Error: The inputs 'log-level' and 'loglevel' are mutually exclusive. Use 'log-level' with @ax-as/axunit >= 10.0.126, 'loglevel' only with older AxUnit versions."
+          exit 1
+        fi
+        if [ -z "$LOG_LEVEL" ] && [ -n "$LEGACY_LOG_LEVEL" ]; then
+          echo "Warning: The input 'loglevel' is deprecated and maps to '--loglevel', which only exists in AxUnit versions before 10.0.126 (e.g. @ax/sdk 2510). Use 'log-level' with @ax-as/axunit >= 10.0.126."
+          LOG_LEVEL="$LEGACY_LOG_LEVEL"
+          LOG_OPTION="--loglevel"
+        fi
+        # normalize to lowercase for backward compatibility with previous default value 'Info'
+        LOG_LEVEL="$(echo "$LOG_LEVEL" | tr '[:upper:]' '[:lower:]')"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" == "trace" ]; then
+            echo "Error: log-level 'trace' is not supported by 'apax test' (contributed command). Allowed values: info, debug."
+            exit 1
+          fi
+          if [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: info, debug"
+            exit 1
+          fi
+          echo "Info: Add $LOG_OPTION $LOG_LEVEL to cmd"
+          CMD="$CMD $LOG_OPTION $LOG_LEVEL"
         fi
 
         echo "Running command: $CMD"

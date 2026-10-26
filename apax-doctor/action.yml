@@ -1,0 +1,103 @@
+name: "Apax doctor"
+description: "Runs apax doctor to check the health of the apax setup (authentication, registry connectivity, environment, project state, ...)"
+inputs:
+  check:
+    description: "The diagnostic check to run. Allowed values: auth, registry, env, git, node, project, all. Default is all."
+    required: false
+    default: "all"
+  format:
+    description: "Output format. Allowed value: json. If empty, the default human-readable text output is used."
+    required: false
+    default: ""
+  verbose:
+    description: "Show detailed diagnostic information including suggestions for resolving issues."
+    required: false
+    default: "false"
+  fail-on-warning:
+    description: "If set to true, the step will fail when apax doctor reports warnings (exit code 2). Otherwise warnings do not fail the step."
+    required: false
+    default: "false"
+  log-level:
+    description: "Log level for the apax command. Allowed values: trace, debug, info"
+    required: false
+    default: ""
+  path:
+    description: "The relative path to the project to run the diagnostic checks against"
+    required: false
+    default: "."
+runs:
+  using: "composite"
+  steps:
+    - name: Run apax doctor
+      shell: bash
+      run: |
+        # Change to the project directory
+        cd ${{ inputs.path }}
+
+        # validate check parameter
+        CHECK="${{ inputs.check }}"
+        case "$CHECK" in
+          auth|registry|env|git|node|project|all) ;;
+          *)
+            echo "Error: check must be one of: auth, registry, env, git, node, project, all"
+            exit 1
+            ;;
+        esac
+
+        # base command
+        CMD="apax doctor --check $CHECK"
+
+        # --format
+        if [ -n "${{ inputs.format }}" ]; then
+          if [ "${{ inputs.format }}" != "json" ]; then
+            echo "Error: format must be 'json' or empty"
+            exit 1
+          fi
+          CMD="$CMD --format ${{ inputs.format }}"
+        fi
+
+        # --verbose
+        if [ "${{ inputs.verbose }}" == "true" ]; then
+          echo "Info: Add --verbose to cmd"
+          CMD="$CMD --verbose"
+        fi
+
+        # --log <level>
+        LOG_LEVEL="${{ inputs.log-level }}"
+        if [ -n "$LOG_LEVEL" ]; then
+          if [ "$LOG_LEVEL" != "trace" ] && [ "$LOG_LEVEL" != "debug" ] && [ "$LOG_LEVEL" != "info" ]; then
+            echo "Error: log-level must be one of: trace, debug, info"
+            exit 1
+          fi
+          CMD="$CMD --log $LOG_LEVEL"
+        fi
+
+        echo "Running command: $CMD"
+        # capture exit code without aborting the step so we can interpret it below
+        set +e
+        eval $CMD
+        EXIT_CODE=$?
+        set -e
+
+        # apax doctor exit codes:
+        #   0: all checks passed
+        #   2: warnings present (no failures)
+        #   1: one or more checks failed
+        case "$EXIT_CODE" in
+          0)
+            echo "Info: apax doctor completed successfully."
+            exit 0
+            ;;
+          2)
+            if [ "${{ inputs.fail-on-warning }}" == "true" ]; then
+              echo "Error: apax doctor reported warnings and fail-on-warning is enabled."
+              exit 2
+            fi
+            echo "Warning: apax doctor reported warnings (exit code 2). Continuing because fail-on-warning is false."
+            exit 0
+            ;;
+          *)
+            echo "Error: apax doctor reported failures (exit code $EXIT_CODE)."
+            exit $EXIT_CODE
+            ;;
+        esac
