@@ -4,7 +4,7 @@
 ### Added
 - apax-make
     - New action that runs the `apax make` command, the successor of `apax build`
-    - Updated the `actions-test` test project to use `make.yml` with the `@ax-as/s7-sdk` and `@ax-as/s7-catalog` packages, to validate the new action (temporary using a 2610 release candidate - change later)
+    - Updated the `actions-test` test project to use `make.yml` with the `@ax-as/s7-sdk` and `@ax-as/s7-catalog` packages (`^2610.0.0`), to validate the new action
 
 ## [4.4.0] - 2026-10-19
 ### Changed
